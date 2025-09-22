@@ -29,7 +29,7 @@ LD      := $(CROSS)-ld
 OBJCOPY := $(CROSS)-objcopy
 OBJDUMP := $(CROSS)-objdump
 CPP     := $(CROSS)-cpp
-CC      := $(TOOLS_DIR)/gcc-2.6.0-psx/cc1 # This does appear correct, 2.5.7 gave incorrection compilations in simple situations
+CC      := $(TOOLS_DIR)/gcc-2.7.2-psx/cc1
 OBJDIFF := $(OBJDIFF_DIR)/objdiff
 
 PYTHON          := python3
