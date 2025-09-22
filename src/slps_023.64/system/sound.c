@@ -1,10 +1,11 @@
 #include "common.h"
+#include "hw.h"
 
-// INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BC94);
+//----------------------------------------------------------------------------------------------------------------------
 void func_8004BC94( u32 in_KeyOn )
 {
-    *(u16*)0x1F801D88 = in_KeyOn;
-    *(u16*)0x1F801D8A = (in_KeyOn >> 0x10);
+    SPU_VOICE_KEY_ON_LO = in_KeyOn;
+    SPU_VOICE_KEY_ON_HI = (in_KeyOn >> 0x10);
 }
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BCB0);
