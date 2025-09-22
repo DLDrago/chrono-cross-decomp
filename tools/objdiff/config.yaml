@@ -7,10 +7,6 @@ categories:
     name: Main Executable
     paths:
       - slps_023.64
-  - id: field
-    name: Field Overlay
-    paths:
-      - field
 
 expected_paths:
   asm: expected/asm

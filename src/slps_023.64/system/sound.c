@@ -2,27 +2,33 @@
 #include "hw.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-void func_8004BC94( u32 in_KeyOn )
+void SetVoiceKeyOn( u32 in_KeyOn )
 {
     SPU_VOICE_KEY_ON_LO = in_KeyOn;
     SPU_VOICE_KEY_ON_HI = (in_KeyOn >> 0x10);
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BCB0);
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceKeyOff( u32 in_KeyOff )
+{
+    SPU_VOICE_KEY_OFF_LO = in_KeyOff;
+    SPU_VOICE_KEY_OFF_HI = (in_KeyOff >> 0x10);
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BCCC);
+//----------------------------------------------------------------------------------------------------------------------
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceReverbMode);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BCE8);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceNoiseMode);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BD04);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceFmMode);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BD20);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceVolume);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BD68);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceSampleRate);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BD80);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceStartAddr);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BD9C);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceRepeatAddr);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BDB8);
 
@@ -38,4 +44,4 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE68);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE9C);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BECC);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams);
