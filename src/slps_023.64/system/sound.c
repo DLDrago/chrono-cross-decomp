@@ -39,7 +39,12 @@ void SetVoiceNoiseMode( u32 in_NoiseMode )
     *SPU_VOICE_CHN_NOISE_MODE_HI = (in_NoiseMode >> 0x10);
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceFmMode);
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceFmMode( u32 in_FmMode )
+{
+    *SPU_VOICE_CHN_FM_MODE_LO = in_FmMode;
+    *SPU_VOICE_CHN_FM_MODE_HI = (in_FmMode >> 0x10);
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceVolume);
 
