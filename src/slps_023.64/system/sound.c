@@ -51,8 +51,13 @@ void SetVoiceStartAddr( u32 in_VoiceIndex, u32 in_Addr )
     VOICE_00_ADPCM_START_ADDR[in_VoiceIndex * (sizeof(SPU_VOICE_REG) / sizeof(u16))] = (in_Addr >> 3);
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceRepeatAddr);
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceRepeatAddr( u32 in_VoiceIndex, u32 in_Addr )
+{
+    VOICE_00_ADPCM_REPEAT_ADDR[in_VoiceIndex * (sizeof(SPU_VOICE_REG) / sizeof(u16))] = (in_Addr >> 3);
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BDB8);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BDD0);
