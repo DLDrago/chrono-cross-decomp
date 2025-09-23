@@ -16,7 +16,11 @@ void SetVoiceKeyOff( u32 in_KeyOff )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceReverbMode);
+void SetVoiceReverbMode( u32 in_ReverbMode )
+{
+    SPU_VOICE_CHN_REVERB_MODE_LO = in_ReverbMode;
+    SPU_VOICE_CHN_REVERB_MODE_HI = (in_ReverbMode >> 0x10);
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceNoiseMode);
 
