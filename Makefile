@@ -29,7 +29,7 @@ LD      := $(CROSS)-ld
 OBJCOPY := $(CROSS)-objcopy
 OBJDUMP := $(CROSS)-objdump
 CPP     := $(CROSS)-cpp
-CC      := $(TOOLS_DIR)/gcc-2.7.2-psx/cc1
+CC      := $(TOOLS_DIR)/gcc-2.8.1-psx/cc1
 OBJDIFF := $(OBJDIFF_DIR)/objdiff
 
 PYTHON          := python3
