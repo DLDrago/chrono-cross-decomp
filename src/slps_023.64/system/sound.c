@@ -46,7 +46,10 @@ void SetVoiceSampleRate( s32 in_VoiceIndex, s16 in_SampleRate )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceStartAddr);
+void SetVoiceStartAddr( u32 in_VoiceIndex, u32 in_Addr )
+{
+    VOICE_00_ADPCM_START_ADDR[in_VoiceIndex * (sizeof(SPU_VOICE_REG) / sizeof(u16))] = (in_Addr >> 3);
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceRepeatAddr);
 
