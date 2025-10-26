@@ -82,3 +82,5 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE68);
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE9C);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BF78);
