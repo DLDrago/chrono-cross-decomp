@@ -33,6 +33,14 @@ SpuSetReverb = 0x80029410;
 _SpuIsInAllocateArea = 0x800294E0;
 _SpuIsInAllocateArea_ = 0x80029560;
 
+SpuInitMalloc      = 0x8004B964;
+SpuSetIRQ          = 0x8004B9C4;
+SpuSetIRQCallback  = 0x8004BB04;
+_SpuCallback       = 0x8004BB44;
+SpuRead            = 0x8004BB74;
+SpuWrite           = 0x8004BBD4;
+SpuSetTransferMode = 0x8004BC34;
+
 //----------------------------------------------------------------------------------------------------------------------
 // Sound
 //----------------------------------------------------------------------------------------------------------------------
