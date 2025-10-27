@@ -44,6 +44,74 @@ strtoul         = 0x80010BB4;
 todigit         = 0x80010D04;
 
 //----------------------------------------------------------------------------------------------------------------------
+// PSY-Q (libgpu)
+//----------------------------------------------------------------------------------------------------------------------
+BreakDraw          = 0x80010D74;
+IsIdleGPU          = 0x80010E08;
+ContinueDraw       = 0x80010E68;
+LoadTPage          = 0x80010F94;
+LoadClut           = 0x80011084;
+LoadClut2          = 0x800110F4;
+SetDefDrawEnv      = 0x80011164;
+SetDefDispEnv      = 0x80011224;
+GetTPage           = 0x80011264;
+GetClut            = 0x800112A4;
+DumpTPage          = 0x800112C4;
+DumpClut           = 0x80011324;
+NextPrim           = 0x80011364;
+IsEndPrim          = 0x80011384;
+AddPrim            = 0x800113A4;
+AddPrims           = 0x800113E4;
+CatPrim            = 0x80011424;
+SetLineF3          = 0x800116F4;
+SetLineG3          = 0x80011714;
+SetLineF4          = 0x80011744;
+SetLineG4          = 0x80011764;
+SetDrawTPage       = 0x80011794;
+SetDrawMove        = 0x800117C4;
+SetDrawLoad        = 0x80011824;
+MargePrim          = 0x80011894;
+SetTexWindow       = 0x800118D4;
+SetPriority        = 0x80011944;
+SetDrawStp         = 0x80011974;
+SetDrawMode        = 0x800119A4;
+GetDrawEnv2        = 0x80011A44;
+GetDrawMode        = 0x80011AEC;
+GetTexWindow       = 0x80011B48;
+GetDrawArea        = 0x80011B7C;
+GetDrawOffset      = 0x80011BC4;
+ResetGraph         = 0x80011C34;
+SetGraphDebug      = 0x80011DA8;
+SetGraphQueue      = 0x80011E04;
+GetGraphDebug      = 0x80011EA8;
+DrawSyncCallback   = 0x80011EB8;
+SetDispMask        = 0x80011F18;
+DrawSync           = 0x80011FB0;
+ClearImage         = 0x80012134;
+ClearImage2        = 0x800121C4;
+LoadImage          = 0x8001225C;
+StoreImage         = 0x800122BC;
+MoveImage          = 0x8001231C;
+ClearOTag          = 0x800123D4;
+ClearOTagR         = 0x8001249C;
+DrawPrim           = 0x80012548;
+DrawOTag           = 0x800125A4;
+PutDrawEnv         = 0x80012614;
+DrawOTagEnv        = 0x800126D4;
+GetDrawEnv         = 0x800127AC;
+PutDispEnv         = 0x800127E0;
+GetDispEnv         = 0x80012CD8;
+GetODE             = 0x80012D0C;
+SetDrawArea        = 0x80012D3C;
+SetDrawOffset      = 0x80012DBC;
+SetDrawEnv         = 0x80012DFC;
+LoadImage2         = 0x800146FC;
+StoreImage2        = 0x800147E8;
+MoveImage2         = 0x800148D4;
+DrawOTag2          = 0x80014A18;
+_GPU_ResetCallback = 0x80014B14;
+
+//----------------------------------------------------------------------------------------------------------------------
 // PSY-Q (libcard)
 //----------------------------------------------------------------------------------------------------------------------
 _bu_init            = 0x80018D34;
