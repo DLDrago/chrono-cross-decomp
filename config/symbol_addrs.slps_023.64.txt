@@ -269,7 +269,9 @@ GetVideoMode        = 0x80028544;
 // PSY-Q (libsn)
 //----------------------------------------------------------------------------------------------------------------------
 PCopen       = 0x80028560;
+PCclose      = 0x80028580;
 PClseek      = 0x80028590;
+PCinit       = 0x800285B4;
 PCread       = 0x800285c0;
 _SN_read     = 0x80028680;
 __fixunsdfsi = 0x80028698;
@@ -301,9 +303,10 @@ _SpuIsInAllocateArea_ = 0x80029560;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Gameplay?
-InitGamepad = 0x8002B52C;
-// Big gap here - probably not the same section
-InitSound   = 0x80049F1C;
+// Big gaps here - probably not the same section
+InitGamepad      = 0x8002B52C;
+TeardownHardware = 0x800365C0;
+InitSound        = 0x80049F1C;
 
 
 //----------------------------------------------------------------------------------------------------------------------
