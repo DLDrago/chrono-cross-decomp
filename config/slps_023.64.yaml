@@ -65,6 +65,7 @@ segments:
       - [0x800, asm]
       - [0x18F20, c, psyq/libspu]
       - [0x19Df0, asm]
+      - [0x3BFF4, c, psyq/libapi] # SetRCnt
       - [0x3C164, c, psyq/libspu2]
       - [0x3C494, c, system/sound]
       - [0x3C894, asm]
