@@ -64,7 +64,10 @@ segments:
     subsegments:
       - [0x800, asm]
       - [0x13040, c, psyq/libapi]
-      - [0x130F0, asm]
+      - [0x138A0, c, psyq/libcd]
+      - [0x157B0, c, psyq/libgte]
+      - [0x18050, c, psyq/libetc]
+      - [0x18D60, c, psyq/libsn]
       - [0x18F20, c, psyq/libspu]
       - [0x19Df0, asm]
       - [0x3BFF4, c, psyq/libapi_2]
