@@ -1,30 +1,37 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80024FB0);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", rsin);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80024FEC);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", GEO_00_OBJ_2C);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80025080);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", sin_1);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80025120);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", GEO_00_OBJ_C4);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_8002523C);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", rcos);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80025358);
+void GEO_01_OBJ_98(void) {
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80025480);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", MatrixNormal_0);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_800254F0);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", MatrixNormal_1);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", MatrixNormal_2);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", SetFogNear);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", SetFogNearFar);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80025600);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80025608);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", InitGeom);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80025690);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", SquareRoot0);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_80025720);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", InvSquareRoot);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_800257AC);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", VectorNormalS);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/psyq/libgte", func_800257C0);
 
