@@ -84,3 +84,31 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE9C);
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BF78);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004C094);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004C5A4);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004CA1C);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004CEAC);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004CF5C);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004CFC4);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D214);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D294);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D374);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D3C4);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D3D4);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D918);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D978);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004DB24);

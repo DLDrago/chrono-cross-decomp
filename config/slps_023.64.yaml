@@ -79,7 +79,7 @@ segments:
       - [0x3BFF4, asm, psyq/libapi_2]
       - [0x3C164, asm, psyq/libspu2]
       - [0x3C494, c, system/sound]
-      - [0x3C894, asm]
+      - [0x3E4B0, asm]
       - [0x46C6C, rodata]
       - [0x5B290, data]
       - [0x85898]
