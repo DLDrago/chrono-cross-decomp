@@ -375,18 +375,19 @@ _SpuIsInAllocateArea_ = 0x80029560;
 //----------------------------------------------------------------------------------------------------------------------
 // Gameplay?
 // Big gaps here - probably not the same section
-InitGamepad      = 0x8002B52C;
-TeardownHardware = 0x800365C0;
-InitSound        = 0x80049F1C;
+InitGamepad       = 0x8002B52C;
+TeardownHardware  = 0x800365C0;
+IsSpuTransferring = 0x8004ABFC;
+InitSound         = 0x80049F1C;
 
 //----------------------------------------------------------------------------------------------------------------------
 // SPU management
-ClearSpuTransferCallback        = 0x8004B178;
-GetIsSettingSpuTransferCallback = 0x8004B188;
-SetSpuTransferCallback          = 0x8004B19C;
-WriteSpu                        = 0x8004B1CC;
-ReadSpu                         = 0x8004B21C;
-WaitForSpuTransfer              = 0x8004B258;
+ClearSpuTransferCallback = 0x8004B178;
+ClearSpuTranferringFlag  = 0x8004B188;
+SetSpuTransferCallback   = 0x8004B19C;
+WriteSpu                 = 0x8004B1CC;
+ReadSpu                  = 0x8004B21C;
+WaitForSpuTransfer       = 0x8004B258;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -443,3 +444,6 @@ WaitEvent = 0x80051E44;
 // LibSpu (again...)
 //----------------------------------------------------------------------------------------------------------------------
 SpuGetReverbModeType = 0x80051E54;
+
+//----------------------------------------------------------------------------------------------------------------------
+g_bSpuTransferring = 0x80092A18;

@@ -2,7 +2,7 @@
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", ClearSpuTransferCallback);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", GetIsSettingSpuTransferCallback);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", ClearSpuTranferringFlag);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", SetSpuTransferCallback);
 
