@@ -18,18 +18,24 @@ void SetSpuTransferCallback()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void WriteSpu(s32 addr, s32 size)
+void WriteSpu(s32 in_Addr, s32 in_Size)
 {
-  g_bSpuTransferring = 1;
-  SpuSetTransferCallback( &ClearSpuTransferCallback );
-  SpuWrite( addr, size );
+    g_bSpuTransferring = 1;
+    SpuSetTransferCallback( &ClearSpuTransferCallback );
+    SpuWrite( in_Addr, in_Size );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void ReadSpu(s32 addr, s32 size)
+void ReadSpu(s32 in_Addr, s32 in_Size)
 {
-  SetSpuTransferCallback();
-  SpuRead( addr, size );
+    SetSpuTransferCallback();
+    SpuRead( in_Addr, in_Size );
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", WaitForSpuTransfer);
+//----------------------------------------------------------------------------------------------------------------------
+void WaitForSpuTransfer()
+{
+    while (g_bSpuTransferring == 1)
+    {
+    }
+}
