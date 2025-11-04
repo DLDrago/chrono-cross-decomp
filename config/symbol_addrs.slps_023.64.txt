@@ -383,7 +383,6 @@ InitSound         = 0x80049F1C;
 //----------------------------------------------------------------------------------------------------------------------
 // SPU management
 ClearSpuTransferCallback = 0x8004B178;
-ClearSpuTranferringFlag  = 0x8004B188;
 SetSpuTransferCallback   = 0x8004B19C;
 WriteSpu                 = 0x8004B1CC;
 ReadSpu                  = 0x8004B21C;
