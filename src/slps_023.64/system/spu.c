@@ -10,15 +10,26 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", ClearSpuTransferCallback)
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", ClearSpuTranferringFlag);
 
-
+//----------------------------------------------------------------------------------------------------------------------
 void SetSpuTransferCallback()
 {
     g_bSpuTransferring = 1;
     SpuSetTransferCallback( &ClearSpuTransferCallback );
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", WriteSpu);
+//----------------------------------------------------------------------------------------------------------------------
+void WriteSpu(s32 addr, s32 size)
+{
+  g_bSpuTransferring = 1;
+  SpuSetTransferCallback( &ClearSpuTransferCallback );
+  SpuWrite( addr, size );
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", ReadSpu);
+//----------------------------------------------------------------------------------------------------------------------
+void ReadSpu(s32 addr, s32 size)
+{
+  SetSpuTransferCallback();
+  SpuRead( addr, size );
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", WaitForSpuTransfer);
