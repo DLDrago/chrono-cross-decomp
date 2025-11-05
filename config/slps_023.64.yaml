@@ -83,6 +83,7 @@ segments:
       - [0x3C494, c, system/sound]
       - [0x3E4B0, asm, psyq/libspu3]
       - [0x3E550, asm]
+      - [0x41448, c, system/unk_reverb]
       - [0x41E04, asm, psyq/libspu_4]
       - [0x42644, asm, psyq/libapi_3]
       - [0x42654, asm, psyq/libspu_5]
