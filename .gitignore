@@ -11,3 +11,7 @@ expected/
 notes/
 .venv/
 objdiff.json
+
+# macOS Finder junk
+.DS_Store
+._.DS_Store
