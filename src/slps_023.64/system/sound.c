@@ -188,7 +188,12 @@ void SetVoiceAdsrDecayRate( s32 in_VoiceIndex, s32 in_DecayRate )
     *AdsrLower = Masked | AttackStep;
 }
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE40 );
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceAdsrSustainLevel( s32 in_VoiceIndex, s32 in_SustainLevel )
+{
+    u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * 8];
+    *AdsrLower = (*AdsrLower & 0xFFF0) | in_SustainLevel;
+}
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE68 );
 

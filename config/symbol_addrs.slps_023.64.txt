@@ -428,6 +428,7 @@ SetVoiceAdsrLower             = 0x8004BDB8;
 SetVoiceAdsrUpper             = 0x8004BDD0;
 SetVoiceAdsrAttackRateAndMode = 0x8004BDE8;
 SetVoiceAdsrDecayRate         = 0x8004BE18;
+SetVoiceAdsrSustainLevel      = 0x8004BE40;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)
