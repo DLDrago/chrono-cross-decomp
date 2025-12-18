@@ -1,8 +1,9 @@
 #include "common.h"
-#include "psyq/libspu.h"
 #include "hw.h"
+#include "psyq/libspu.h"
 
-typedef struct {
+typedef struct
+{
     SpuVolume volume;
     u16 pitch;
     u16 addr;
@@ -15,103 +16,107 @@ typedef struct {
 void SetVoiceKeyOn( u32 in_KeyOn )
 {
     *SPU_VOICE_KEY_ON_LO = in_KeyOn;
-    *SPU_VOICE_KEY_ON_HI = (in_KeyOn >> 0x10);
+    *SPU_VOICE_KEY_ON_HI = ( in_KeyOn >> 0x10 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceKeyOff( u32 in_KeyOff )
 {
     *SPU_VOICE_KEY_OFF_LO = in_KeyOff;
-    *SPU_VOICE_KEY_OFF_HI = (in_KeyOff >> 0x10);
+    *SPU_VOICE_KEY_OFF_HI = ( in_KeyOff >> 0x10 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceReverbMode( u32 in_ReverbMode )
 {
     *SPU_VOICE_CHN_REVERB_MODE_LO = in_ReverbMode;
-    *SPU_VOICE_CHN_REVERB_MODE_HI = (in_ReverbMode >> 0x10);
+    *SPU_VOICE_CHN_REVERB_MODE_HI = ( in_ReverbMode >> 0x10 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceNoiseMode( u32 in_NoiseMode )
 {
     *SPU_VOICE_CHN_NOISE_MODE_LO = in_NoiseMode;
-    *SPU_VOICE_CHN_NOISE_MODE_HI = (in_NoiseMode >> 0x10);
+    *SPU_VOICE_CHN_NOISE_MODE_HI = ( in_NoiseMode >> 0x10 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceFmMode( u32 in_FmMode )
 {
     *SPU_VOICE_CHN_FM_MODE_LO = in_FmMode;
-    *SPU_VOICE_CHN_FM_MODE_HI = (in_FmMode >> 0x10);
+    *SPU_VOICE_CHN_FM_MODE_HI = ( in_FmMode >> 0x10 );
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceVolume);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceVolume );
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceSampleRate( s32 in_VoiceIndex, s16 in_SampleRate )
 {
-    VOICE_00_ADPCM_SAMPLE_RATE[in_VoiceIndex * (sizeof(SPU_VOICE_REG) / sizeof(u16))] = in_SampleRate;
+    VOICE_00_ADPCM_SAMPLE_RATE[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = in_SampleRate;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceStartAddr( u32 in_VoiceIndex, u32 in_Addr )
 {
-    VOICE_00_ADPCM_START_ADDR[in_VoiceIndex * (sizeof(SPU_VOICE_REG) / sizeof(u16))] = (in_Addr >> 3);
+    VOICE_00_ADPCM_START_ADDR[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = ( in_Addr >> 3 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceRepeatAddr( u32 in_VoiceIndex, u32 in_Addr )
 {
-    VOICE_00_ADPCM_REPEAT_ADDR[in_VoiceIndex * (sizeof(SPU_VOICE_REG) / sizeof(u16))] = (in_Addr >> 3);
+    VOICE_00_ADPCM_REPEAT_ADDR[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = ( in_Addr >> 3 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceAdsrLower( s32 in_VoiceIndex, s16 in_Register )
 {
-    VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * (sizeof(SPU_VOICE_REG) / sizeof(u16))] = in_Register;
+    VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = in_Register;
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BDD0);
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceAdsrUpper( s32 in_VoiceIndex, s16 in_Register )
+{
+    VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = in_Register;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BDE8);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BDE8 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE18);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE18 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE40);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE40 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE68);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE68 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BE9C);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE9C );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BF78);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BF78 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004C094);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C094 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004C5A4);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C5A4 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004CA1C);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CA1C );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004CEAC);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CEAC );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004CF5C);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CF5C );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004CFC4);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CFC4 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D214);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D214 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D294);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D294 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D374);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D374 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D3C4);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3C4 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D3D4);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3D4 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D918);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D918 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004D978);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D978 );
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004DB24);
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004DB24 );
