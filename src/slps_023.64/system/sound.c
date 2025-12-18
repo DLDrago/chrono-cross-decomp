@@ -11,6 +11,7 @@ typedef struct
     u16 volumex;
     u16 loop_addr;
 } SPU_VOICE_REG;
+#define SPU_VOICE_INDEX_STRIDE  8  // u16s to skip per voice when indexing voice register arrays
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceKeyOn( u32 in_KeyOn )
@@ -52,31 +53,31 @@ INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceVolume );
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceSampleRate( s32 in_VoiceIndex, s16 in_SampleRate )
 {
-    VOICE_00_ADPCM_SAMPLE_RATE[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = in_SampleRate;
+    VOICE_00_ADPCM_SAMPLE_RATE[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_SampleRate;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceStartAddr( u32 in_VoiceIndex, u32 in_Addr )
 {
-    VOICE_00_ADPCM_START_ADDR[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = ( in_Addr >> 3 );
+    VOICE_00_ADPCM_START_ADDR[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = ( in_Addr >> 3 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceRepeatAddr( u32 in_VoiceIndex, u32 in_Addr )
 {
-    VOICE_00_ADPCM_REPEAT_ADDR[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = ( in_Addr >> 3 );
+    VOICE_00_ADPCM_REPEAT_ADDR[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = ( in_Addr >> 3 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceAdsrLower( s32 in_VoiceIndex, s16 in_Register )
 {
-    VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = in_Register;
+    VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_Register;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceAdsrUpper( s32 in_VoiceIndex, s16 in_Register )
 {
-    VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * ( sizeof( SPU_VOICE_REG ) / sizeof( u16 ) )] = in_Register;
+    VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_Register;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -171,7 +172,7 @@ void SetVoiceAdsrUpper( s32 in_VoiceIndex, s16 in_Register )
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceAdsrAttackRateAndMode( s32 in_VoiceIndex, s32 in_AttackStep, u32 in_AttackMode )
 {
-    u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * 8];
+    u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
     // Extract Attack Mode bit (bit 2 of in_AttackRate -> bit 15 of ADSR)
     u16 AttackMode = ADSR_ATTACK_MODE(in_AttackMode >> 2);
     // Position Attack Step (0-3) at bits 8-9
@@ -182,7 +183,7 @@ void SetVoiceAdsrAttackRateAndMode( s32 in_VoiceIndex, s32 in_AttackStep, u32 in
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceAdsrDecayRate( s32 in_VoiceIndex, s32 in_DecayRate )
 {
-    u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * 8];
+    u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
     u16 AttackStep = in_DecayRate * 0x10;
     u16 Masked = ( *AdsrLower & 0xFF0F );
     *AdsrLower = Masked | AttackStep;
@@ -191,13 +192,29 @@ void SetVoiceAdsrDecayRate( s32 in_VoiceIndex, s32 in_DecayRate )
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceAdsrSustainLevel( s32 in_VoiceIndex, s32 in_SustainLevel )
 {
-    u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * 8];
+    u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
     *AdsrLower = (*AdsrLower & 0xFFF0) | in_SustainLevel;
 }
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE68 );
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceAdsrSustainRateAndDirection( s32 in_VoiceIndex, s32 in_SustainRate, u32 in_SustainDirection )
+{
+    u16* AdsrUpper = &VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    u16 SustainDirection = ADSR_SUSTAIN_DIRECTION( in_SustainDirection >> 1 );
+    u16 SustainRate = in_SustainRate << ADSR_SUSTAIN_STEP_POS;
+    u16 Masked = *AdsrUpper & 0x3F;
+    *AdsrUpper = Masked | ( SustainDirection | SustainRate );
+}
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE9C );
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceAdsrReleaseRateAndMode( s32 in_VoiceIndex, s32 in_ReleaseRate, u32 in_ReleaseMode )
+{
+    u16* AdsrUpper = &VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    u16 ReleaseMode = (in_ReleaseMode >> 2) << ADSR_RELEASE_MODE_BIT;
+    u16 ReleaseRate = in_ReleaseRate << ADSR_RELEASE_SHIFT_POS;
+    u16 Masked = *AdsrUpper & 0xFFC0;
+    *AdsrUpper = Masked | ( ReleaseMode | ReleaseRate);
+}
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams );
 
