@@ -1,0 +1,8 @@
+-Iinclude
+-Ibuild
+-D_LANGUAGE_C
+-DUSE_INCLUDE_ASM
+-undef
+-Wall
+-nostdinc
+-std=gnu11
