@@ -173,13 +173,20 @@ void SetVoiceAdsrAttackRateAndMode( s32 in_VoiceIndex, s32 in_AttackStep, u32 in
 {
     u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * 8];
     // Extract Attack Mode bit (bit 2 of in_AttackRate -> bit 15 of ADSR)
-    u16 AttackMode = (in_AttackMode >> 2) << ADSR_ATTACK_MODE_BIT;
+    u16 AttackMode = ADSR_ATTACK_MODE(in_AttackMode >> 2);
     // Position Attack Step (0-3) at bits 8-9
     u16 AttackStep = in_AttackStep << ADSR_ATTACK_STEP_POS;
     *AdsrLower = AttackMode | AttackStep | *(u8*)AdsrLower;
 }
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE18 );
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceAdsrDecayRate( s32 in_VoiceIndex, s32 in_DecayRate )
+{
+    u16* AdsrLower = &VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * 8];
+    u16 AttackStep = in_DecayRate * 0x10;
+    u16 Masked = ( *AdsrLower & 0xFF0F );
+    *AdsrLower = Masked | AttackStep;
+}
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BE40 );
 
