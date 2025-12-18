@@ -1,6 +1,10 @@
 # Adapted from https://github.com/ladysilverberg/xenogears-decomp
 # which was adapted from https://github.com/Vatuu/silent-hill-decomp/tree/master
 
+.PHONY: all
+all:
+	@true
+
 # Configuration
 BUILD_OVERLAYS ?= 0
 NON_MATCHING   ?= 0
