@@ -67,7 +67,10 @@ void SetVoiceRepeatAddr( u32 in_VoiceIndex, u32 in_Addr )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BDB8);
+void SetVoiceAdsrLower( s32 in_VoiceIndex, s16 in_Register )
+{
+    VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * (sizeof(SPU_VOICE_REG) / sizeof(u16))] = in_Register;
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound", func_8004BDD0);
 

@@ -424,6 +424,7 @@ SetVoiceSampleRate = 0x8004BD68;
 SetVoiceStartAddr  = 0x8004BD80;
 SetVoiceRepeatAddr = 0x8004BD9C;
 SetVoiceParams     = 0x8004BECC;
+SetVoiceAdsrLower  = 0x8004BDB8;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)
