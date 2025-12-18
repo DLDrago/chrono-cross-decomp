@@ -414,18 +414,19 @@ SpuSetTransferCallback = 0x8004BC64;
 //----------------------------------------------------------------------------------------------------------------------
 // Sound voice
 //----------------------------------------------------------------------------------------------------------------------
-SetVoiceKeyOn      = 0x8004BC94;
-SetVoiceKeyOff     = 0x8004BCB0;
-SetVoiceReverbMode = 0x8004BCCC;
-SetVoiceNoiseMode  = 0x8004BCE8;
-SetVoiceFmMode     = 0x8004BD04;
-SetVoiceVolume     = 0x8004BD20;
-SetVoiceSampleRate = 0x8004BD68;
-SetVoiceStartAddr  = 0x8004BD80;
-SetVoiceRepeatAddr = 0x8004BD9C;
-SetVoiceParams     = 0x8004BECC;
-SetVoiceAdsrLower  = 0x8004BDB8;
-SetVoiceAdsrUpper  = 0x8004BDD0;
+SetVoiceKeyOn                 = 0x8004BC94;
+SetVoiceKeyOff                = 0x8004BCB0;
+SetVoiceReverbMode            = 0x8004BCCC;
+SetVoiceNoiseMode             = 0x8004BCE8;
+SetVoiceFmMode                = 0x8004BD04;
+SetVoiceVolume                = 0x8004BD20;
+SetVoiceSampleRate            = 0x8004BD68;
+SetVoiceStartAddr             = 0x8004BD80;
+SetVoiceRepeatAddr            = 0x8004BD9C;
+SetVoiceParams                = 0x8004BECC;
+SetVoiceAdsrLower             = 0x8004BDB8;
+SetVoiceAdsrUpper             = 0x8004BDD0;
+SetVoiceAdsrAttackRateAndMode = 0x8004BDE8;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)
