@@ -48,7 +48,23 @@ void SetVoiceFmMode( u32 in_FmMode )
     *SPU_VOICE_CHN_FM_MODE_HI = ( in_FmMode >> 0x10 );
 }
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceVolume );
+//----------------------------------------------------------------------------------------------------------------------
+void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeScale )
+{
+    SpuVolume* pVolume;
+
+    if( in_VolumeScale != 0 )
+    {
+        in_VolL = in_VolL * in_VolumeScale;
+        in_VolR = in_VolR * in_VolumeScale;
+        in_VolL = in_VolL >> 7;
+        in_VolR = in_VolR >> 7;
+    }
+
+    pVolume = (SpuVolume*)&VOICE_00_LEFT_RIGHT[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    pVolume->left = in_VolL & 0x7FFF;
+    pVolume->right = in_VolR & 0x7FFF;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SetVoiceSampleRate( s32 in_VoiceIndex, s16 in_SampleRate )
@@ -216,7 +232,8 @@ void SetVoiceAdsrReleaseRateAndMode( s32 in_VoiceIndex, s32 in_ReleaseRate, u32 
     *AdsrUpper = Masked | ( ReleaseMode | ReleaseRate);
 }
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams );
+//----------------------------------------------------------------------------------------------------------------------
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams);
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BF78 );
 

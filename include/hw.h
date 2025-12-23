@@ -1,6 +1,7 @@
 #ifndef _HW_H
 #define _HW_H
 
+#define VOICE_00_LEFT_RIGHT          ( (u16*)0x1F801C00 )
 #define VOICE_00_ADPCM_SAMPLE_RATE   ( (u16*)0x1F801C04 )
 #define VOICE_00_ADPCM_START_ADDR    ( (u16*)0x1F801C06 )
 #define VOICE_00_ADPCM_ADSR_LOWER    ( (u16*)0x1F801C08 )
