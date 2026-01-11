@@ -29,6 +29,7 @@ void func_80050F84()
 {
     if( D_80094FA0.bUnknown != 0 )
     {
+        // Looks like we have a stereo pair, one left and one right
         SetVoiceSampleRate( D_80094FA0.VoiceIndex, 0 );
         SetVoiceSampleRate( D_80094FA0.VoiceIndex + 1, 0 );
         SetVoiceVolume( D_80094FA0.VoiceIndex, 0, 0, 0 );

@@ -271,18 +271,12 @@ void SetVoiceParams( s32 in_VoiceIndex, FVoiceParams* in_VoiceParams, s32 in_Vol
     }
 
     // This is the dumbest shit, but I can't find any other way that compiles correctly
-    *p = left & 0x7FFF;
-    p++;
-    *p = right & 0x7FFF;
-    p++;
-    *p = in_VoiceParams->sample_rate;
-    p++;
-    *p = (in_VoiceParams->addr >> 3);
-    p++;
-    *p = in_VoiceParams->adsr1;
-    p++;
-    *p = in_VoiceParams->adsr2;
-    p++;
+    *p++ = left & 0x7FFF;
+    *p++ = right & 0x7FFF;
+    *p++ = in_VoiceParams->sample_rate;
+    *p++ = in_VoiceParams->addr >> 3;
+    *p++ = in_VoiceParams->adsr1;
+    *p++ = in_VoiceParams->adsr2;
     p++;
     *p = in_VoiceParams->loop_addr >> 3;
 }
