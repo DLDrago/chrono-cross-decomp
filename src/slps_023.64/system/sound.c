@@ -232,8 +232,60 @@ void SetVoiceAdsrReleaseRateAndMode( s32 in_VoiceIndex, s32 in_ReleaseRate, u32 
     *AdsrUpper = Masked | ( ReleaseMode | ReleaseRate);
 }
 
+typedef struct
+{
+    /* 0x00 */ s8 unk0[4];
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u32 addr;
+    /* 0x0A */ // u8 unkA[2];
+    /* 0x0C */ u32 loop_addr;
+    /* 0x0E */ // u8 unkE[2];
+    /* 0x10 */ s16 sample_rate;
+    /* 0x12 */ u16 adsr1;
+    /* 0x14 */ u16 adsr2;
+    /* 0x16 */ u8 unk16[2];
+    /* 0x18 */ s16 volL;
+    /* 0x1A */ s16 volR;
+} FVoiceParams;
+
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceParams);
+void SetVoiceParams( s32 in_VoiceIndex, FVoiceParams* in_VoiceParams, s32 in_VolumeScale )
+{
+    s32 left;
+    s32 right;
+    s16* p;
+
+    in_VoiceParams->unk4 = 0;
+    p = (s16*)&VOICE_00_LEFT_RIGHT[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
+    if( in_VolumeScale == 0 )
+    {
+        left = in_VoiceParams->volL;
+        right = in_VoiceParams->volR;
+    }
+    else
+    {
+        left = in_VoiceParams->volL* in_VolumeScale;
+        right = in_VoiceParams->volR * in_VolumeScale;
+        left >>= 7;
+        right >>=  7;
+    }
+
+    // This is the dumbest shit, but I can't find any other way that compiles correctly
+    *p = left & 0x7FFF;
+    p++;
+    *p = right & 0x7FFF;
+    p++;
+    *p = in_VoiceParams->sample_rate;
+    p++;
+    *p = (in_VoiceParams->addr >> 3);
+    p++;
+    *p = in_VoiceParams->adsr1;
+    p++;
+    *p = in_VoiceParams->adsr2;
+    p++;
+    p++;
+    *p = in_VoiceParams->loop_addr >> 3;
+}
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BF78 );
 
