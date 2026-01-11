@@ -67,7 +67,7 @@ void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeS
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SetVoiceSampleRate( s32 in_VoiceIndex, s16 in_SampleRate )
+void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate )
 {
     VOICE_00_ADPCM_SAMPLE_RATE[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_SampleRate;
 }
