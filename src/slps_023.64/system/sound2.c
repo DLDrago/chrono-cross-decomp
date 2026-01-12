@@ -1,6 +1,19 @@
 #include "common.h"
 #include "system/sound.h"
 
+//----------------------------------------------------------------------------------------------------------------------
+typedef struct
+{
+    /* 0x00 */ u8 unk0[0x4];
+    /* 0x04 */ u32 unk_Flags_0x4;
+    /* 0x08 */ u8 unk8[0xC];
+    /* 0x14 */ u32 ChannelFlags; // 32-bit: one bit per channel
+    // ...
+} FSound80092A48;
+extern FSound80092A48* D_80092A48;
+extern FSound80092A48 D_80091940; // This is the same type as 80092A48 as shown by memcpy in FUN_8004F130
+extern FSound80092A48* D_800917F0; // This seems to always either be null or a pointer to D_80091940
+
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", unk_Sound_8004DD50);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDA4);
@@ -44,14 +57,6 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E478);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E7D8);
 
-//----------------------------------------------------------------------------------------------------------------------
-typedef struct
-{
-    /* 0x00 */ u8 unk0[0x14];
-    /* 0x14 */ u32 ChannelFlags; // 32-bit: one bit per channel
-    // ...
-} FSound80092A48;
-extern FSound80092A48* D_80092A48;
 
 //----------------------------------------------------------------------------------------------------------------------
 void FreeVoiceChannels( FSoundManager* in_Manager, u32 in_Voice )
@@ -80,7 +85,36 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E9D0);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EBC8);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EC40);
+//----------------------------------------------------------------------------------------------------------------------
+// Unknown exactly how this functions but it is setting bits 0 and 1 to each channel in the incoming struct's flags
+void unk_Sound_SetLow2BitsForChannels( FSound80092A48* in_p, FSoundManager* in_Manager )
+{
+    u32 tmp;
+    u32 Flags;
+    u32 Mask;
+    FSoundChannel* pChannel;
+
+    tmp = in_p->unk_Flags_0x4;
+    if( tmp == 0 )
+    {
+        return;
+    }
+
+    Flags = tmp;
+    Mask = 1;
+    pChannel = &in_Manager->Channels[0];
+
+    while( Flags != 0 )
+    {
+        if( Flags & Mask )
+        {
+            pChannel->unk4 |= (1 << 1) | (1 << 0);
+            Flags ^= Mask;
+        }
+        pChannel++;
+        Mask <<= 1;
+    }
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EC88);
 
