@@ -54,9 +54,6 @@ typedef struct
 extern FSound80092A48* D_80092A48;
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", FreeVoiceChannels);
-/*
- * Very close, but can't solve a register swap
 void FreeVoiceChannels( FSoundManager* in_Manager, u32 in_Voice )
 {
     FSoundChannel* channel;
@@ -78,7 +75,6 @@ void FreeVoiceChannels( FSoundManager* in_Manager, u32 in_Voice )
         
     }
 }
-*/
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E9D0);
 
