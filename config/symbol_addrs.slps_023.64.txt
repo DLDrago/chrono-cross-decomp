@@ -431,12 +431,20 @@ SetVoiceAdsrDecayRate               = 0x8004BE18;
 SetVoiceAdsrSustainLevel            = 0x8004BE40;
 SetVoiceAdsrSustainRateAndDirection = 0x8004BE68;
 SetVoiceAdsrReleaseRateAndMode      = 0x8004BE9C;
+UnassignVoicesFromChannels          = 0x8004D214;
+ChannelMaskToVoiceMaskFiltered      = 0x8004D918;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)
 SpuSetNoiseClock    = 0x8004DCB0;
 SpuGetVoiceEnvelope = 0x8004DD00;
 SpuSetReverbDepth   = 0x8004DD20;
+
+//----------------------------------------------------------------------------------------------------------------------
+// Sound2
+unk_Sound_8004DD50         = 0x8004DD50;
+ChannelMaskToVoiceMask     = 0x8004DFC4;
+FreeVoiceChannels          = 0x8004E974;
 
 //----------------------------------------------------------------------------------------------------------------------
 // unk_reverb (???)

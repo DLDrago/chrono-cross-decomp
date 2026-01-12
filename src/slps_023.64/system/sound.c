@@ -1,6 +1,7 @@
 #include "common.h"
 #include "hw.h"
 #include "psyq/libspu.h"
+#include "system/sound.h"
 
 typedef struct
 {
@@ -281,6 +282,7 @@ void SetVoiceParams( s32 in_VoiceIndex, FVoiceParams* in_VoiceParams, s32 in_Vol
     *p = in_VoiceParams->loop_addr >> 3;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BF78 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C094 );
@@ -295,7 +297,7 @@ INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CF5C );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CFC4 );
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D214 );
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", UnassignVoicesFromChannels );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D294 );
 
@@ -305,8 +307,31 @@ INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3C4 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3D4 );
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D918 );
+//----------------------------------------------------------------------------------------------------------------------
+void ChannelMaskToVoiceMaskFiltered( FSoundManager* in_Manager, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter )
+{
+    s32 bit;
+    u32 i;
 
+    i = 0;
+    bit = 1;
+    do {
+        if( in_ChannelMask & bit )
+        {
+            if( in_Manager->Channels[i].AssignedVoiceNumber < VOICE_COUNT )
+            {
+                *io_VoiceMask |= 1 << in_Manager->Channels[i].AssignedVoiceNumber;
+            }
+        }
+        in_ChannelMask &= ~bit;
+        i++;
+        bit <<= 1;
+    } while( in_ChannelMask != 0 );
+
+    *io_VoiceMask &= in_VoiceMaskFilter;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D978 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004DB24 );

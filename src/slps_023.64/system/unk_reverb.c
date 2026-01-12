@@ -25,6 +25,7 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/unk_reverb", func_80050DD4);
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/unk_reverb", func_80050EF0);
 
 //----------------------------------------------------------------------------------------------------------------------
+// Some sort of reset function on these reserved voices
 void func_80050F84()
 {
     if( D_80094FA0.bUnknown != 0 )
