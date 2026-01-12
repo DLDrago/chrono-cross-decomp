@@ -18,4 +18,7 @@
 #define SPU_VOICE_CHN_REVERB_MODE_LO ( (u16*)0x1F801D98 )
 #define SPU_VOICE_CHN_REVERB_MODE_HI ( (u16*)0x1F801D9A )
 
+#define CD_VOL_L                     ( (u16*)0x1F801DB0 )
+#define CD_VOL_R                     ( (u16*)0x1F801DB2 )
+
 #endif

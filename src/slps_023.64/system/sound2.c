@@ -152,8 +152,15 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004FA04);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004FAB8);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004FBD8);
+//----------------------------------------------------------------------------------------------------------------------
+void SetCdVolume( u16* in_pVolume )
+{
+    D_80092A64 = 0;
+    g_CdVolume = *in_pVolume << 0x10;
+    UpdateCdVolume();
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004FC0C);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004FC74);
