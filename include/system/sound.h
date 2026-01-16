@@ -5,9 +5,11 @@
 
 typedef struct
 {
-    /* 0x0 */ u32 AssignedVoiceNumber;
-    /* 0x4 */ u32 unk4;
-    /* 0x8 */ u8 Data[0x11C];
+    /* 0x000 */ u32 unk0;
+    /* 0x004 */ u32 unk4;
+    /* 0x008 */ u8 Data[0x100];
+    /* 0x108 */ u32 AssignedVoiceNumber;
+    /* 0x10C */ u8 unk108[0x18];
 } FSoundChannel;
 
 typedef struct

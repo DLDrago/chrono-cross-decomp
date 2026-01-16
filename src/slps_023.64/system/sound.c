@@ -308,7 +308,7 @@ INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3C4 );
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3D4 );
 
 //----------------------------------------------------------------------------------------------------------------------
-void ChannelMaskToVoiceMaskFiltered( FSoundManager* in_Manager, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter )
+void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter )
 {
     s32 bit;
     u32 i;
@@ -318,12 +318,13 @@ void ChannelMaskToVoiceMaskFiltered( FSoundManager* in_Manager, s32* io_VoiceMas
     do {
         if( in_ChannelMask & bit )
         {
-            if( in_Manager->Channels[i].AssignedVoiceNumber < VOICE_COUNT )
+            if( in_Channel->AssignedVoiceNumber < VOICE_COUNT )
             {
-                *io_VoiceMask |= 1 << in_Manager->Channels[i].AssignedVoiceNumber;
+                *io_VoiceMask |= 1 << in_Channel->AssignedVoiceNumber;
             }
         }
         in_ChannelMask &= ~bit;
+        in_Channel++;
         i++;
         bit <<= 1;
     } while( in_ChannelMask != 0 );
