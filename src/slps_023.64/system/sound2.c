@@ -60,25 +60,23 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E7D8);
 
 
 //----------------------------------------------------------------------------------------------------------------------
-void FreeVoiceChannels( FSoundManager* in_Manager, u32 in_Voice )
+void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice )
 {
-    FSoundChannel* channel;
-    u32 channelIndex;
-    
-    if (in_Voice >= VOICE_COUNT)
+    u32 VoiceIndex;
+
+    if( in_Voice < VOICE_COUNT )
     {
-        return;
-    }
-    
-    channel = in_Manager->Channels;
-    for (channelIndex = 0; channelIndex < SOUND_CHANNEL_COUNT; channelIndex++)
-    {
-        if (channel[channelIndex].AssignedVoiceNumber == in_Voice)
+        VoiceIndex = 0;
+        while( VoiceIndex < SOUND_CHANNEL_COUNT )
         {
-            channel[channelIndex].AssignedVoiceNumber = VOICE_COUNT;
-            D_80092A48->ChannelFlags &= ~(1 << channelIndex);
-        }
-        
+            if( in_Channel->AssignedVoiceNumber == in_Voice )
+            {
+                in_Channel->AssignedVoiceNumber = VOICE_COUNT;
+                D_80092A48->ChannelFlags &= ~(1 << VoiceIndex);
+            }
+            in_Channel++;
+            VoiceIndex++;
+        };
     }
 }
 
@@ -88,12 +86,11 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EBC8);
 
 //----------------------------------------------------------------------------------------------------------------------
 // Unknown exactly how this functions but it is setting bits 0 and 1 to each channel in the incoming struct's flags
-void unk_Sound_SetLow2BitsForChannels( FSound80092A48* in_p, FSoundManager* in_Manager )
+void unk_Sound_SetLow2BitsForChannels( FSound80092A48* in_p, FSoundChannel* in_pChannel )
 {
     u32 tmp;
     u32 Flags;
     u32 Mask;
-    FSoundChannel* pChannel;
 
     tmp = in_p->unk_Flags_0x4;
     if( tmp == 0 )
@@ -103,16 +100,15 @@ void unk_Sound_SetLow2BitsForChannels( FSound80092A48* in_p, FSoundManager* in_M
 
     Flags = tmp;
     Mask = 1;
-    pChannel = &in_Manager->Channels[0];
 
     while( Flags != 0 )
     {
         if( Flags & Mask )
         {
-            pChannel->unk4 |= (1 << 1) | (1 << 0);
+            in_pChannel->unk10C |= (1 << 1) | (1 << 0);
             Flags ^= Mask;
         }
-        pChannel++;
+        in_pChannel++;
         Mask <<= 1;
     }
 }
