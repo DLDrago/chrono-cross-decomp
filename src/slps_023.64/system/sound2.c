@@ -26,7 +26,7 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DF1C);
 
 
 //----------------------------------------------------------------------------------------------------------------------
-u32 ChannelMaskToVoiceMask( FSoundManager* in_pManager, s32 in_ChannelMask )
+u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, s32 in_ChannelMask )
 {
     u32 VoiceNumber, Mask;
     u32 i = 0;
@@ -37,13 +37,14 @@ u32 ChannelMaskToVoiceMask( FSoundManager* in_pManager, s32 in_ChannelMask )
         Mask = 1 << i;
         if( in_ChannelMask & Mask )
         {
-            VoiceNumber = in_pManager->Channels[i].AssignedVoiceNumber;
+            VoiceNumber = in_pChannel->AssignedVoiceNumber;
             if( VoiceNumber < VOICE_COUNT )
             {
                 out_VoiceMask |= 1 << VoiceNumber;
             }
         }
         i++;
+        in_pChannel++;
     };
     return out_VoiceMask;
 }
