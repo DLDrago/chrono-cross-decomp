@@ -233,40 +233,24 @@ void SetVoiceAdsrReleaseRateAndMode( s32 in_VoiceIndex, s32 in_ReleaseRate, u32 
     *AdsrUpper = Masked | ( ReleaseMode | ReleaseRate);
 }
 
-typedef struct
-{
-    /* 0x00 */ s8 unk0[4];
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u32 addr;
-    /* 0x0A */ // u8 unkA[2];
-    /* 0x0C */ u32 loop_addr;
-    /* 0x0E */ // u8 unkE[2];
-    /* 0x10 */ s16 sample_rate;
-    /* 0x12 */ u16 adsr1;
-    /* 0x14 */ u16 adsr2;
-    /* 0x16 */ u8 unk16[2];
-    /* 0x18 */ s16 volL;
-    /* 0x1A */ s16 volR;
-} FVoiceParams;
-
 //----------------------------------------------------------------------------------------------------------------------
-void SetVoiceParams( s32 in_VoiceIndex, FVoiceParams* in_VoiceParams, s32 in_VolumeScale )
+void SetVoiceParams( s32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, s32 in_VolumeScale )
 {
     s32 left;
     s32 right;
     s16* p;
 
-    in_VoiceParams->unk4 = 0;
+    in_VoiceParams->VoiceParamFlags = 0;
     p = (s16*)&VOICE_00_LEFT_RIGHT[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE];
     if( in_VolumeScale == 0 )
     {
-        left = in_VoiceParams->volL;
-        right = in_VoiceParams->volR;
+        left = in_VoiceParams->Volume.left;
+        right = in_VoiceParams->Volume.right;
     }
     else
     {
-        left = in_VoiceParams->volL* in_VolumeScale;
-        right = in_VoiceParams->volR * in_VolumeScale;
+        left = in_VoiceParams->Volume.left * in_VolumeScale;
+        right = in_VoiceParams->Volume.right * in_VolumeScale;
         left >>= 7;
         right >>=  7;
     }
@@ -274,16 +258,16 @@ void SetVoiceParams( s32 in_VoiceIndex, FVoiceParams* in_VoiceParams, s32 in_Vol
     // This is the dumbest shit, but I can't find any other way that compiles correctly
     *p++ = left & 0x7FFF;
     *p++ = right & 0x7FFF;
-    *p++ = in_VoiceParams->sample_rate;
-    *p++ = in_VoiceParams->addr >> 3;
-    *p++ = in_VoiceParams->adsr1;
-    *p++ = in_VoiceParams->adsr2;
+    *p++ = in_VoiceParams->SampleRate;
+    *p++ = in_VoiceParams->StartAddress >> 3;
+    *p++ = in_VoiceParams->AdsrLower;
+    *p++ = in_VoiceParams->AdsrUpper;
     p++;
-    *p = in_VoiceParams->loop_addr >> 3;
+    *p = in_VoiceParams->LoopAddress >> 3;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004BF78 );
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceParamsByFlags );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C094 );
 

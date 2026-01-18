@@ -423,7 +423,6 @@ SetVoiceVolume                      = 0x8004BD20;
 SetVoiceSampleRate                  = 0x8004BD68;
 SetVoiceStartAddr                   = 0x8004BD80;
 SetVoiceRepeatAddr                  = 0x8004BD9C;
-SetVoiceParams                      = 0x8004BECC;
 SetVoiceAdsrLower                   = 0x8004BDB8;
 SetVoiceAdsrUpper                   = 0x8004BDD0;
 SetVoiceAdsrAttackRateAndMode       = 0x8004BDE8;
@@ -431,6 +430,8 @@ SetVoiceAdsrDecayRate               = 0x8004BE18;
 SetVoiceAdsrSustainLevel            = 0x8004BE40;
 SetVoiceAdsrSustainRateAndDirection = 0x8004BE68;
 SetVoiceAdsrReleaseRateAndMode      = 0x8004BE9C;
+SetVoiceParams                      = 0x8004BECC;
+SetVoiceParamsByFlags               = 0x8004BF78;
 UnassignVoicesFromChannels          = 0x8004D214;
 ChannelMaskToVoiceMaskFiltered      = 0x8004D918;
 
