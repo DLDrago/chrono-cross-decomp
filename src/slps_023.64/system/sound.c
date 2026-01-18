@@ -86,13 +86,13 @@ void SetVoiceRepeatAddr( u32 in_VoiceIndex, u32 in_Addr )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SetVoiceAdsrLower( s32 in_VoiceIndex, s16 in_Register )
+void SetVoiceAdsrLower( s32 in_VoiceIndex, u16 in_Register )
 {
     VOICE_00_ADPCM_ADSR_LOWER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_Register;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SetVoiceAdsrUpper( s32 in_VoiceIndex, s16 in_Register )
+void SetVoiceAdsrUpper( s32 in_VoiceIndex, u16 in_Register )
 {
     VOICE_00_ADPCM_ADSR_UPPER[in_VoiceIndex * SPU_VOICE_INDEX_STRIDE] = in_Register;
 }
@@ -267,8 +267,60 @@ void SetVoiceParams( s32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, s32 i
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", SetVoiceParamsByFlags );
+void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams )
+{
+    s32 flags;
 
+    flags = in_VoiceParams->VoiceParamFlags;
+    if( flags == 0 )
+    {
+        return;
+    }
+
+    in_VoiceParams->VoiceParamFlags = 0;
+
+    if( flags & VOICE_PARAM_SAMPLE_RATE )
+    {
+        flags &= ~VOICE_PARAM_SAMPLE_RATE;
+        SetVoiceSampleRate( in_VoiceIndex, in_VoiceParams->SampleRate );
+        if( flags == 0 ) return;
+    }
+
+    if( flags & VOICE_PARAM_VOLUME )
+    {
+        flags &= ~VOICE_PARAM_VOLUME;
+        SetVoiceVolume( in_VoiceIndex, in_VoiceParams->Volume.left, in_VoiceParams->Volume.right, in_VoiceParams->VolumeScale );
+        if( flags == 0 ) return;
+    }
+
+    if( flags & VOICE_PARAM_START_ADDR )
+    {
+        flags &= ~VOICE_PARAM_START_ADDR;
+        SetVoiceStartAddr( in_VoiceIndex, in_VoiceParams->StartAddress );
+        if( flags == 0 ) return;
+    }
+
+    if( flags & VOICE_PARAM_LOOP_ADDR )
+    {
+        flags &= ~VOICE_PARAM_LOOP_ADDR;
+        SetVoiceRepeatAddr( in_VoiceIndex, in_VoiceParams->LoopAddress );
+        if( flags == 0 ) return;
+    }
+
+    if( flags & VOICE_PARAM_ADSR_UPPER )
+    {
+        flags &= ~VOICE_PARAM_ADSR_UPPER;
+        SetVoiceAdsrUpper( in_VoiceIndex, in_VoiceParams->AdsrUpper );
+        if( flags == 0 ) return;
+    }
+
+    if( flags & VOICE_PARAM_ADSR_LOWER )
+    {
+        SetVoiceAdsrLower( in_VoiceIndex, in_VoiceParams->AdsrLower );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C094 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C5A4 );

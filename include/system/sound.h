@@ -14,6 +14,24 @@ typedef struct
     /* 0x110 */ u8 unk110[0x14];
 } FSoundChannel;
 
+// Voice parameter update flags
+#define VOICE_PARAM_VOLUME_L      (1 << 0)
+#define VOICE_PARAM_VOLUME_R      (1 << 1)
+#define VOICE_PARAM_VOLUME        (VOICE_PARAM_VOLUME_L | VOICE_PARAM_VOLUME_R)
+#define VOICE_PARAM_SAMPLE_RATE   (1 << 4)
+#define VOICE_PARAM_START_ADDR    (1 << 7)
+#define VOICE_PARAM_ADSR_L_BIT_08 (1 << 8)
+#define VOICE_PARAM_ADSR_L_BIT_11 (1 << 11)
+#define VOICE_PARAM_ADSR_L_BIT_12 (1 << 12)
+#define VOICE_PARAM_ADSR_L_BIT_15 (1 << 15)
+#define VOICE_PARAM_ADSR_LOWER    (VOICE_PARAM_ADSR_L_BIT_08 | VOICE_PARAM_ADSR_L_BIT_11 | VOICE_PARAM_ADSR_L_BIT_12 | VOICE_PARAM_ADSR_L_BIT_15)
+#define VOICE_PARAM_ADSR_U_BIT_09 (1 << 9)
+#define VOICE_PARAM_ADSR_U_BIT_10 (1 << 10)
+#define VOICE_PARAM_ADSR_U_BIT_13 (1 << 13)
+#define VOICE_PARAM_ADSR_U_BIT_14 (1 << 14)
+#define VOICE_PARAM_ADSR_UPPER    (VOICE_PARAM_ADSR_U_BIT_09 | VOICE_PARAM_ADSR_U_BIT_10 | VOICE_PARAM_ADSR_U_BIT_13 | VOICE_PARAM_ADSR_U_BIT_14)
+#define VOICE_PARAM_LOOP_ADDR     (1 << 16)
+
 typedef struct
 {
     s32 AssignedVoiceNumber;
