@@ -49,6 +49,7 @@
 #define SOUND_UPDATE_DRUM_MODE        ( 1 << 3 )
 #define SOUND_UPDATE_SIDE_CHAIN_PITCH ( 1 << 4 )
 #define SOUND_UPDATE_SIDE_CHAIN_VOL   ( 1 << 5 )
+#define SOUND_UPDATE_UNKNOWN_01       ( 1 << 6 )
 #define SOUND_UPDATE_OVERLAY          ( 1 << 8 )
 #define SOUND_UPDATE_ALTERNATIVE      ( 1 << 9 )
 
