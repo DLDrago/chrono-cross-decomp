@@ -45,6 +45,24 @@ typedef struct
     SpuVolume Volume;
 } FSoundVoiceParams;
 
+#define SEMITONES_IN_OCTAVE (12)
+
+// Semitone pitch multipliers (fixed-point, 0x1000 = 1.0)
+const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE] = {
+    0x00001000,  // C  - base pitch (1.0)
+    0x000010F3,  // C# - 2^(1/12)
+    0x000011F5,  // D  - 2^(2/12)
+    0x00001306,  // D# - 2^(3/12)
+    0x00001428,  // E  - 2^(4/12)
+    0x0000155B,  // F  - 2^(5/12)
+    0x000016A0,  // F# - 2^(6/12)
+    0x000017F9,  // G  - 2^(7/12)
+    0x00001966,  // G# - 2^(8/12)
+    0x00001AE8,  // A  - 2^(9/12)
+    0x00001C82,  // A# - 2^(10/12)
+    0x00001E34   // B  - 2^(11/12)
+};
+
 extern s16 D_80092A64;
 extern s32 g_CdVolume;
 
