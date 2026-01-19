@@ -15,4 +15,12 @@ expected_paths:
 ignored_files:
   - slps_023.64/header
 
+scratch:
+  enabled: true
+  platform: ps1
+  compiler: gcc2.8.1-psx
+  c_flags: "-Wall -Wa,--aspsx-version=2.79,--expand-div -g3 -O2 -G0"
+  ctx_path: ctx/project.ctx.c
+  build_ctx: true
+
 output: ./objdiff.json

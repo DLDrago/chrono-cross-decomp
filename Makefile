@@ -25,6 +25,8 @@ ASSETS_DIR   := assets
 ASM_DIR      := asm
 C_DIR        := src
 EXPECTED_DIR := expected
+CTX_DIR      := ctx
+CTX_FILE     := $(CTX_DIR)/project.ctx.c
 
 # Tools
 CROSS   := mips-linux-gnu
@@ -137,6 +139,8 @@ TARGET_IN  := $(TARGET_MAIN) $(TARGET_OVERLAYS)
 TARGET_OUT := $(foreach target,$(TARGET_IN),$(call get_target_out,$(target)))
 LD_FILES     := $(addsuffix .ld,$(addprefix $(LINKER_DIR)/,$(TARGET_IN)))
 
+
+
 # Rules
 default: all
 
@@ -146,6 +150,7 @@ build: $(TARGET_OUT)
 
 objdiff-config: regenerate
 	@$(MAKE) NON_MATCHING=1 SKIP_ASM=1 expected
+	@$(MAKE) generate-context
 	@$(PYTHON) $(OBJDIFF_DIR)/objdiff_generate.py $(OBJDIFF_DIR)/config.yaml
 
 report: objdiff-config
@@ -176,6 +181,8 @@ clean-extract:
 
 generate: $(LD_FILES)
 
+generate-context: $(CTX_FILE)
+
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf $(PERMUTER_DIR)
@@ -184,6 +191,7 @@ reset: clean
 	rm -rf $(ASM_DIR)
 	rm -rf $(LINKER_DIR)
 	rm -rf $(EXPECTED_DIR)
+	rm -rf $(CTX_DIR)
 
 regenerate: reset
 	$(MAKE) generate
@@ -242,7 +250,12 @@ $(LINKER_DIR)/%.ld: $(CONFIG_DIR)/%.yaml
 	@mkdir -p $(dir $@)
 	$(SPLAT) $(SPLAT_FLAGS) $<
 
+$(CTX_FILE):
+	@mkdir -p ctx
+	$(PYTHON) tools/cc_m2ctx.py --auto -o $(CTX_FILE)
+
+
 ### Settings
 .SECONDARY:
-.PHONY: all clean default
+.PHONY: all clean default clean-check objdiff-config generate-context clean-context
 SHELL = /bin/bash -e -o pipefail

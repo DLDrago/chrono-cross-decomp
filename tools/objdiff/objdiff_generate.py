@@ -12,11 +12,20 @@ class UnitMetadata:
     progress_categories: list[str]
 
 @dataclass
+class Scratch:
+    platform: str
+    compiler: str
+    c_flags: str
+    ctx_path: str
+    build_ctx: bool
+
+@dataclass
 class Unit:
     name: str
     base_path: str
     target_path: str
     metadata: UnitMetadata
+    scratch: Scratch = None
 
 @dataclass
 class ProgressCategory:
@@ -76,22 +85,48 @@ def main():
     expected_objects = _collect_objects(Path(config["expected_paths"]["asm"]), config) + _collect_objects(Path(config["expected_paths"]["src"]), config)
     
     logging.info(f"Accounting for {len(expected_objects)} objects.")
+
+    scratch_config = config.get("scratch", {})
+    enable_scratch = scratch_config.get("enabled", False)
+
     units = []
     for file in expected_objects:
         processed_path = _determine_categories(file, config)
         base_path = "build/src/" + processed_path[1].removesuffix(".s.o").removesuffix(".c.o") + ".c.o"
+
+        scratch = None
+        if enable_scratch:
+            scratch = Scratch(
+                platform=scratch_config.get("platform", "ps1"),
+                compiler=scratch_config.get("compiler", "gcc2.8.1-psx"),
+                c_flags=scratch_config.get("c_flags", ""),
+                ctx_path=scratch_config.get("ctx_path", "ctx/project.ctx.c"),
+                build_ctx=scratch_config.get("build_ctx", True)
+            )
+
         unit = Unit(
             processed_path[1].removesuffix(".s.o").removesuffix(".c.o"),
             base_path if Path(base_path).exists() else None,
             str(file),
-            processed_path[0])
+            processed_path[0],
+            scratch
+        )
         units.append(unit)
-    
+
     categories = []
     for category in config["categories"]:
         categories.append(ProgressCategory(category["id"], category["name"]))
     
     with (Path(config["output"])).open("w") as json_file:
+        # Custom dict conversion to handle None values properly
+        config_dict = asdict(Config(True, False, "make", ["progress"], units, categories))
+
+        # Remove None scratch entries to keep JSON clean
+        # if not enable_scratch:
+        #     for unit in config_dict["units"]:
+        #         if unit["scratch"] is None:
+        #             del unit["scratch"]
+
         json.dump(asdict(Config(True, False, "make", ["progress"], units, categories)), json_file, indent=2)
 
 if __name__ == "__main__":

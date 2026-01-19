@@ -21,6 +21,7 @@ src_dir = root_dir / "src"
 # CUSTOMIZE THESE for your Chrono Cross project
 CPP_FLAGS = [
     "-Iinclude",           # Your include directory
+    "-Iinclude/psyq",      # PSY-Q SDK headers (so <kernel.h> can be found)
     "-Isrc",               # Source directory
     "-D_LANGUAGE_C",       # MIPS/PSY-Q convention
     "-D_MIPS_SZLONG=32",   # 32-bit longs
@@ -132,6 +133,110 @@ def preprocess_c_file(c_file: Path) -> str:
     
     return output
 
+def generate_project_context(project_root: Path = None) -> str:
+    """
+    Automatically generate a unified context from project headers
+
+    Intelligently filters out conflicting/problematic headers.
+    """
+    if project_root is None:
+        project_root = root_dir
+
+    # Find all header files
+    include_headers = list((project_root / "include").rglob("*.h")) if (project_root / "include").exists() else []
+    src_headers = list((project_root / "src").rglob("*.h")) if (project_root / "src").exists() else []
+
+    all_headers = sorted(set(include_headers + src_headers))
+
+    print(f"Found {len(all_headers)} header files")
+
+    # Filter out problematic headers
+    SKIP_PATTERNS = [
+        # PSY-Q inline variants - only keep one
+        "inline_o.h",      # Skip the "old" inline style
+        # "inline_c.h",    # Keep the C inline style (uncomment to skip both)
+        "setjmp.h",
+
+        # Assembly-only headers (not for C compilation)
+        "inline_a.h",      # Assembly inline macros
+        "gtereg.h",        # GTE register definitions (assembly)
+        "gtenom.h",        # GTE macros (assembly)
+        "gtemac.h",        # GTE macros (assembly) - if it exists
+
+        # SDK headers that require full environment
+        "<kernel.h>",
+
+        # Headers with circular dependencies or conflicts
+        # Add more patterns as you discover issues
+    ]
+
+    SKIP_DIRS = [
+        # Skip certain SDK subdirectories if needed
+        # "psyq/lib",
+    ]
+
+    def should_skip_header(header: Path) -> bool:
+        """Check if a header should be skipped"""
+        # Check filename patterns
+        for pattern in SKIP_PATTERNS:
+            if header.name == pattern:
+                return True
+
+        # Check directory patterns
+        for dir_pattern in SKIP_DIRS:
+            if dir_pattern in str(header):
+                return True
+
+        return False
+
+    # Filter headers
+    filtered_headers = [h for h in all_headers if not should_skip_header(h)]
+
+    print(f"Using {len(filtered_headers)} headers after filtering")
+    if len(all_headers) - len(filtered_headers) > 0:
+        print(f"Skipped {len(all_headers) - len(filtered_headers)} problematic headers")
+
+    if not filtered_headers:
+        print("Warning: No valid header files found!")
+        return ""
+
+    # Create a temporary master include file
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        suffix=".c",
+        delete=False,
+        dir=project_root
+    ) as tmp:
+        tmp.write("/* Auto-generated master context file */\n")
+        tmp.write("/* Filtered to avoid PSY-Q SDK conflicts */\n\n")
+
+        # Add include guards to prevent redefinition issues
+        tmp.write("#ifndef M2CTX_CONTEXT_H\n")
+        tmp.write("#define M2CTX_CONTEXT_H\n\n")
+
+        for header in filtered_headers:
+            # Get path relative to project root
+            try:
+                rel_path = header.relative_to(project_root)
+                tmp.write(f'#include "{rel_path}"\n')
+            except ValueError:
+                # If not relative to project root, try absolute
+                tmp.write(f'#include "{header}"\n')
+
+        tmp.write("\n#endif /* M2CTX_CONTEXT_H */\n")
+        tmp.flush()
+        tmp_path = Path(tmp.name)
+
+    try:
+        # Process the master include file
+        print(f"Processing {len(filtered_headers)} includes...")
+        context = preprocess_c_file(tmp_path)
+        print(f"Generated context: {len(context)} bytes")
+        return context
+    finally:
+        # Clean up temp file
+        tmp_path.unlink(missing_ok=True)
+
 def main():
     parser = argparse.ArgumentParser(
         description="Create context file for m2c decompilation"
@@ -139,6 +244,7 @@ def main():
     parser.add_argument(
         "c_file",
         type=Path,
+        nargs='?',
         help="C source file to create context from"
     )
     parser.add_argument(
@@ -147,20 +253,30 @@ def main():
         default=None,
         help="Output file (default: ctx.c in project root)"
     )
+    parser.add_argument(
+        "-a", "--auto",
+        action="store_true",
+        help="Automatically generate context from all project headers"
+    )
     
     args = parser.parse_args()
     
-    # Validate input file
-    if not args.c_file.exists():
-        print(f"Error: File not found: {args.c_file}", file=sys.stderr)
-        sys.exit(1)
-    
-    # Generate context
-    print(f"Generating context from {args.c_file}...")
-    context = preprocess_c_file(args.c_file)
-    
     # Determine output path
-    output_path = args.output if args.output else (root_dir / "ctx.c")
+    output_path = args.output if args.output else (root_dir / "ctx" / "project.ctx.c")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Generate context
+    if args.auto or not args.c_file:
+        print("Auto-generating context from all project headers...")
+        context = generate_project_context()
+    else:
+        # Validate input file
+        if not args.c_file.exists():
+            print(f"Error: File not found: {args.c_file}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"Generating context from {args.c_file}...")
+        context = preprocess_c_file(args.c_file)
     
     # Write output
     with open(output_path, "w", encoding="utf-8") as f:

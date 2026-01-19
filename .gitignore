@@ -1,5 +1,6 @@
 asm/
 assets/
+ctx/
 disc/*
 build/
 linker/
