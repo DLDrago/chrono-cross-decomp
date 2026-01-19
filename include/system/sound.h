@@ -193,7 +193,9 @@ typedef struct
 #define SEMITONES_IN_OCTAVE (12)
 
 // Semitone pitch multipliers (fixed-point, 0x1000 = 1.0)
-const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE] = {
+extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
+// Only referenced in SoundVM functions - maybe move there if we process the sound VM in that source file
+/* {
     0x00001000,  // C  - base pitch (1.0)
     0x000010F3,  // C# - 2^(1/12)
     0x000011F5,  // D  - 2^(2/12)
@@ -206,7 +208,7 @@ const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE] = {
     0x00001AE8,  // A  - 2^(9/12)
     0x00001C82,  // A# - 2^(10/12)
     0x00001E34   // B  - 2^(11/12)
-};
+}; */
 
 extern s16 D_80092A64;
 extern s32 g_CdVolume;

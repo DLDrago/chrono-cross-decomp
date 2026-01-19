@@ -592,5 +592,6 @@ unk_Sound_800562d0              = 0x800562D0;
 unk_Sound_80056308              = 0x80056308;
 
 //----------------------------------------------------------------------------------------------------------------------
-g_bSpuTransferring = 0x80092A18;
-g_CdVolume         = 0x80092AF8;
+g_SemitonePitchTable = 0x8007232C;
+g_bSpuTransferring   = 0x80092A18;
+g_CdVolume           = 0x80092AF8;
