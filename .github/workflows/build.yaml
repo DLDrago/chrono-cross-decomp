@@ -66,8 +66,8 @@ jobs:
         run: |
           make extract
 
-      - name: Build target objects (expected)
-        run: make expected
+      - name: Generate ASM splits
+        run: make generate
 
       - name: Build source objects
         run: make build
