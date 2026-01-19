@@ -23,6 +23,38 @@
 #define VOICE_PARAM_ADSR_UPPER    (VOICE_PARAM_ADSR_U_BIT_09 | VOICE_PARAM_ADSR_U_BIT_10 | VOICE_PARAM_ADSR_U_BIT_13 | VOICE_PARAM_ADSR_U_BIT_14)
 #define VOICE_PARAM_LOOP_ADDR     (1 << 16)
 
+#define SOUND_CHANNEL_TYPE_MUSIC 0x0
+#define SOUND_CHANNEL_TYPE_SOUND 0x1
+#define SOUND_CHANNEL_TYPE_MENU  0x2
+
+#define SOUND_CHANNEL_CONFIG_STEREO          ( 1 << 0 )
+#define SOUND_CHANNEL_CONFIG_MONO            ( 1 << 1 )
+#define SOUND_CHANNEL_CONFIG_STEREO_CHANNELS ( 1 << 2 )
+
+#define SOUND_SFX_LEGATO      0x1
+#define SOUND_SFX_FULL_LENGTH 0x4
+
+#define SOUND_UPDATE_SPU_VOICE    (SPU_VOICE_VOLL       | SPU_VOICE_VOLR)
+#define SOUND_UPDATE_SPU_ADSR     (SPU_VOICE_ADSR_AMODE | SPU_VOICE_ADSR_SMODE | SPU_VOICE_ADSR_RMODE | \
+                                   SPU_VOICE_ADSR_AR    | SPU_VOICE_ADSR_DR    | SPU_VOICE_ADSR_SR | SPU_VOICE_ADSR_RR | SPU_VOICE_ADSR_SL)
+#define SOUND_UPDATE_SPU_BASE_WOR (SPU_VOICE_WDSA       | SPU_VOICE_ADSR_AMODE | SPU_VOICE_ADSR_SMODE | \
+                                   SPU_VOICE_ADSR_AR    | SPU_VOICE_ADSR_DR    | SPU_VOICE_ADSR_SR | \
+                                   SPU_VOICE_ADSR_SL    | SPU_VOICE_LSAX)
+#define SOUND_UPDATE_SPU_BASE     (AKAO_UPDATE_SPU_BASE_WOR | SPU_VOICE_ADSR_RMODE | SPU_VOICE_ADSR_RR)
+#define SOUND_UPDATE_SPU_ALL      (AKAO_UPDATE_SPU_BASE     | AKAO_UPDATE_SPU_VOICE    | SPU_VOICE_PITCH)
+
+#define SOUND_UPDATE_VIBRATO          ( 1 << 0 )
+#define SOUND_UPDATE_TREMOLO          ( 1 << 1 )
+#define SOUND_UPDATE_PAN_LFO          ( 1 << 2 )
+#define SOUND_UPDATE_DRUM_MODE        ( 1 << 3 )
+#define SOUND_UPDATE_SIDE_CHAIN_PITCH ( 1 << 4 )
+#define SOUND_UPDATE_SIDE_CHAIN_VOL   ( 1 << 5 )
+#define SOUND_UPDATE_OVERLAY          ( 1 << 8 )
+#define SOUND_UPDATE_ALTERNATIVE      ( 1 << 9 )
+
+#define SOUND_UPDATE_NOISE_CLOCK 0x10
+#define SOUND_UPDATE_REVERB      0x80
+
 typedef struct
 {
     /* 0x00 */ u32 AssignedVoiceNumber;
@@ -164,3 +196,102 @@ void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeS
 void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams );
 void UpdateCdVolume();
+
+void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE00_80053F3C( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE01_80053f88( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE02_80054028( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE03_80054070( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE06_80054118( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE07_80054144( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE0E_8005419c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE0F_800541d4( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE12_80054208( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A9_ChannelVolumeSlides( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE19_80054348( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE1A_800543d8( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE1B_800543ec( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_AA_ChannelPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_AB_ChannelPanSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A5_SetOctave( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A6_IncreaseOctave( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A7_DecreaseOctave( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A1_LoadInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE0A_80054580( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE14_800545ec( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B3_ResetAdsr( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C0_ChannelTranspose_Absolute( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C1_ChannelTranspose_Relative( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A4_PitchBendSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_DA_EnablePortamento( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_DB_DisablePortamento( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D8_ChannelFineTune_Absolute( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D9_ChannelFineTune_Relative( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B5_VibratoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_DD_VibratoDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E4_80054a30( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B6_DisableVibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B9_TremeloDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_DE_TremeloDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E5_80054c00( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_BA_DisableTremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_BC_ChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_BD_ChannelLfoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_DF_ChannelPanLfoDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E6_80054d84( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_BE_DisableChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C4_EnableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C5_DisableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C6_EnableFmVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C7_DisableFmVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C2_EnableReverbVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C3_DisableReverbVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_CC_EnableLegato( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_CD_DEBUG_80055078( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D0_EnableSustainedNote( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D1_DEBUG_8005509c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_AC_NoiseClockFrequency( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_AD_AttackRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_AE_DecayRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_AF_SustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B1_SustainRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B2_ReleaseRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_B7_AttackMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_BB_SustainMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_BF_ReleaseMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE10_8005536c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE11_8005538c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C8_LoopPoint( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_C9_LoopN( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE08_80055480( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE09_800554ec( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_CA_LoopInf( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A2_OverwriteNextNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_DC_FixNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE04_8005562c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE05_80055664( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE15_8005567c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE16_800556b4( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_BO_DecayRateAndSustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_CE_EnableNoiseAndDelayToggle( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_CF_ToggleNoiseOnDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D2_EnableFmAndDelayToggle( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D3_ToggleFmDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_CB_DisableVoiceModes( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D4_EnablePlaybackRateSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D5_DisablePlaybackRateSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D6_EnablePitchVolumeSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_D7_DisablePitchVolumeSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE0B_800558cc( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E0_80055944( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE1C_80055958( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE1D_8005596c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE1E_8005598c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E1_SetVibratoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E2_ResetVibratoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE13_800559d0( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_XX_Unimplemented( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
