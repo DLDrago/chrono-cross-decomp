@@ -58,9 +58,9 @@ jobs:
       - name: Reassemble ROM
         run: |
           mkdir -p disc
-          cat tmp/x* > disc/${{ matrix.game_id }}.bin
+          cat tmp/x* > disc/cdrom.dat
           rm -rf tmp
-          echo "ROM size: $(stat -c%s disc/${{ matrix.game_id }}.bin) bytes"
+          echo "ROM size: $(stat -c%s disc/cdrom.dat) bytes"
 
       - name: Extract and prepare
         run: |
