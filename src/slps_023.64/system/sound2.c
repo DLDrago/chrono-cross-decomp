@@ -37,7 +37,7 @@ u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, s32 in_ChannelMask )
         Mask = 1 << i;
         if( in_ChannelMask & Mask )
         {
-            VoiceNumber = in_pChannel->AssignedVoiceNumber;
+            VoiceNumber = in_pChannel->VoiceParams.AssignedVoiceNumber;
             if( VoiceNumber < VOICE_COUNT )
             {
                 out_VoiceMask |= 1 << VoiceNumber;
@@ -69,9 +69,9 @@ void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice )
         VoiceIndex = 0;
         while( VoiceIndex < SOUND_CHANNEL_COUNT )
         {
-            if( in_Channel->AssignedVoiceNumber == in_Voice )
+            if( in_Channel->VoiceParams.AssignedVoiceNumber == in_Voice )
             {
-                in_Channel->AssignedVoiceNumber = VOICE_COUNT;
+                in_Channel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
                 D_80092A48->ChannelFlags &= ~(1 << VoiceIndex);
             }
             in_Channel++;
@@ -105,7 +105,7 @@ void unk_Sound_SetLow2BitsForChannels( FSound80092A48* in_p, FSoundChannel* in_p
     {
         if( Flags & Mask )
         {
-            in_pChannel->unk10C |= (1 << 1) | (1 << 0);
+            in_pChannel->VoiceParams.VoiceParamFlags |= (1 << 1) | (1 << 0);
             Flags ^= Mask;
         }
         in_pChannel++;
