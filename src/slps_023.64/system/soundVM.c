@@ -298,8 +298,17 @@ void SoundVM_AF_SustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_SL;
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B1_SustainRate);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B1_SustainRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 SustainRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_SUS_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrUpper |= SustainRate << SOUND_ADSR_SUS_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |= (VOICE_PARAM_ADSR_SR | VOICE_PARAM_ADSR_SMODE);
+    in_pChannel->UpdateFlags |= 0x08000000;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B2_ReleaseRate);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B7_AttackMode);
