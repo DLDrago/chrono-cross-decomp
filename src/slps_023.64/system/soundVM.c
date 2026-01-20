@@ -79,9 +79,28 @@ void SoundVM_A7_DecreaseOctave( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     in_pChannel->Octave = (in_pChannel->Octave - 1) & 0xF;
 }
-//----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A1_LoadInstrument);
 
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_A1_LoadInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    FSoundInstrumentInfo* InstrumentInfo;
+    u16 InstrumentIndex;
+
+    InstrumentIndex = *in_pChannel->ProgramCounter++;
+    InstrumentInfo = &g_InstrumentInfo[ InstrumentIndex ];
+    Sound_CopyInstrumentInfoToChannel( in_pChannel, InstrumentInfo, InstrumentInfo->StartAddr );
+    in_pChannel->InstrumentIndex = InstrumentIndex;
+    in_pChannel->VoiceParams.VolumeScale = 0;
+    in_pChannel->UpdateFlags &= ~( 
+        SOUND_UPDATE_DRUM_MODE  | 
+        SOUND_UPDATE_UNKNOWN_12 | 
+        SOUND_UPDATE_UNKNOWN_24 | 
+        SOUND_UPDATE_UNKNOWN_27 | 
+        SOUND_UPDATE_UNKNOWN_28 
+    );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0A_80054580);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE14_800545ec);
