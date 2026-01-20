@@ -235,8 +235,19 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BO_DecayRateA
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CE_EnableNoiseAndDelayToggle);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CF_ToggleNoiseOnDelay);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_CF_ToggleNoiseOnDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Delay = *in_pChannel->ProgramCounter++;
+    if( Delay != 0 )
+    {
+        in_pChannel->NoiseTimer = Delay + 1;
+        return;
+    }
+    in_pChannel->NoiseTimer = SOUND_DEFAULT_DELAY_TIME;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D2_EnableFmAndDelayToggle);
 
 //----------------------------------------------------------------------------------------------------------------------
