@@ -91,10 +91,28 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C1_ChannelTra
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A4_PitchBendSlide);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DA_EnablePortamento);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_DA_EnablePortamento(FSoundChannel* in_pChannel, u32 in_VoiceFlags) {
+    u16 Steps;
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DB_DisablePortamento);
+    Steps = *in_pChannel->ProgramCounter++;
+    in_pChannel->PortamentoSteps = Steps;
+    if( Steps == 0 )
+    {
+        in_pChannel->PortamentoSteps = 0x100;
+    }
+    in_pChannel->TransposeStored = 0;
+    in_pChannel->KeyStored = 0;
+    in_pChannel->SfxMask = 1;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_DB_DisablePortamento( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->PortamentoSteps = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D8_ChannelFineTune_Absolute);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D9_ChannelFineTune_Relative);
