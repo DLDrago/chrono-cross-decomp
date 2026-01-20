@@ -1,6 +1,8 @@
 #include "common.h"
 #include "system/sound.h"
 
+#define SOUND_DEFAULT_PORTAMENTO_STEPS (0x100) // 256 steps
+
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A0_FinishChannel);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE00_80053F3C);
@@ -85,10 +87,21 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE14_800545ec
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B3_ResetAdsr);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C0_ChannelTranspose_Absolute);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_C0_ChannelTranspose_Absolute( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s8 Transpose = *in_pChannel->ProgramCounter++;
+    in_pChannel->Transpose = Transpose;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C1_ChannelTranspose_Relative);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_C1_ChannelTranspose_Relative( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s8 Transpose = *in_pChannel->ProgramCounter++;
+    in_pChannel->Transpose += Transpose;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A4_PitchBendSlide);
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -99,7 +112,7 @@ void SoundVM_DA_EnablePortamento(FSoundChannel* in_pChannel, u32 in_VoiceFlags) 
     in_pChannel->PortamentoSteps = Steps;
     if( Steps == 0 )
     {
-        in_pChannel->PortamentoSteps = 0x100;
+        in_pChannel->PortamentoSteps = SOUND_DEFAULT_PORTAMENTO_STEPS;
     }
     in_pChannel->TransposeStored = 0;
     in_pChannel->KeyStored = 0;
