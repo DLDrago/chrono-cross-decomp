@@ -43,18 +43,34 @@
 #define SOUND_UPDATE_SPU_BASE     (AKAO_UPDATE_SPU_BASE_WOR | SPU_VOICE_ADSR_RMODE | SPU_VOICE_ADSR_RR)
 #define SOUND_UPDATE_SPU_ALL      (AKAO_UPDATE_SPU_BASE     | AKAO_UPDATE_SPU_VOICE    | SPU_VOICE_PITCH)
 
-#define SOUND_UPDATE_VIBRATO          ( 1 << 0 )
-#define SOUND_UPDATE_TREMOLO          ( 1 << 1 )
-#define SOUND_UPDATE_PAN_LFO          ( 1 << 2 )
-#define SOUND_UPDATE_DRUM_MODE        ( 1 << 3 )
-#define SOUND_UPDATE_SIDE_CHAIN_PITCH ( 1 << 4 )
-#define SOUND_UPDATE_SIDE_CHAIN_VOL   ( 1 << 5 )
-#define SOUND_UPDATE_UNKNOWN_01       ( 1 << 6 )
-#define SOUND_UPDATE_OVERLAY          ( 1 << 8 )
-#define SOUND_UPDATE_ALTERNATIVE      ( 1 << 9 )
+#define SOUND_UPDATE_VIBRATO          ( 1 <<  0 )
+#define SOUND_UPDATE_TREMOLO          ( 1 <<  1 )
+#define SOUND_UPDATE_PAN_LFO          ( 1 <<  2 )
+#define SOUND_UPDATE_DRUM_MODE        ( 1 <<  3 )
+#define SOUND_UPDATE_SIDE_CHAIN_PITCH ( 1 <<  4 )
+#define SOUND_UPDATE_SIDE_CHAIN_VOL   ( 1 <<  5 )
+#define SOUND_UPDATE_UNKNOWN_01       ( 1 <<  6 )
+#define SOUND_UPDATE_OVERLAY          ( 1 <<  8 )
+#define SOUND_UPDATE_ALTERNATIVE      ( 1 <<  9 )
+#define SOUND_UPDATE_UNKNOWN_12       ( 1 << 12 )
+#define SOUND_UPDATE_UNKNOWN_24       ( 1 << 24 )
+#define SOUND_UPDATE_UNKNOWN_27       ( 1 << 27 )
+#define SOUND_UPDATE_UNKNOWN_28       ( 1 << 28 )
+
+#define VIBRATO_FLAG_ABSOLUTE         ( 1 << 15 )
 
 #define SOUND_UPDATE_NOISE_CLOCK 0x10
 #define SOUND_UPDATE_REVERB      0x80
+
+typedef struct
+{
+    /* 0x00 */ u32 StartAddr;
+    /* 0x04 */ u32 LoopAddr;
+    /* 0x08 */ s16 FineTune;
+    /* 0x0A */ s16 SampleNote;
+    /* 0x0C */ u16 AdsrLower;
+    /* 0x0E */ u16 AdsrUpper;
+} FSoundInstrumentInfo; /* size 0x10 */
 
 typedef struct
 {
@@ -110,7 +126,7 @@ typedef struct
     /* 0x06C */ s32  field34_0x6c;
     /* 0x070 */ s32  field35_0x70;
     /* 0x074 */ s32  field36_0x74;
-    /* 0x078 */ s16  Type; /* Music, SFX, Menu */
+    /* 0x078 */ u16  Type; /* Music, SFX, Menu */
     /* 0x07A */ s16  Length1;
     /* 0x07C */ s16  Length2;
     /* 0x07E */ u16  InstrumentIndex;
@@ -212,11 +228,13 @@ extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
 
 extern s16 D_80092A64;
 extern s32 g_CdVolume;
+extern FSoundInstrumentInfo g_InstrumentInfo[256];
 
 void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeScale );
 void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams );
 void UpdateCdVolume();
+void Sound_CopyInstrumentInfoToChannel( FSoundChannel* in_pChannel, FSoundInstrumentInfo* in_pInstrumentInfo, u32 in_StartAddress );
 
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE00_80053F3C( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
