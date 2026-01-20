@@ -42,16 +42,20 @@ These instructions assume you're using a Debian-based Linux distribution (Ubuntu
 
 ```bash
 sudo apt update
-sudo apt install git make ninja-build 7zip \
+sudo apt install git make 7zip \
     binutils-mips-linux-gnu gcc-mips-linux-gnu \
     python3 python3-pip python3-venv
+```
+
+If on an ARM-based architecture or VM, you'll need these packages as well
+```bash
+sudo apt install qemu-user-static binfmt-support
 ```
 
 ### Clone the Repository
 
 ```bash
 git clone --recursive https://github.com/yourusername/chrono-cross-decomp.git
-cd chrono-cross-decomp
 ```
 
 ### Install Python Dependencies
@@ -59,6 +63,7 @@ cd chrono-cross-decomp
 We use a virtual environment to manage Python packages:
 
 ```bash
+cd chrono-cross-decomp
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -115,7 +120,7 @@ Once you have the ROM in place:
 make extract
 ```
 
-This will use splat to split the ROM into assembly and data files in the `expected/` directory.
+This will extract cdrom.dat to expose all of the program data
 
 ### Build and Verify
 
