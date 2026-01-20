@@ -382,4 +382,8 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E2_ResetVibra
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE13_800559d0);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_XX_Unimplemented);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_XX_Unimplemented( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    SoundVM_A0_FinishChannel( in_pChannel, in_VoiceFlags );
+}
