@@ -57,6 +57,27 @@
 #define SOUND_UPDATE_UNKNOWN_27       ( 1 << 27 )
 #define SOUND_UPDATE_UNKNOWN_28       ( 1 << 28 )
 
+/*
+ * ADSR1 (Lower)
+ * 15 14 13 12 11 10 9 8 | 7 6 5 4 | 3 2 1 0
+ *  ---------------------+---------+--------
+ *   Attack Rate / Mode  | Decay   | Sustain Level
+ */
+#define SOUND_ADSR_ATTACK_MODE_MASK        0x8000  // bit 15
+#define SOUND_ADSR_ATTACK_RATE_MASK        0x7F00  // bits 14–8
+#define SOUND_ADSR_DECAY_RATE_MASK         0x00F0  // bits 7–4
+#define SOUND_ADSR_SUSTAIN_LEVEL_MASK      0x000F  // bits 3–0
+
+/*
+ * ADSR2 (Upper)
+ * 15 14 | 13 12 11 10 9 8 | 7 6 5 | 4 3 2 1 0
+ * ------+-----------------+-------+---------
+ * SMode | Sustain Rate    | Rel.  | (unused)
+ */
+#define SOUND_ADSR_SUSTAIN_MODE_MASK       0xC000  // bits 15–14
+#define SOUND_ADSR_SUSTAIN_RATE_MASK       0x3F00  // bits 13–8
+#define SOUND_ADSR_RELEASE_RATE_MASK       0x00E0  // bits 7–5
+
 #define VIBRATO_FLAG_ABSOLUTE         ( 1 << 15 )
 
 #define SOUND_UPDATE_NOISE_CLOCK 0x10

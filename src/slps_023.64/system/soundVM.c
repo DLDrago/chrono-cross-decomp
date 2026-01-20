@@ -266,7 +266,14 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AD_AttackRate
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AE_DecayRate);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AF_SustainLevel);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_AF_SustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 SustainLevel = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_SUSTAIN_LEVEL_MASK;
+    in_pChannel->VoiceParams.AdsrLower |= SustainLevel;
+    in_pChannel->VoiceParams.VoiceParamFlags |= 0x8000;
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B1_SustainRate);
 
