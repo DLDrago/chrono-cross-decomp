@@ -315,7 +315,12 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE15_8005567c
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE16_800556b4);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BO_DecayRateAndSustainLevel);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B0_DecayRateAndSustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    SoundVM_AE_DecayRate( in_pChannel, in_VoiceFlags );
+    SoundVM_AF_SustainLevel( in_pChannel, in_VoiceFlags );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_CE_EnableNoiseAndDelayToggle( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
