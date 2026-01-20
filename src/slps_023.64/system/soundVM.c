@@ -351,7 +351,24 @@ void SoundVM_CF_ToggleNoiseOnDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlag
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D2_EnableFmAndDelayToggle);
+void SoundVM_D2_EnableFmAndDelayToggle( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Timer;
+    u16 Value;
+
+    Value = *in_pChannel->ProgramCounter++;
+    if( Value != 0 )
+    {
+        Timer = Value + 1;
+    }
+    else
+    {
+        Timer = SOUND_DEFAULT_DELAY_TIME;
+    }
+
+    in_pChannel->FmTimer = Timer;
+    SoundVM_C6_EnableFmVoices(in_pChannel, in_VoiceFlags);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_D3_ToggleFmDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
