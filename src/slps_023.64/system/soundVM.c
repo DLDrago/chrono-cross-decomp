@@ -105,7 +105,15 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0A_80054580
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE14_800545ec);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B3_ResetAdsr);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B3_ResetAdsr( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    FSoundInstrumentInfo* InstrumentInfo = &g_InstrumentInfo[in_pChannel->InstrumentIndex];
+    in_pChannel->VoiceParams.AdsrLower = InstrumentInfo->AdsrLower;
+    in_pChannel->VoiceParams.AdsrUpper = InstrumentInfo->AdsrUpper;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_FULL;
+    in_pChannel->UpdateFlags &= ~(SOUND_UPDATE_UNKNOWN_24 | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_C0_ChannelTranspose_Absolute( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
