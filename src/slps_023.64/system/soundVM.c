@@ -152,8 +152,41 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D9_ChannelFin
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B4_Vibrato);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B5_VibratoDepth);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B5_VibratoDepth(FSoundChannel* in_pChannel, u32 in_VoiceFlags) {
+    s32 PitchBase;      // Base pitch around which the vibrato will oscillate
+    u32 DepthAmount;    // This is just the magnitude part of the vibrato depth parameter, 0-127 depth scalar
+    u32 VibratoProduct; // Intermediate scaled value
 
+    PitchBase = in_pChannel->PitchBase;
+
+    // Read vibrato depth parameter from the sequence.
+    // Stored in the high byte so bit 15 can act as a mode flag.
+    in_pChannel->VibratoDepth = *in_pChannel->ProgramCounter++ << 8;
+
+    // Extract the depth magnitude (bits 8–14)
+    DepthAmount = (in_pChannel->VibratoDepth & 0x7F00) >> 8;
+    if( !(in_pChannel->VibratoDepth & VIBRATO_FLAG_ABSOLUTE) )
+    {
+        // Relative mode:
+        // Vibrato depth is scaled down relative to pitch so higher notes
+        // don’t produce excessively wide vibrato.
+        // (PitchBase * 15) >> 8 ≈ PitchBase * 0.0586
+        VibratoProduct = DepthAmount * ((PitchBase * 15) >> 8);
+    }
+    else
+    {
+        // Absolute mode:
+        // Vibrato depth is directly proportional to pitch.
+        VibratoProduct = DepthAmount * PitchBase;
+    }
+
+    // Final vibrato amplitude in pitch units.
+    // The >> 7 normalizes the multiplication into a usable range.
+    in_pChannel->VibratoBase = VibratoProduct >> 7;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DD_VibratoDepthSlide);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E4_80054a30);
