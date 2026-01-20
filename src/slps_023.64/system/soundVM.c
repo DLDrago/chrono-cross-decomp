@@ -192,14 +192,24 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C2_EnableReve
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C3_DisableReverbVoices);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CC_EnableLegato);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_CC_EnableLegato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->SfxMask = SOUND_SFX_LEGATO;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_CD_DEBUG_80055078( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D0_EnableSustainedNote);
+void SoundVM_D0_EnableSustainedNote( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    if( in_pChannel->Type != SOUND_CHANNEL_TYPE_MUSIC )
+    {
+        in_pChannel->SfxMask = SOUND_SFX_FULL_LENGTH;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_D1_DEBUG_8005509c( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {
