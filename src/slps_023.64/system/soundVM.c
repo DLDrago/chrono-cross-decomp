@@ -292,8 +292,19 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE09_800554ec
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CA_LoopInf);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A2_OverwriteNextNoteLength);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_A2_OverwriteNextNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Length;
 
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->LengthFixed = 0;
+    in_pChannel->Length2 = Length;
+    in_pChannel->Length1 = Length;
+    in_pChannel->LengthStored = Length;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DC_FixNoteLength);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE04_8005562c);
@@ -371,4 +382,8 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E2_ResetVibra
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE13_800559d0);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_XX_Unimplemented);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_XX_Unimplemented( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    SoundVM_A0_FinishChannel( in_pChannel, in_VoiceFlags );
+}
