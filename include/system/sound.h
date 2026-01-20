@@ -4,25 +4,50 @@
 #define VOICE_COUNT 24
 #define SOUND_CHANNEL_COUNT 0x20
 
+#define	SPU_VOICE_VOLL          (0x01 <<  0) /* volume (left) */
+#define	SPU_VOICE_VOLR          (0x01 <<  1) /* volume (right) */
+#define	SPU_VOICE_VOLMODEL      (0x01 <<  2) /* volume mode (left) */
+#define	SPU_VOICE_VOLMODER      (0x01 <<  3) /* volume mode (right) */
+#define	SPU_VOICE_PITCH         (0x01 <<  4) /* tone (pitch setting) */
+#define	SPU_VOICE_NOTE          (0x01 <<  5) /* tone (note setting)  */
+#define	SPU_VOICE_SAMPLE_NOTE   (0x01 <<  6) /* waveform data sample note */
+#define	SPU_VOICE_WDSA          (0x01 <<  7) /* waveform data start address */
+#define	SPU_VOICE_ADSR_AMODE    (0x01 <<  8) /* ADSR Attack rate mode */
+#define	SPU_VOICE_ADSR_SMODE    (0x01 <<  9) /* ADSR Sustain rate mode */
+#define	SPU_VOICE_ADSR_RMODE    (0x01 << 10) /* ADSR Release rate mode */
+#define	SPU_VOICE_ADSR_AR       (0x01 << 11) /* ADSR Attack rate         */
+#define	SPU_VOICE_ADSR_DR       (0x01 << 12) /* ADSR Decay rate          */
+#define	SPU_VOICE_ADSR_SR       (0x01 << 13) /* ADSR Sustain rate        */
+#define	SPU_VOICE_ADSR_RR       (0x01 << 14) /* ADSR Release rate        */
+#define	SPU_VOICE_ADSR_SL       (0x01 << 15) /* ADSR Sustain level       */
+#define	SPU_VOICE_LSAX          (0x01 << 16) /* start address for loop */
+#define	SPU_VOICE_ADSR_ADSR1    (0x01 << 17) /* ADSR adsr1 for `VagAtr'  */
+#define	SPU_VOICE_ADSR_ADSR2    (0x01 << 18) /* ADSR adsr2 for `VagAtr'  */
 
 // Voice parameter update flags
-#define VOICE_PARAM_VOLUME_L      (1 << 0)
-#define VOICE_PARAM_VOLUME_R      (1 << 1)
+#define VOICE_PARAM_VOLUME_L      (1 << 0) /* volume (left) */
+#define VOICE_PARAM_VOLUME_R      (1 << 1) /* volume (right) */
 #define VOICE_PARAM_VOLUME        (VOICE_PARAM_VOLUME_L | VOICE_PARAM_VOLUME_R)
-#define VOICE_PARAM_SAMPLE_RATE   (1 << 4)
-#define VOICE_PARAM_START_ADDR    (1 << 7)
-#define VOICE_PARAM_ADSR_L_BIT_08 (1 << 8)
-#define VOICE_PARAM_ADSR_L_BIT_11 (1 << 11)
-#define VOICE_PARAM_ADSR_L_BIT_12 (1 << 12)
-#define VOICE_PARAM_ADSR_L_BIT_15 (1 << 15)
-#define VOICE_PARAM_ADSR_LOWER    (VOICE_PARAM_ADSR_L_BIT_08 | VOICE_PARAM_ADSR_L_BIT_11 | VOICE_PARAM_ADSR_L_BIT_12 | VOICE_PARAM_ADSR_L_BIT_15)
-#define VOICE_PARAM_ADSR_U_BIT_09 (1 << 9)
-#define VOICE_PARAM_ADSR_U_BIT_10 (1 << 10)
-#define VOICE_PARAM_ADSR_U_BIT_13 (1 << 13)
-#define VOICE_PARAM_ADSR_U_BIT_14 (1 << 14)
-#define VOICE_PARAM_ADSR_UPPER    (VOICE_PARAM_ADSR_U_BIT_09 | VOICE_PARAM_ADSR_U_BIT_10 | VOICE_PARAM_ADSR_U_BIT_13 | VOICE_PARAM_ADSR_U_BIT_14)
+#define	VOICE_PARAM_VOLMODE_L     (1 <<  2) /* volume mode (left) */
+#define	VOICE_PARAM_VOLMODE_R     (1 <<  3) /* volume mode (right) */
+#define VOICE_PARAM_SAMPLE_RATE   (1 <<  4) /* tone (pitch setting)  */
+#define	VOICE_PARAM_NOTE          (1 <<  5) /* tone (note setting)  */
+#define	VOICE_PARAM_SAMPLE_NOTE   (1 <<  6) /* waveform data sample note */
+#define VOICE_PARAM_START_ADDR    (1 <<  7) /* waveform data start address */
+#define	VOICE_PARAM_ADSR_AMODE    (1 <<  8) /* ADSR Attack rate mode */
+#define	VOICE_PARAM_ADSR_SMODE    (1 <<  9) /* ADSR Sustain rate mode */
+#define	VOICE_PARAM_ADSR_RMODE    (1 << 10) /* ADSR Release rate mode */
+#define	VOICE_PARAM_ADSR_AR       (1 << 11) /* ADSR Attack rate */
+#define	VOICE_PARAM_ADSR_DR       (1 << 12) /* ADSR Decay rate */
+#define	VOICE_PARAM_ADSR_SR       (1 << 13) /* ADSR Sustain rate */
+#define	VOICE_PARAM_ADSR_RR       (1 << 14) /* ADSR Release rate */
+#define	VOICE_PARAM_ADSR_SL       (1 << 15) /* ADSR Sustain level */
+#define VOICE_PARAM_ADSR_LOWER    (VOICE_PARAM_ADSR_AMODE | VOICE_PARAM_ADSR_AR | VOICE_PARAM_ADSR_DR | VOICE_PARAM_ADSR_SL)
+#define VOICE_PARAM_ADSR_UPPER    (VOICE_PARAM_ADSR_SMODE | VOICE_PARAM_ADSR_RMODE | VOICE_PARAM_ADSR_SR | VOICE_PARAM_ADSR_RR)
 #define VOICE_PARAM_ADSR_FULL     (VOICE_PARAM_ADSR_LOWER | VOICE_PARAM_ADSR_UPPER)
-#define VOICE_PARAM_LOOP_ADDR     (1 << 16)
+#define VOICE_PARAM_LOOP_ADDR     (1 << 16) /* start address for loop */
+#define	VOICE_PARAM_ADSR_ADSR1    (1 << 17) /* ADSR adsr1 for `VagAtr'  */
+#define	VOICE_PARAM_ADSR_ADSR2    (1 << 18) /* ADSR adsr2 for `VagAtr'  */
 
 #define SOUND_CHANNEL_TYPE_MUSIC 0x0
 #define SOUND_CHANNEL_TYPE_SOUND 0x1
@@ -58,16 +83,30 @@
 #define SOUND_UPDATE_UNKNOWN_27       ( 1 << 27 )
 #define SOUND_UPDATE_UNKNOWN_28       ( 1 << 28 )
 
+
+#define BIT_MASK(width)               ((1u << (width)) - 1u)
+#define FIELD_MASK(width, shift)      (BIT_MASK(width) << (shift))
+
 /*
  * ADSR1 (Lower)
  * 15 14 13 12 11 10 9 8 | 7 6 5 4 | 3 2 1 0
  *  ---------------------+---------+--------
  *   Attack Rate / Mode  | Decay   | Sustain Level
  */
-#define SOUND_ADSR_ATTACK_MODE_MASK        0x8000  // bit 15
-#define SOUND_ADSR_ATTACK_RATE_MASK        0x7F00  // bits 14–8
-#define SOUND_ADSR_DECAY_RATE_MASK         0x00F0  // bits 7–4
-#define SOUND_ADSR_SUSTAIN_LEVEL_MASK      0x000F  // bits 3–0
+#define SOUND_ADSR_ATTACK_MODE_MASK    (BIT_MASK(SOUND_ADSR_ATTACK_MODE_WIDTH) << SOUND_ADSR_ATTACK_MODE_SHIFT) // 0x8000  // bit 15
+#define SOUND_ADSR_ATTACK_RATE_MASK    (BIT_MASK(SOUND_ADSR_ATTACK_RATE_WIDTH) << SOUND_ADSR_ATTACK_RATE_SHIFT) // 0x7F00  // bits 14–8
+#define SOUND_ADSR_DECAY_RATE_MASK     (BIT_MASK(SOUND_ADSR_DECAY_RATE_WIDTH ) << SOUND_ADSR_DECAY_RATE_SHIFT ) // 0x00F0  // bits 7–4
+#define SOUND_ADSR_SUS_LEVEL_MASK      (BIT_MASK(SOUND_ADSR_SUS_LEVEL_WIDTH  ) << SOUND_ADSR_SUS_LEVEL_SHIFT  ) // 0x000F  // bits 3–0
+
+#define SOUND_ADSR_ATTACK_MODE_SHIFT   15
+#define SOUND_ADSR_ATTACK_RATE_SHIFT    8
+#define SOUND_ADSR_DECAY_RATE_SHIFT     4
+#define SOUND_ADSR_SUS_LEVEL_SHIFT      0
+
+#define SOUND_ADSR_ATTACK_MODE_WIDTH    1
+#define SOUND_ADSR_ATTACK_RATE_WIDTH    7
+#define SOUND_ADSR_DECAY_RATE_WIDTH     4
+#define SOUND_ADSR_SUS_LEVEL_WIDTH      4
 
 /*
  * ADSR2 (Upper)
@@ -75,9 +114,17 @@
  * ------+-----------------+-------+---------
  * SMode | Sustain Rate    | Rel.  | (unused)
  */
-#define SOUND_ADSR_SUSTAIN_MODE_MASK       0xC000  // bits 15–14
-#define SOUND_ADSR_SUSTAIN_RATE_MASK       0x3F00  // bits 13–8
-#define SOUND_ADSR_RELEASE_RATE_MASK       0x00E0  // bits 7–5
+#define SOUND_ADSR_SUS_MODE_MASK     (BIT_MASK(SOUND_ADSR_SUS_MODE_WIDTH    ) << SOUND_ADSR_SUS_MODE_SHIFT    ) //   0xC000
+#define SOUND_ADSR_SUS_RATE_MASK     (BIT_MASK(SOUND_ADSR_SUS_RATE_WIDTH    ) << SOUND_ADSR_SUS_RATE_SHIFT    ) //   0x3F00
+#define SOUND_ADSR_RELEASE_RATE_MASK (BIT_MASK(SOUND_ADSR_RELEASE_RATE_WIDTH) << SOUND_ADSR_RELEASE_RATE_SHIFT) //   0x00E0
+
+#define SOUND_ADSR_SUS_MODE_SHIFT      14
+#define SOUND_ADSR_SUS_RATE_SHIFT       8
+#define SOUND_ADSR_RELEASE_RATE_SHIFT   5
+
+#define SOUND_ADSR_SUS_MODE_WIDTH       2
+#define SOUND_ADSR_SUS_RATE_WIDTH       6
+#define SOUND_ADSR_RELEASE_RATE_WIDTH   3
 
 #define VIBRATO_FLAG_ABSOLUTE         ( 1 << 15 )
 

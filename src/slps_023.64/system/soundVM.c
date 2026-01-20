@@ -270,7 +270,15 @@ void SoundVM_D1_DEBUG_8005509c( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AC_NoiseClockFrequency);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AD_AttackRate);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_AD_AttackRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 AttackRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_ATTACK_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrLower |= AttackRate << 8;
+    in_pChannel->VoiceParams.VoiceParamFlags |= (VOICE_PARAM_ADSR_AMODE | VOICE_PARAM_ADSR_AR);
+    in_pChannel->UpdateFlags |= 0x01000000;
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AE_DecayRate);
 
@@ -278,9 +286,9 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AE_DecayRate)
 void SoundVM_AF_SustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u16 SustainLevel = *in_pChannel->ProgramCounter++;
-    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_SUSTAIN_LEVEL_MASK;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_SUS_LEVEL_MASK;
     in_pChannel->VoiceParams.AdsrLower |= SustainLevel;
-    in_pChannel->VoiceParams.VoiceParamFlags |= 0x8000;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_SL;
 }
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B1_SustainRate);
