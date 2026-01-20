@@ -263,8 +263,17 @@ void SoundVM_D3_ToggleFmDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CB_DisableVoiceModes);
+void SoundVM_CB_DisableVoiceModes( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->UpdateFlags &= ~( SOUND_UPDATE_SIDE_CHAIN_PITCH | SOUND_UPDATE_SIDE_CHAIN_VOL | SOUND_UPDATE_PAN_LFO |
+        SOUND_UPDATE_TREMOLO | SOUND_UPDATE_VIBRATO );
+    SoundVM_C5_DisableNoiseVoices(in_pChannel, in_VoiceFlags);
+    SoundVM_C7_DisableFmVoices(in_pChannel, in_VoiceFlags);
+    SoundVM_C3_DisableReverbVoices(in_pChannel, in_VoiceFlags);
+    in_pChannel->SfxMask &= ~( SOUND_SFX_LEGATO | SOUND_SFX_FULL_LENGTH );
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D4_EnablePlaybackRateSidechain);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D5_DisablePlaybackRateSidechain);
