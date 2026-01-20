@@ -158,8 +158,15 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DD_VibratoDep
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E4_80054a30);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B6_DisableVibrato);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B6_DisableVibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->VibratoPitch = 0;
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_VIBRATO;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B8_Tremelo);
 
 //----------------------------------------------------------------------------------------------------------------------
