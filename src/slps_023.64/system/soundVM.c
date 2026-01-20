@@ -2,6 +2,7 @@
 #include "system/sound.h"
 
 #define SOUND_DEFAULT_PORTAMENTO_STEPS (0x100) // 256 steps
+#define SOUND_DEFAULT_DELAY_TIME       (0x101) // 256 + 1
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A0_FinishChannel);
 
@@ -174,14 +175,18 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C3_DisableRev
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CC_EnableLegato);
 
+//----------------------------------------------------------------------------------------------------------------------
 void SoundVM_CD_DEBUG_80055078( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D0_EnableSustainedNote);
 
+//----------------------------------------------------------------------------------------------------------------------
 void SoundVM_D1_DEBUG_8005509c( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AC_NoiseClockFrequency);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AD_AttackRate);
@@ -234,8 +239,19 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CF_ToggleNois
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D2_EnableFmAndDelayToggle);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D3_ToggleFmDelay);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_D3_ToggleFmDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Delay = *in_pChannel->ProgramCounter++;
+    if( Delay != 0 )
+    {
+        in_pChannel->FmTimer = Delay + 1;
+        return;
+    }
+    in_pChannel->FmTimer = SOUND_DEFAULT_DELAY_TIME;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CB_DisableVoiceModes);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D4_EnablePlaybackRateSidechain);
