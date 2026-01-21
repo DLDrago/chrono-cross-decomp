@@ -236,7 +236,7 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BE_DisableCha
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_C4_EnableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    if( in_pChannel->Type == 0 )
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
     {
         g_pActiveMusicConfig->NoiseChannelFlags |= in_VoiceFlags;
     }
@@ -250,7 +250,7 @@ void SoundVM_C4_EnableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_C5_DisableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    if( in_pChannel->Type == 0 )
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
     {
         g_pActiveMusicConfig->NoiseChannelFlags &= ~in_VoiceFlags;
     }
@@ -263,13 +263,61 @@ void SoundVM_C5_DisableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlag
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C6_EnableFmVoices);
+void SoundVM_C6_EnableFmVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
+    {
+        g_pActiveMusicConfig->FmChannelFlags |= in_VoiceFlags;
+    }
+    else if( in_pChannel->UpdateFlags & 0x10000 )
+    {
+        g_Sound_VoiceSchedulerState.FmVoiceFlags |= in_VoiceFlags;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C7_DisableFmVoices);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_C7_DisableFmVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
+    {
+        g_pActiveMusicConfig->FmChannelFlags &= ~in_VoiceFlags;
+    }
+    else
+    {
+        g_Sound_VoiceSchedulerState.FmVoiceFlags &= ~in_VoiceFlags;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    in_pChannel->FmTimer = 0;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C2_EnableReverbVoices);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_C2_EnableReverbVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
+    {
+        g_pActiveMusicConfig->ReverbChannelFlags |= in_VoiceFlags;
+    }
+    else
+    {
+        g_Sound_VoiceSchedulerState.ReverbVoiceFlags |= in_VoiceFlags;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C3_DisableReverbVoices);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_C3_DisableReverbVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
+    {
+        g_pActiveMusicConfig->ReverbChannelFlags &= ~in_VoiceFlags;
+    }
+    else
+    {
+        g_Sound_VoiceSchedulerState.ReverbVoiceFlags &= ~in_VoiceFlags;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_CC_EnableLegato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
