@@ -107,6 +107,9 @@
 #define SOUND_ADSR_SUS_RATE_WIDTH       7
 #define SOUND_ADSR_RELEASE_RATE_WIDTH   5
 
+#define SOUND_AMODE_1                   1
+#define SOUND_AMODE_5                   5
+
 #define VIBRATO_FLAG_ABSOLUTE         ( 1 << 15 )
 
 #define SOUND_UPDATE_NOISE_CLOCK 0x10

@@ -318,7 +318,19 @@ void SoundVM_B2_ReleaseRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->UpdateFlags |= 0x10000000;
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B7_AttackMode);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B7_AttackMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Mode = *in_pChannel->ProgramCounter++;
+
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_ATTACK_MODE_MASK;
+
+    if( Mode == SOUND_AMODE_5 )
+    {
+        in_pChannel->VoiceParams.AdsrLower |= SOUND_ADSR_ATTACK_MODE_MASK;
+    }
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_AMODE;
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BB_SustainMode);
 
