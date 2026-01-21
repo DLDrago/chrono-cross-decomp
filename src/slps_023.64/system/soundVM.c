@@ -120,7 +120,15 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0A_80054580
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE14_800545ec);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B3_ResetAdsr);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B3_ResetAdsr( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    FSoundInstrumentInfo* InstrumentInfo = &g_InstrumentInfo[in_pChannel->InstrumentIndex];
+    in_pChannel->VoiceParams.AdsrLower = InstrumentInfo->AdsrLower;
+    in_pChannel->VoiceParams.AdsrUpper = InstrumentInfo->AdsrUpper;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_FULL;
+    in_pChannel->UpdateFlags &= ~(SOUND_UPDATE_UNKNOWN_24 | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_C0_ChannelTranspose_Absolute( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -277,17 +285,67 @@ void SoundVM_D1_DEBUG_8005509c( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AC_NoiseClockFrequency);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AD_AttackRate);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_AD_AttackRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 AttackRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_ATTACK_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrLower |= AttackRate << SOUND_ADSR_ATTACK_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |= (VOICE_PARAM_ADSR_AMODE | VOICE_PARAM_ADSR_AR);
+    in_pChannel->UpdateFlags |= 0x01000000;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AE_DecayRate);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_AE_DecayRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 DecayRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_DECAY_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrLower |= DecayRate << SOUND_ADSR_DECAY_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_DR;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AF_SustainLevel);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_AF_SustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 SustainLevel = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_SUS_LEVEL_MASK;
+    in_pChannel->VoiceParams.AdsrLower |= SustainLevel;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_SL;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B1_SustainRate);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B1_SustainRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 SustainRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_SUS_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrUpper |= SustainRate << SOUND_ADSR_SUS_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |= (VOICE_PARAM_ADSR_SR | VOICE_PARAM_ADSR_SMODE);
+    in_pChannel->UpdateFlags |= 0x08000000;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B2_ReleaseRate);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B2_ReleaseRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 ReleaseRate = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_RELEASE_RATE_MASK;
+    in_pChannel->VoiceParams.AdsrUpper |= ReleaseRate << SOUND_ADSR_RELEASE_RATE_SHIFT;
+    in_pChannel->VoiceParams.VoiceParamFlags |= (VOICE_PARAM_ADSR_RR | VOICE_PARAM_ADSR_RMODE);
+    in_pChannel->UpdateFlags |= 0x10000000;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B7_AttackMode);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B7_AttackMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Mode = *in_pChannel->ProgramCounter++;
+
+    in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_ATTACK_MODE_MASK;
+
+    if( Mode == SOUND_AMODE_5 )
+    {
+        in_pChannel->VoiceParams.AdsrLower |= SOUND_ADSR_ATTACK_MODE_MASK;
+    }
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_AMODE;
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BB_SustainMode);
 
@@ -330,9 +388,33 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE15_8005567c
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE16_800556b4);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BO_DecayRateAndSustainLevel);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_B0_DecayRateAndSustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    SoundVM_AE_DecayRate( in_pChannel, in_VoiceFlags );
+    SoundVM_AF_SustainLevel( in_pChannel, in_VoiceFlags );
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CE_EnableNoiseAndDelayToggle);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_CE_EnableNoiseAndDelayToggle( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Timer;
+    u16 Value;
+
+    Value = *in_pChannel->ProgramCounter++;
+    if( Value != 0 )
+    {
+        Timer = Value + 1;
+    }
+    else
+    {
+        Timer = SOUND_DEFAULT_DELAY_TIME;
+    }
+
+    in_pChannel->NoiseTimer = Timer;
+
+    SoundVM_C4_EnableNoiseVoices( in_pChannel, in_VoiceFlags );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_CF_ToggleNoiseOnDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -347,7 +429,24 @@ void SoundVM_CF_ToggleNoiseOnDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlag
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D2_EnableFmAndDelayToggle);
+void SoundVM_D2_EnableFmAndDelayToggle( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Timer;
+    u16 Value;
+
+    Value = *in_pChannel->ProgramCounter++;
+    if( Value != 0 )
+    {
+        Timer = Value + 1;
+    }
+    else
+    {
+        Timer = SOUND_DEFAULT_DELAY_TIME;
+    }
+
+    in_pChannel->FmTimer = Timer;
+    SoundVM_C6_EnableFmVoices(in_pChannel, in_VoiceFlags);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_D3_ToggleFmDelay( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
