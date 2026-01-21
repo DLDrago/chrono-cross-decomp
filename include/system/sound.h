@@ -287,12 +287,19 @@ extern s16 D_80092A64;
 extern s32 g_CdVolume;
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 
+// Sound
 void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeScale );
 void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams );
+
+// Sound 2
+u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_Channel );
+
+// Sound 3
 void UpdateCdVolume();
 void Sound_CopyInstrumentInfoToChannel( FSoundChannel* in_pChannel, FSoundInstrumentInfo* in_pInstrumentInfo, u32 in_StartAddress );
 
+// SoundVM
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE00_80053F3C( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE01_80053f88( FSoundChannel* in_pChannel, u32 in_VoiceFlags );

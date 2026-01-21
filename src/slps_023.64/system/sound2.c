@@ -1,6 +1,17 @@
 #include "common.h"
 #include "system/sound.h"
 
+
+// 0x20 toggles whether we use the alternate sample bank
+#define SOUND_BANK_FLAG_ALT_SAMPLE_BANK      (1u << 5)   // 0x20
+
+// the instrument index window that is eligible for bank remap
+#define SOUND_BANK_REMAP_BASE_INDEX          0x20u       // first remappable instrument
+#define SOUND_BANK_REMAP_COUNT               0x40u       // 64 instruments (0x20..0x5F)
+
+// how far to shift SPU sample addresses when remapping
+#define SOUND_BANK_SPU_ADDR_OFFSET           0x30000u
+
 //----------------------------------------------------------------------------------------------------------------------
 typedef struct
 {
@@ -14,8 +25,21 @@ extern FSound80092A48* D_80092A48;
 extern FSound80092A48 D_80091940; // This is the same type as 80092A48 as shown by memcpy in FUN_8004F130
 extern FSound80092A48* D_800917F0; // This seems to always either be null or a pointer to D_80091940
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", unk_Sound_8004DD50);
+//----------------------------------------------------------------------------------------------------------------------
+u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_pChannel )
+{
+    if( in_Flags & SOUND_BANK_FLAG_ALT_SAMPLE_BANK &&
+            (in_pChannel->InstrumentIndex - SOUND_BANK_REMAP_BASE_INDEX) < SOUND_BANK_REMAP_COUNT
+    )
+    {
+        in_pChannel->VoiceParams.StartAddress += SOUND_BANK_SPU_ADDR_OFFSET;
+        in_pChannel->VoiceParams.LoopAddress  += SOUND_BANK_SPU_ADDR_OFFSET;
+        in_pChannel->InstrumentIndex          += SOUND_BANK_REMAP_BASE_INDEX; // mirror into alt-bank instrument table
+    }
+    return in_pChannel->InstrumentIndex;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDA4);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDF8);

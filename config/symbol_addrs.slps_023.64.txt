@@ -443,11 +443,11 @@ SpuSetReverbDepth   = 0x8004DD20;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Sound2
-unk_Sound_8004DD50               = 0x8004DD50;
-ChannelMaskToVoiceMask           = 0x8004DFC4;
-FreeVoiceChannels                = 0x8004E974;
-unk_Sound_SetLow2BitsForChannels = 0x8004EC40;
-SetCdVolume                      = 0x8004FBD8;
+Sound_ApplySampleBankOffsetIfNeeded = 0x8004DD50;
+ChannelMaskToVoiceMask              = 0x8004DFC4;
+FreeVoiceChannels                   = 0x8004E974;
+unk_Sound_SetLow2BitsForChannels    = 0x8004EC40;
+SetCdVolume                         = 0x8004FBD8;
 
 //----------------------------------------------------------------------------------------------------------------------
 // unk_reverb (???)
