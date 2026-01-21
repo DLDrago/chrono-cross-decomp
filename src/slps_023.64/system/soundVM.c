@@ -376,8 +376,28 @@ void SoundVM_A2_OverwriteNextNoteLength( FSoundChannel* in_pChannel, u32 in_Voic
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DC_FixNoteLength);
+// Set the duration for all the upcoming notes (same as A2 except it doesn't apply only to the next note)
+void SoundVM_DC_FixNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s32 NoteLength;
 
+    NoteLength = *(s8*)in_pChannel->ProgramCounter++;
+    if( NoteLength != 0 )
+    {
+        NoteLength += in_pChannel->LengthStored;
+        if( NoteLength <= 0 )
+        {
+            NoteLength = 1;
+        }
+        else if( NoteLength >= 256 )
+        {
+            NoteLength = 255;
+        }
+    }
+    in_pChannel->LengthFixed = NoteLength;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE04_8005562c);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE05_80055664);
