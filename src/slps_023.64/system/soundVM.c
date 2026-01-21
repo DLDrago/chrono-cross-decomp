@@ -347,8 +347,39 @@ void SoundVM_B7_AttackMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_AMODE;
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BB_SustainMode);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_BB_SustainMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 mode;
+    u16 adsrUpper;
 
+    adsrUpper = in_pChannel->VoiceParams.AdsrUpper & 0x3FFF;
+    mode = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrUpper = adsrUpper;
+
+    if (mode == 5)
+    {
+        in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0x8000;
+    }
+    else if (mode < 6)
+    {
+        if (mode == 3)
+        {
+            in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0x4000;
+        }
+    }
+    else
+    {
+        if (mode == 7)
+        {
+            in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0xC000;
+        }
+    }
+
+    in_pChannel->VoiceParams.VoiceParamFlags |= 0x200;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BF_ReleaseMode);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE10_8005536c);
