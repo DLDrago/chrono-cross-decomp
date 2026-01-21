@@ -13,19 +13,6 @@
 #define SOUND_BANK_SPU_ADDR_OFFSET           0x30000u
 
 //----------------------------------------------------------------------------------------------------------------------
-typedef struct
-{
-    /* 0x00 */ u8 unk0[0x4];
-    /* 0x04 */ u32 unk_Flags_0x4;
-    /* 0x08 */ u8 unk8[0xC];
-    /* 0x14 */ u32 ChannelFlags; // 32-bit: one bit per channel
-    // ...
-} FSound80092A48;
-extern FSound80092A48* D_80092A48;
-extern FSound80092A48 D_80091940; // This is the same type as 80092A48 as shown by memcpy in FUN_8004F130
-extern FSound80092A48* D_800917F0; // This seems to always either be null or a pointer to D_80091940
-
-//----------------------------------------------------------------------------------------------------------------------
 u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_pChannel )
 {
     if( in_Flags & SOUND_BANK_FLAG_ALT_SAMPLE_BANK &&
@@ -96,7 +83,7 @@ void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice )
             if( in_Channel->VoiceParams.AssignedVoiceNumber == in_Voice )
             {
                 in_Channel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
-                D_80092A48->ChannelFlags &= ~(1 << VoiceIndex);
+                g_pActiveMusicConfig->ActiveNoteMask &= ~(1 << VoiceIndex);
             }
             in_Channel++;
             VoiceIndex++;
@@ -110,13 +97,13 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EBC8);
 
 //----------------------------------------------------------------------------------------------------------------------
 // Unknown exactly how this functions but it is setting bits 0 and 1 to each channel in the incoming struct's flags
-void unk_Sound_SetLow2BitsForChannels( FSound80092A48* in_p, FSoundChannel* in_pChannel )
+void unk_Sound_SetLow2BitsForChannels( FSoundChannelConfig* in_p, FSoundChannel* in_pChannel )
 {
     u32 tmp;
     u32 Flags;
     u32 Mask;
 
-    tmp = in_p->unk_Flags_0x4;
+    tmp = in_p->ActiveChannelMask;
     if( tmp == 0 )
     {
         return;
@@ -139,7 +126,7 @@ void unk_Sound_SetLow2BitsForChannels( FSound80092A48* in_p, FSoundChannel* in_p
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EC88);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004ECDC);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_SetMusicSequence );
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EF8C);
 
