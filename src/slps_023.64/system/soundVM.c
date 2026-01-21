@@ -248,8 +248,21 @@ void SoundVM_C4_EnableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C5_DisableNoiseVoices);
+void SoundVM_C5_DisableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    if( in_pChannel->Type == 0 )
+    {
+        g_pActiveMusicConfig->NoiseChannelFlags &= ~in_VoiceFlags;
+    }
+    else
+    {
+        g_Sound_VoiceSchedulerState.NoiseVoiceFlags &= ~in_VoiceFlags;
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+    in_pChannel->NoiseTimer = 0;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C6_EnableFmVoices);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C7_DisableFmVoices);
