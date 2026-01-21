@@ -55,7 +55,7 @@ void SetReverbMode( s32 in_ReverbMode )
 {
     s32 currentReverbMode;
 
-    SpuGetReverbModeType( &currentReverbMode );
+    SpuGetReverbModeType( (long*)&currentReverbMode );
     if( currentReverbMode != in_ReverbMode )
     {
         SpuSetReverb( SPU_OFF );

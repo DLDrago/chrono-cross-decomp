@@ -119,6 +119,60 @@
 #define SOUND_UPDATE_NOISE_CLOCK 0x10
 #define SOUND_UPDATE_REVERB      0x80
 
+
+typedef struct
+{
+    u32 ControlLatches;   // one-shot / transactional engine state flags
+    u32 MixBehavior;      // global mixing & music-stack behavior flags
+    u32 UpdateFlags;      // deferred SPU / voice-mode update flags
+} FSoundGlobalFlags;
+
+/* =========================
+ * ControlLatches
+ * ========================= */
+
+/* SPU instrument upload / relocation transaction in progress.
+ * - Set before streaming instrument data
+ * - Cleared when transfer finishes
+ * - Gates unk_Spu_8004ac2c()
+ */
+#define SOUND_CTL_INSTRUMENT_TRANSFER_ACTIVE     (1u << 0)
+
+/* Last-active SFX channel fade completion should trigger VM command.
+ * - Set when a global SFX fade starts
+ * - Checked when C_StepsRemaining reaches 0 on final channel
+ * - Causes Sound_Cmd_80050dd4()
+ */
+#define SOUND_CTL_SFX_FADE_END_CALLBACK_PENDING  (1u << 16)
+
+
+/* =========================
+ * MixBehavior
+ * ========================= */
+
+/* Force dual-mono output.
+ * - Bypasses pan law table
+ * - L = R using 0x440a scale
+ * - Affects:
+ *     - Music voices
+ *     - SFX voices
+ *     - CD audio mixing
+ */
+#define SOUND_MIX_FORCE_MONO                    (1u << 1)
+
+/* Secondary (pushed) music is in fade / teardown phase.
+ * - Enables periodic fade processing
+ * - Delays cleanup until fade completes
+ * - Cleared automatically when channels die
+ */
+#define SOUND_MIX_SECONDARY_MUSIC_FADING        (1u << 8)
+
+/* Legacy / initialization bit.
+ * - Written (set to 1) but not meaningfully read in observed paths
+ * - Likely historical or reserved
+ */
+#define SOUND_MIX_LEGACY_ENABLE                 (1u << 0)
+
 typedef struct
 {
     /* 0x00 */ u32 StartAddr;
@@ -128,6 +182,24 @@ typedef struct
     /* 0x0C */ u16 AdsrLower;
     /* 0x0E */ u16 AdsrUpper;
 } FSoundInstrumentInfo; /* size 0x10 */
+
+typedef struct
+{
+    u32 ActiveChannelMask;
+    u32 KeyOnFlags;
+    u32 KeyedFlags;
+    u32 KeyOffFlags;
+    undefined4 unk_Flags_0x10;
+    undefined4 field5_0x14;
+    undefined4 TempoAccumumulator;
+    undefined4 NoiseVoiceFlags;
+    undefined4 ReverbVoiceFlags;
+    undefined4 FmVoiceFlags;
+    undefined2 NoiseClock;
+    undefined field11_0x2a;
+    undefined field12_0x2b;
+    undefined4 field13_0x2c;
+} FSoundVoiceSchedulerState;
 
 typedef struct
 {
@@ -173,8 +245,6 @@ typedef struct
     /* 0x16 */ u16 VolumeScale;
     /* 0x18 */ SpuVolume Volume;
 } FSoundVoiceParams; /* size 0x1C */
-
-typedef u8 undefined;
 
 typedef struct
 {
@@ -503,9 +573,8 @@ extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern bool g_bSpuTransferring;
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern s16 D_80092A64;
-extern u32 g_Sound_ActiveChannelMask;
-extern u32 g_Sound_OffFlags;
+extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
 extern s32 g_CdVolume;
 extern FSoundChannel g_PushedMusicChannels[0x20];
-extern u32 g_Sound_UpdateFlags;
+extern FSoundGlobalFlags g_Sound_GlobalFlags;
 extern FSound80094FA0 D_80094FA0;
