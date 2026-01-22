@@ -662,7 +662,13 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE08_80055480
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE09_800554ec);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_CA_LoopInf);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_CA_LoopInf( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->LoopIterationCount[in_pChannel->LoopStackTop] += 1;
+    in_pChannel->ProgramCounter = in_pChannel->LoopStartPc[in_pChannel->LoopStackTop];
+    in_pChannel->OpcodeStepCounter = in_pChannel->LoopStepCounterSnapshot[in_pChannel->LoopStackTop];
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A2_OverwriteNextNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
