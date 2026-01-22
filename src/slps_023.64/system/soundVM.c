@@ -218,8 +218,29 @@ void SoundVM_DB_DisablePortamento( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D8_ChannelFineTune_Absolute);
+void SoundVM_D8_ChannelFineTune_Absolute( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s32 FinePitchDelta;
+    u32 ScaledFineTune;
 
+    in_pChannel->FineTune = (s8)*in_pChannel->ProgramCounter++;
+    ScaledFineTune = in_pChannel->PitchBase * (u8)in_pChannel->FineTune;
+    
+    if( in_pChannel->FineTune < 0 )
+    {
+        FinePitchDelta = (ScaledFineTune >> 8) - in_pChannel->PitchBase;
+    }
+    else
+    {
+        FinePitchDelta = ScaledFineTune >> 7;
+    }
+
+    in_pChannel->FinePitchDelta = FinePitchDelta;
+
+    in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D9_ChannelFineTune_Relative);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B4_Vibrato);
