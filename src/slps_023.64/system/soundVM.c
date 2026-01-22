@@ -60,7 +60,28 @@ void SoundVM_AA_ChannelPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AB_ChannelPanSlide);
+void SoundVM_AB_ChannelPanSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Prev;
+    u16 Length;
+    u16 Dest;
+    s32 Delta;
+
+
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->ChannelPanSlideLength = Length;
+    if( Length == 0 )
+    {
+        in_pChannel->ChannelPanSlideLength = 0x100;
+    }
+    
+    Dest = *in_pChannel->ProgramCounter++;
+    Dest = ((Dest + 0x40) & 0xFF) << 8; // Center it
+    Prev = in_pChannel->ChannelPan & 0xFF00;
+    Delta = Dest - Prev;
+    in_pChannel->PanSlideStep = Delta / in_pChannel->ChannelPanSlideLength;
+    in_pChannel->ChannelPan = Prev;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A5_SetOctave( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
