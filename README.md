@@ -31,6 +31,7 @@ This project stands on the shoulders of giants and owes a huge debt to:
 - [decomp.dev](https://decomp.dev/) - Progress tracking and visualization
 - [decomp.me](https://decomp.me/) - Collaborative decompilation platform
 - [The Chrono Compendium](https://chronocompendium.com/) community for reverse engineering research
+- [q-gears reverse](https://github.com/Akari1982/q-gears_reverse) - Reverse engineering of similar games
 
 ## Building
 
