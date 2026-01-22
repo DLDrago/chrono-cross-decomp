@@ -265,12 +265,12 @@ typedef struct
     /* 0x02C */ s32  PitchBase;
     /* 0x030 */ s32  PitchSlide;
     /* 0x034 */ s32  UpdateFlags;
-    /* 0x038 */ u32  field17_0x38;
-    /* 0x03C */ s32  field18_0x3c;
-    /* 0x040 */ u32  field19_0x40;
-    /* 0x044 */ s32  field20_0x44;
-    /* 0x048 */ s32  field21_0x48;
-    /* 0x04C */ s32  field22_0x4c;
+    /* 0x038 */ u32  VibratoRateAccumulator;
+    /* 0x03C */ s32  VibratoRateStep;
+    /* 0x040 */ u32  TremeloRateAccumulator;
+    /* 0x044 */ s32  TremeloRateStep;
+    /* 0x048 */ s32  PanLfoRateAccumulator;
+    /* 0x04C */ s32  PanLfoRateStep;
     /* 0x050 */ s16  field23_0x50;
     /* 0x052 */ s16  field24_0x52;
     /* 0x054 */ u32  field25_0x54;

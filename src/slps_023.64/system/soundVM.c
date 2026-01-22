@@ -369,8 +369,25 @@ void SoundVM_BA_DisableTremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
+extern u32 D_80072E60[];
+
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BC_ChannelPanLfo);
+void SoundVM_BC_ChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s32 Rate;
+
+    in_pChannel->UpdateFlags |= 4;
+    Rate = *in_pChannel->ProgramCounter++ << 0xA;
+    in_pChannel->PanLfoRateAccumulator = Rate;
+    if( Rate == 0 )
+    {
+        in_pChannel->PanLfoRateAccumulator = 0x40000;
+    }
+    in_pChannel->PanLfoType = *in_pChannel->ProgramCounter++;
+    in_pChannel->PanLfoWave = D_80072E60[in_pChannel->PanLfoType];
+    in_pChannel->PanLfoRateCurrent = 1;
+    in_pChannel->PanLfoRate = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_BD_ChannelLfoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
