@@ -246,14 +246,12 @@ typedef struct
     /* 0x18 */ SpuVolume Volume;
 } FSoundVoiceParams; /* size 0x1C */
 
+#define SOUND_MAX_LOOP_DEPTH (4)
+
 typedef struct
 {
     /* 0x000 */ u8*  ProgramCounter;
-    /* 0x004 */ u32  LoopPoints;
-    /* 0x008 */ s32  field2_0x8;
-    /* 0x00C */ s32  field3_0xc;
-    /* 0x010 */ u16  field4_0x10;
-    /* 0x012 */ u16  field5_0x12;
+    /* 0x004 */ u8*  LoopStartPc[SOUND_MAX_LOOP_DEPTH];
     /* 0x014 */ u16  field6_0x14;
     /* 0x016 */ u16  field7_0x16;
     /* 0x018 */ s16  field8_0x18;
@@ -291,18 +289,9 @@ typedef struct
     /* 0x07E */ u16  InstrumentIndex;
     /* 0x080 */ u16  field41_0x80;
     /* 0x082 */ s16  field42_0x82;
-    /* 0x084 */ s16  field43_0x84;
-    /* 0x086 */ u16  LoopTimes;
-    /* 0x088 */ u8   field45_0x88;
-    /* 0x089 */ u8   field46_0x89;
-    /* 0x08A */ u8   field47_0x8a;
-    /* 0x08B */ u8   field48_0x8b;
-    /* 0x08C */ u8   field49_0x8c;
-    /* 0x08D */ u8   field50_0x8d;
-    /* 0x08E */ s16  unkArray2;
-    /* 0x090 */ s32  field52_0x90;
-    /* 0x094 */ u8   field53_0x94;
-    /* 0x095 */ u8   field54_0x95;
+    /* 0x084 */ s16  OpcodeStepCounter;
+    /* 0x086 */ u16  LoopIterationCount[SOUND_MAX_LOOP_DEPTH];
+    /* 0x08E */ s16  LoopStepCounterSnapshot[SOUND_MAX_LOOP_DEPTH];
     /* 0x096 */ u16  VolumeBalance; /* Volume is set by "volume << 8" */
     /* 0x098 */ s16  VolumeBalanceSlideLength;
     /* 0x09A */ s16  field57_0x9a;
@@ -342,7 +331,7 @@ typedef struct
     /* 0x0DE */ s16  PanLfoDepthSlideStep;
     /* 0x0E0 */ s16  NoiseTimer;
     /* 0x0E2 */ s16  FmTimer;
-    /* 0x0E4 */ u16  LoopIndex;
+    /* 0x0E4 */ u16  LoopStackTop;
     /* 0x0E6 */ u16  RandomPitchDepth;
     /* 0x0E8 */ s16  LengthStored;
     /* 0x0EA */ u16  LengthFixed;
