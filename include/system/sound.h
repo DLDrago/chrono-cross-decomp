@@ -246,12 +246,13 @@ typedef struct
     /* 0x18 */ SpuVolume Volume;
 } FSoundVoiceParams; /* size 0x1C */
 
-#define SOUND_MAX_LOOP_DEPTH (4)
+#define SOUND_LOOP_STACK_SIZE (4)
+#define SOUND_LOOP_STACK_MAX_INDEX (SOUND_LOOP_STACK_SIZE - 1)
 
 typedef struct
 {
     /* 0x000 */ u8*  ProgramCounter;
-    /* 0x004 */ u8*  LoopStartPc[SOUND_MAX_LOOP_DEPTH];
+    /* 0x004 */ u8*  LoopStartPc[SOUND_LOOP_STACK_SIZE];
     /* 0x014 */ u16  field6_0x14;
     /* 0x016 */ u16  field7_0x16;
     /* 0x018 */ s16  field8_0x18;
@@ -290,8 +291,8 @@ typedef struct
     /* 0x080 */ u16  field41_0x80;
     /* 0x082 */ s16  field42_0x82;
     /* 0x084 */ s16  OpcodeStepCounter;
-    /* 0x086 */ u16  LoopIterationCount[SOUND_MAX_LOOP_DEPTH];
-    /* 0x08E */ s16  LoopStepCounterSnapshot[SOUND_MAX_LOOP_DEPTH];
+    /* 0x086 */ u16  LoopIterationCount[SOUND_LOOP_STACK_SIZE];
+    /* 0x08E */ s16  LoopStepCounterSnapshot[SOUND_LOOP_STACK_SIZE];
     /* 0x096 */ u16  VolumeBalance; /* Volume is set by "volume << 8" */
     /* 0x098 */ s16  VolumeBalanceSlideLength;
     /* 0x09A */ s16  field57_0x9a;
