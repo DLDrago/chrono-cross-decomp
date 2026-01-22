@@ -231,7 +231,13 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DF_ChannelPan
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E6_80054d84);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BE_DisableChannelPanLfo);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_BE_DisableChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->PanLfoVolume = 0;
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_PAN_LFO;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_C4_EnableNoiseVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
