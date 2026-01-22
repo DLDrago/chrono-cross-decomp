@@ -461,7 +461,7 @@ void Sound_ClearVoiceFromSchedulerState( FSoundChannel* in_pChannel, u32 in_Voic
 
 // SoundVM
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE00_80053F3C( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE01_80053f88( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE02_80054028( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE03_80054070( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
