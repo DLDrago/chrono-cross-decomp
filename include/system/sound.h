@@ -258,7 +258,7 @@ typedef struct
     /* 0x018 */ s16  field8_0x18;
     /* 0x01A */ s16  field9_0x1a;
     /* 0x01C */ s16* VibratoWave;
-    /* 0x020 */ s32  TremeloWave;
+    /* 0x020 */ u32  TremeloWave;
     /* 0x024 */ u32  PanLfoWave;
     /* 0x028 */ s32  unk_Flags;
     /* 0x02C */ s32  PitchBase;
