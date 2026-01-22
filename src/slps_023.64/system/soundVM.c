@@ -4,6 +4,11 @@
 #define SOUND_DEFAULT_PORTAMENTO_STEPS (0x100) // 256 steps
 #define SOUND_DEFAULT_DELAY_TIME       (0x101) // 256 + 1
 
+extern u32 D_80072E60[];
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A0_FinishChannel);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE00_80053F3C);
@@ -223,7 +228,44 @@ void SoundVM_B6_DisableVibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B8_Tremelo);
+void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Delay;
+    u32 Rate;
+    u16 Type;
+
+    in_pChannel->UpdateFlags |= 2;
+    Delay = *in_pChannel->ProgramCounter++;
+
+    if (in_pChannel->Type != 0)
+    {
+        in_pChannel->TremeloDelay = 0;
+        if( Delay != 0 )
+        {
+            in_pChannel->TremeloDepth = (Delay & 0x7F) << 8;
+        }
+    }
+    else
+    {
+        in_pChannel->TremeloDelay = (s16) Delay;
+    }
+
+    Rate = *in_pChannel->ProgramCounter++ << 0xA;
+    in_pChannel->TremeloRateAccumulator = Rate;
+
+    if( Rate == 0 )
+    {
+        in_pChannel->TremeloRateAccumulator = 0x40000;
+    }
+
+    Type = *in_pChannel->ProgramCounter++;
+    in_pChannel->TremeloType = Type;
+
+    in_pChannel->TremeloRate = 0;
+    in_pChannel->field81_0xca = 1;
+    in_pChannel->TremeloDelayCurrent = (u16)in_pChannel->TremeloDelay;
+    in_pChannel->TremeloWave = D_80072E60[Type];
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B9_TremeloDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -237,9 +279,16 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E5_80054c00);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BA_DisableTremelo);
 
+<<<<<<< Updated upstream
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BC_ChannelPanLfo);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BD_ChannelLfoDepth);
+=======
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_BC_ChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s32 Rate;
+>>>>>>> Stashed changes
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DF_ChannelPanLfoDepthSlide);
 
