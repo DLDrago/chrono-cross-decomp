@@ -4,8 +4,34 @@
 #define SOUND_DEFAULT_PORTAMENTO_STEPS (0x100) // 256 steps
 #define SOUND_DEFAULT_DELAY_TIME       (0x101) // 256 + 1
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A0_FinishChannel);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
+    {
+        g_pActiveMusicConfig->ActiveChannelMask &= ~in_VoiceFlags;
+        if( g_pActiveMusicConfig->ActiveChannelMask == 0 )
+        {
+            g_Music_LoopCounter = 0;
+            g_pActiveMusicConfig->MusicId = 0;
+            g_pActiveMusicConfig->StatusFlags = 0;
+        }
+        g_pActiveMusicConfig->ActiveNoteMask     &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->KeyedMask          &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->AllocatedVoiceMask &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->NoiseChannelFlags  &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->ReverbChannelFlags &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->FmChannelFlags     &= ~in_VoiceFlags;
+    }
+    else
+    {
+        Sound_ClearVoiceFromSchedulerState( in_pChannel, in_VoiceFlags );
+    }
+    in_pChannel->UpdateFlags = 0;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE00_80053F3C);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE01_80053f88);
