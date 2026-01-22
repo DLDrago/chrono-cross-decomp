@@ -367,6 +367,11 @@ typedef struct
     u8 PanAndReverb; /* low 7 bits pan, high bit reverb-enable */
 } FSoundKeymapEntry8;
 
+typedef struct
+{
+    undefined4 unk0;
+} FAkaoSequence;
+
 typedef struct 
 {
     s32 StatusFlags; /*   0x01 - Voice exhaustion (couldn't allocate even with stealing) 0x02 - Voice stealing occurred */
@@ -381,7 +386,7 @@ typedef struct
     s32 Tempo;
     s32 TempoSlideStep;
     s32 TempoUpdate;
-    undefined* SequenceBase;
+    FAkaoSequence* SequenceBase;
     s16 *SequencePatchTable;
     FSoundKeymapEntry8* KeymapTable;
     s32 SomeIndexRelatedToSpuVoiceInfo;
@@ -400,7 +405,7 @@ typedef struct
     s16 B_StepsRemaining;
     s16 ReverbDepthSlideLength;
     u16 TempoSlideLength;
-    u16 field31_0x6e;
+    u16 MusicId;
     s16 field32_0x70;
     u16 NoiseClock;
     s16 TimerUpper;
@@ -452,6 +457,7 @@ void UpdateCdVolume();
 void memcpy32( void* in_Src, void* in_Dst, uint in_Size );
 void memswap32( void* in_A, void* in_B, uint in_Size );
 void Sound_CopyInstrumentInfoToChannel( FSoundChannel* in_pChannel, FSoundInstrumentInfo* in_pInstrumentInfo, u32 in_StartAddress );
+void Sound_ClearVoiceFromSchedulerState( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 
 // SoundVM
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
@@ -560,6 +566,7 @@ extern FSoundChannel* g_pSecondaryMusicChannels;
 extern FSoundChannelConfig* g_pSavedMousicConfig; // What even is this used for
 extern FSoundChannelConfig g_PushedMusicConfig;
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
+extern u32 g_Music_LoopCounter;
 extern bool g_bSpuTransferring;
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern s16 D_80092A64;

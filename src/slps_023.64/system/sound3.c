@@ -38,4 +38,4 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", Sound_CopyInstrumentIn
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", func_80053DC4);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", func_80053DFC);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", Sound_ClearVoiceFromSchedulerState);
