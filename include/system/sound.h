@@ -343,7 +343,7 @@ typedef struct
     /* 0x0E0 */ s16  NoiseTimer;
     /* 0x0E2 */ s16  FmTimer;
     /* 0x0E4 */ u16  LoopIndex;
-    /* 0x0E6 */ u16  field95_0xe6;
+    /* 0x0E6 */ u16  RandomPitchDepth;
     /* 0x0E8 */ s16  LengthStored;
     /* 0x0EA */ u16  LengthFixed;
     /* 0x0EC */ s16  field98_0xec;
@@ -385,7 +385,7 @@ typedef struct
     u32 AllocatedVoiceMask; /* Channels with SPU voices allocated */
     s32 PendingKeyOnMask; /* Pending key-ons */
     s32 ActiveNoteMask; /* Currently playing notes (not rests) */
-    u32 field6_0x18;
+    u32 PreventRekeyOnMusicResumeMask; /* With the way music pushes and pops, if something like a one-shot was started and "paused" then it won't rekey/resume that note when the music resumes*/
     s32 PendingKeyOffMask;
     u32 LastChannelModeFlags;
     s32 Tempo;
@@ -558,8 +558,8 @@ void SoundVM_E0_80055944( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1C_80055958( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1D_8005596c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1E_8005598c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_E1_SetVibratoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_E2_ResetVibratoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E1_SetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E2_ResetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE13_800559d0( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_XX_Unimplemented( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 

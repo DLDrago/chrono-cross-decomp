@@ -572,8 +572,8 @@ SoundVM_E0_80055944                     = 0x80055944;
 SoundVM_FE1C_80055958                   = 0x80055958;
 SoundVM_FE1D_8005596c                   = 0x8005596C;
 SoundVM_FE1E_8005598c                   = 0x8005598C;
-SoundVM_E1_SetVibratoDepth              = 0x800559AC;
-SoundVM_E2_ResetVibratoDepth            = 0x800559C8;
+SoundVM_E1_SetRandomPitchDepth          = 0x800559AC;
+SoundVM_E2_ResetRandomPitchDepth        = 0x800559C8;
 SoundVM_FE13_800559d0                   = 0x800559D0;
 SoundVM_XX_Unimplemented                = 0x800559F0;
 

@@ -616,10 +616,19 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE1D_8005596c
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE1E_8005598c);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E1_SetVibratoDepth);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_E1_SetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->RandomPitchDepth = *in_pChannel->ProgramCounter++;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E2_ResetVibratoDepth);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_E2_ResetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->RandomPitchDepth = 0;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE13_800559d0);
 
 //----------------------------------------------------------------------------------------------------------------------
