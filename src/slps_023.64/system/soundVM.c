@@ -237,12 +237,30 @@ void SoundVM_D8_ChannelFineTune_Absolute( FSoundChannel* in_pChannel, u32 in_Voi
 
     in_pChannel->FinePitchDelta = FinePitchDelta;
 
-    in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D9_ChannelFineTune_Relative);
+void SoundVM_D9_ChannelFineTune_Relative( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u32 ScaledFineTune;
+    u32 FinePitchDelta;
 
+    in_pChannel->FineTune = in_pChannel->FineTune + (s8) *in_pChannel->ProgramCounter++;
+    ScaledFineTune = in_pChannel->PitchBase * (u8)in_pChannel->FineTune;
+    if( in_pChannel->FineTune < 0 )
+    {
+        FinePitchDelta = (ScaledFineTune >> 8) - in_pChannel->PitchBase;
+    }
+    else
+    {
+        FinePitchDelta = ScaledFineTune >> 7;
+    }
+    in_pChannel->FinePitchDelta = FinePitchDelta;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B4_Vibrato);
 
 //----------------------------------------------------------------------------------------------------------------------
