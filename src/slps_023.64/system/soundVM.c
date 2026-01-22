@@ -35,7 +35,7 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE12_80054208
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A8_ChannelVolume);
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_A9_ChannelVolumeSlides( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_A9_ChannelVolumeSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     s32 Prev;
     s32 Dest;
@@ -252,8 +252,27 @@ void SoundVM_B5_VibratoDepth(FSoundChannel* in_pChannel, u32 in_VoiceFlags) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DD_VibratoDepthSlide);
+void SoundVM_DD_VibratoDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Length;
+    u16 Prev;
+    u16 Dest;
+    s32 Delta;
 
+    Length = *in_pChannel->ProgramCounter++;
+    if( Length == 0 )
+    {
+        Length = 0x100;
+    }
+    Dest = *in_pChannel->ProgramCounter++;
+    Dest = Dest << 8;
+    Prev = in_pChannel->VibratoDepth;
+    Delta = Dest - Prev;
+    in_pChannel->VibratoDepthSlideStep = Delta / Length;
+    in_pChannel->VibratoDepthSlideLength = Length;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E4_80054a30);
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -274,8 +293,26 @@ void SoundVM_B9_TremeloDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DE_TremeloDepthSlide);
+void SoundVM_DE_TremeloDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s32 Length;
+    s32 Prev;
+    u32 Dest;
+    s32 Delta;
 
+    Length = *in_pChannel->ProgramCounter++;
+    if( Length == 0 )
+    {
+        Length = 0x100;
+    }
+    Dest = (*in_pChannel->ProgramCounter++ & 0x7f) << 8;
+    Prev = in_pChannel->TremeloDepth;
+    Delta = Dest - Prev;
+    in_pChannel->TremeloDepthSlideStep = Delta / Length;
+    in_pChannel->TremeloDepthSlideLength = Length;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E5_80054c00);
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -296,8 +333,27 @@ void SoundVM_BD_ChannelLfoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DF_ChannelPanLfoDepthSlide);
+void SoundVM_DF_ChannelPanLfoDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Length;
+    u16 Prev;
+    u16 Dest;
+    s32 Delta;
 
+    Length = *in_pChannel->ProgramCounter++;
+    if (Length == 0) {
+        Length = 0x100;
+    }
+    Dest = *in_pChannel->ProgramCounter++;
+    Dest = Dest << 7;
+    Prev = in_pChannel->PanLfoDepth;
+
+    Delta = Dest - Prev;
+    in_pChannel->PanLfoDepthSlideStep = Delta / Length;
+    in_pChannel->PanLfoDepthSlideLength = Length;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E6_80054d84);
 
 //----------------------------------------------------------------------------------------------------------------------
