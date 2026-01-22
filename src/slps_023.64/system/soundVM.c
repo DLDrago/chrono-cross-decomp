@@ -34,8 +34,32 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE12_80054208
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A8_ChannelVolume);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A9_ChannelVolumeSlides);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_A9_ChannelVolumeSlides( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s32 Prev;
+    s32 Dest;
+    u16 Length;
+    s32 Delta;
 
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->ChannelVolumeSlideLength = Length;
+    if( Length == 0 )
+    {
+        in_pChannel->ChannelVolumeSlideLength = 0x100;
+    }
+    Dest = ((s8) *in_pChannel->ProgramCounter++ << 0x17);
+
+    Prev = in_pChannel->Volume & 0xFFFF0000;
+    in_pChannel->Volume = Prev;
+
+    Delta = Dest - Prev;
+    in_pChannel->VolumeSlideStep = Delta / in_pChannel->ChannelVolumeSlideLength;
+
+    in_pChannel->field59_0x9e = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE19_80054348);
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -159,7 +183,7 @@ void SoundVM_A4_PitchBendSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->PitchBendSlideLength = Length;
     if( Length == 0 )
     {
-        in_pChannel->ChannelPanSlideLength = 0x100;
+        in_pChannel->PitchBendSlideLength = 0x100;
     }
     
     in_pChannel->PitchBendSlideTranspose = (s8)*in_pChannel->ProgramCounter++;
