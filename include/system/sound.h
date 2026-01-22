@@ -97,23 +97,81 @@
  */
 #define SOUND_ADSR_SUS_MODE_MASK     (BIT_MASK(SOUND_ADSR_SUS_MODE_WIDTH    ) << SOUND_ADSR_SUS_MODE_SHIFT    ) //   0xC000
 #define SOUND_ADSR_SUS_RATE_MASK     (BIT_MASK(SOUND_ADSR_SUS_RATE_WIDTH    ) << SOUND_ADSR_SUS_RATE_SHIFT    ) //   0x3F00
+#define SOUND_ADSR_RELEASE_MODE_MASK (BIT_MASK(SOUND_ADSR_RELEASE_MODE_WIDTH) << SOUND_ADSR_RELEASE_MODE_SHIFT) //   0x00E0
 #define SOUND_ADSR_RELEASE_RATE_MASK (BIT_MASK(SOUND_ADSR_RELEASE_RATE_WIDTH) << SOUND_ADSR_RELEASE_RATE_SHIFT) //   0x00E0
 
 #define SOUND_ADSR_SUS_MODE_SHIFT      14
 #define SOUND_ADSR_SUS_RATE_SHIFT       6
+#define SOUND_ADSR_RELEASE_MODE_SHIFT   5
 #define SOUND_ADSR_RELEASE_RATE_SHIFT   0
 
 #define SOUND_ADSR_SUS_MODE_WIDTH       2
 #define SOUND_ADSR_SUS_RATE_WIDTH       7
+#define SOUND_ADSR_RELEASE_MODE_WIDTH   1
 #define SOUND_ADSR_RELEASE_RATE_WIDTH   5
 
 #define SOUND_AMODE_1                   1
 #define SOUND_AMODE_5                   5
+#define SOUND_RMODE_7                   7
 
 #define VIBRATO_FLAG_ABSOLUTE         ( 1 << 15 )
 
 #define SOUND_UPDATE_NOISE_CLOCK 0x10
 #define SOUND_UPDATE_REVERB      0x80
+
+
+typedef struct
+{
+    u32 ControlLatches;   // one-shot / transactional engine state flags
+    u32 MixBehavior;      // global mixing & music-stack behavior flags
+    u32 UpdateFlags;      // deferred SPU / voice-mode update flags
+} FSoundGlobalFlags;
+
+/* =========================
+ * ControlLatches
+ * ========================= */
+
+/* SPU instrument upload / relocation transaction in progress.
+ * - Set before streaming instrument data
+ * - Cleared when transfer finishes
+ * - Gates unk_Spu_8004ac2c()
+ */
+#define SOUND_CTL_INSTRUMENT_TRANSFER_ACTIVE     (1u << 0)
+
+/* Last-active SFX channel fade completion should trigger VM command.
+ * - Set when a global SFX fade starts
+ * - Checked when C_StepsRemaining reaches 0 on final channel
+ * - Causes Sound_Cmd_80050dd4()
+ */
+#define SOUND_CTL_SFX_FADE_END_CALLBACK_PENDING  (1u << 16)
+
+
+/* =========================
+ * MixBehavior
+ * ========================= */
+
+/* Force dual-mono output.
+ * - Bypasses pan law table
+ * - L = R using 0x440a scale
+ * - Affects:
+ *     - Music voices
+ *     - SFX voices
+ *     - CD audio mixing
+ */
+#define SOUND_MIX_FORCE_MONO                    (1u << 1)
+
+/* Secondary (pushed) music is in fade / teardown phase.
+ * - Enables periodic fade processing
+ * - Delays cleanup until fade completes
+ * - Cleared automatically when channels die
+ */
+#define SOUND_MIX_SECONDARY_MUSIC_FADING        (1u << 8)
+
+/* Legacy / initialization bit.
+ * - Written (set to 1) but not meaningfully read in observed paths
+ * - Likely historical or reserved
+ */
+#define SOUND_MIX_LEGACY_ENABLE                 (1u << 0)
 
 typedef struct
 {
@@ -124,6 +182,56 @@ typedef struct
     /* 0x0C */ u16 AdsrLower;
     /* 0x0E */ u16 AdsrUpper;
 } FSoundInstrumentInfo; /* size 0x10 */
+
+typedef struct
+{
+    u32 ActiveChannelMask;
+    u32 KeyOnFlags;
+    u32 KeyedFlags;
+    u32 KeyOffFlags;
+    undefined4 unk_Flags_0x10;
+    undefined4 field5_0x14;
+    undefined4 TempoAccumumulator;
+    undefined4 NoiseVoiceFlags;
+    undefined4 ReverbVoiceFlags;
+    undefined4 FmVoiceFlags;
+    undefined2 NoiseClock;
+    undefined field11_0x2a;
+    undefined field12_0x2b;
+    undefined4 field13_0x2c;
+} FSoundVoiceSchedulerState;
+
+typedef struct
+{
+    s32 field0_0x0;
+    s32 unk_Mask_0x4;
+    s32 field2_0x8;
+    s32 VoicesInUseFlags;
+    s32 VoiceIndex;
+    s32 ChannelFlags;
+    s32 field6_0x18;
+    s32 field7_0x1c;
+    s32 field8_0x20;
+    s32 field9_0x24;
+    s32 field10_0x28;
+    s32 field11_0x2c;
+    s32 field12_0x30;
+    s32 field13_0x34;
+    s32 field14_0x38;
+    s32 field15_0x3c;
+    s32 Volume;
+    s32 field17_0x44;
+    s32 field18_0x48;
+    u8 field19_0x4c;
+    u8 field20_0x4d;
+    u8 field21_0x4e;
+    u8 field22_0x4f;
+    s32 field23_0x50;
+    s32 field24_0x54;
+    s32 VoiceSampleRate;
+    s32 ControlFlags;
+    struct FSoundChannelConfig *SomeSFXArray[24];
+} FSound80094FA0;
 
 typedef struct
 {
@@ -138,33 +246,30 @@ typedef struct
     /* 0x18 */ SpuVolume Volume;
 } FSoundVoiceParams; /* size 0x1C */
 
-typedef u8 undefined;
+#define SOUND_LOOP_STACK_SIZE (4)
+#define SOUND_LOOP_STACK_MAX_INDEX (SOUND_LOOP_STACK_SIZE - 1)
 
 typedef struct
 {
     /* 0x000 */ u8*  ProgramCounter;
-    /* 0x004 */ u32  LoopPoints;
-    /* 0x008 */ s32  field2_0x8;
-    /* 0x00C */ s32  field3_0xc;
-    /* 0x010 */ u16  field4_0x10;
-    /* 0x012 */ u16  field5_0x12;
+    /* 0x004 */ u8*  LoopStartPc[SOUND_LOOP_STACK_SIZE];
     /* 0x014 */ u16  field6_0x14;
     /* 0x016 */ u16  field7_0x16;
     /* 0x018 */ s16  field8_0x18;
     /* 0x01A */ s16  field9_0x1a;
     /* 0x01C */ s16* VibratoWave;
-    /* 0x020 */ s32  TremeloWave;
+    /* 0x020 */ u32  TremeloWave;
     /* 0x024 */ u32  PanLfoWave;
     /* 0x028 */ s32  unk_Flags;
     /* 0x02C */ s32  PitchBase;
     /* 0x030 */ s32  PitchSlide;
     /* 0x034 */ s32  UpdateFlags;
-    /* 0x038 */ u32  field17_0x38;
-    /* 0x03C */ s32  field18_0x3c;
-    /* 0x040 */ u32  field19_0x40;
-    /* 0x044 */ s32  field20_0x44;
-    /* 0x048 */ s32  field21_0x48;
-    /* 0x04C */ s32  field22_0x4c;
+    /* 0x038 */ u32  VibratoRateAccumulator;
+    /* 0x03C */ s32  VibratoRateStep;
+    /* 0x040 */ u32  TremeloRateAccumulator;
+    /* 0x044 */ s32  TremeloRateStep;
+    /* 0x048 */ s32  PanLfoRateAccumulator;
+    /* 0x04C */ s32  PanLfoRateStep;
     /* 0x050 */ s16  field23_0x50;
     /* 0x052 */ s16  field24_0x52;
     /* 0x054 */ u32  field25_0x54;
@@ -185,23 +290,14 @@ typedef struct
     /* 0x07E */ u16  InstrumentIndex;
     /* 0x080 */ u16  field41_0x80;
     /* 0x082 */ s16  field42_0x82;
-    /* 0x084 */ s16  field43_0x84;
-    /* 0x086 */ u16  LoopTimes;
-    /* 0x088 */ u8   field45_0x88;
-    /* 0x089 */ u8   field46_0x89;
-    /* 0x08A */ u8   field47_0x8a;
-    /* 0x08B */ u8   field48_0x8b;
-    /* 0x08C */ u8   field49_0x8c;
-    /* 0x08D */ u8   field50_0x8d;
-    /* 0x08E */ s16  unkArray2;
-    /* 0x090 */ s32  field52_0x90;
-    /* 0x094 */ u8   field53_0x94;
-    /* 0x095 */ u8   field54_0x95;
+    /* 0x084 */ s16  OpcodeStepCounter;
+    /* 0x086 */ u16  LoopIterationCount[SOUND_LOOP_STACK_SIZE];
+    /* 0x08E */ s16  LoopStepCounterSnapshot[SOUND_LOOP_STACK_SIZE];
     /* 0x096 */ u16  VolumeBalance; /* Volume is set by "volume << 8" */
     /* 0x098 */ s16  VolumeBalanceSlideLength;
     /* 0x09A */ s16  field57_0x9a;
-    /* 0x09C */ s16  ChannelVolumeSlideLength;
-    /* 0x09E */ s16  field59_0x9e;
+    /* 0x09C */ u16  ChannelVolumeSlideLength;
+    /* 0x09E */ s16  KeyOnVolumeRampLength;
     /* 0x0A0 */ s16  field60_0xa0;
     /* 0x0A2 */ u16  ChannelPan;
     /* 0x0A4 */ u16  ChannelPanSlideLength;
@@ -236,8 +332,8 @@ typedef struct
     /* 0x0DE */ s16  PanLfoDepthSlideStep;
     /* 0x0E0 */ s16  NoiseTimer;
     /* 0x0E2 */ s16  FmTimer;
-    /* 0x0E4 */ u16  LoopIndex;
-    /* 0x0E6 */ u16  field95_0xe6;
+    /* 0x0E4 */ u16  LoopStackTop;
+    /* 0x0E6 */ u16  RandomPitchDepth;
     /* 0x0E8 */ s16  LengthStored;
     /* 0x0EA */ u16  LengthFixed;
     /* 0x0EC */ s16  field98_0xec;
@@ -259,10 +355,73 @@ typedef struct
     /* 0x108 */ FSoundVoiceParams VoiceParams;
 } FSoundChannel; /* size 0x124 */
 
+typedef struct
+{
+    u8 InstrumentIndex;
+    u8 Note;
+    u8 AdsrAttackRate;
+    u8 AdsrSustainRate;
+    u8 SustainModeCode; /* values 3/5/7 map to 0x4000/0x8000/0xC000 */
+    u8 ReleaseRate;
+    u8 VolumeScale;
+    u8 PanAndReverb; /* low 7 bits pan, high bit reverb-enable */
+} FSoundKeymapEntry8;
+
+typedef struct
+{
+    undefined4 unk0;
+} FAkaoSequence;
+
+typedef struct 
+{
+    s32 StatusFlags; /*   0x01 - Voice exhaustion (couldn't allocate even with stealing) 0x02 - Voice stealing occurred */
+    u32 ActiveChannelMask;
+    u32 KeyedMask; /* SPU voices currently keyed-on */
+    u32 AllocatedVoiceMask; /* Channels with SPU voices allocated */
+    s32 PendingKeyOnMask; /* Pending key-ons */
+    s32 ActiveNoteMask; /* Currently playing notes (not rests) */
+    u32 PreventRekeyOnMusicResumeMask; /* With the way music pushes and pops, if something like a one-shot was started and "paused" then it won't rekey/resume that note when the music resumes*/
+    s32 PendingKeyOffMask;
+    u32 LastChannelModeFlags;
+    s32 Tempo;
+    s32 TempoSlideStep;
+    s32 TempoUpdate;
+    FAkaoSequence* SequenceBase;
+    s16 *SequencePatchTable;
+    FSoundKeymapEntry8* KeymapTable;
+    s32 SomeIndexRelatedToSpuVoiceInfo;
+    u32 NoiseChannelFlags;
+    u32 ReverbChannelFlags;
+    u32 FmChannelFlags;
+    s32 RevDepth;
+    s32 ReverbDepthSlideStep;
+    u32 A_Volume;
+    s32 A_Step;
+    s16 A_StepsRemaining;
+    undefined field24_0x5e;
+    undefined field25_0x5f;
+    u32 B_Volume;
+    s32 B_Step;
+    s16 B_StepsRemaining;
+    s16 ReverbDepthSlideLength;
+    u16 TempoSlideLength;
+    u16 MusicId;
+    s16 field32_0x70;
+    u16 NoiseClock;
+    s16 TimerUpper;
+    s16 TimerUpperCurrent;
+    s16 TimerLower;
+    s16 TimerLowerCurrent;
+    s16 TimerTopCurrent;
+    undefined field39_0x7e;
+    undefined field40_0x7f;
+} FSoundChannelConfig;
+
+
 #define SEMITONES_IN_OCTAVE (12)
 
 // Semitone pitch multipliers (fixed-point, 0x1000 = 1.0)
-extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
+// extern const s32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
 // Only referenced in SoundVM functions - maybe move there if we process the sound VM in that source file
 /* {
     0x00001000,  // C  - base pitch (1.0)
@@ -279,16 +438,28 @@ extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
     0x00001E34   // B  - 2^(11/12)
 }; */
 
-extern s16 D_80092A64;
-extern s32 g_CdVolume;
-extern FSoundInstrumentInfo g_InstrumentInfo[256];
+typedef struct
+{
+    u32 unk0;
+} FMusicSequence;
 
+// Sound
 void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeScale );
 void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams );
-void UpdateCdVolume();
-void Sound_CopyInstrumentInfoToChannel( FSoundChannel* in_pChannel, FSoundInstrumentInfo* in_pInstrumentInfo, u32 in_StartAddress );
 
+// Sound 2
+u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_Channel );
+void Sound_SetMusicSequence( FMusicSequence *in_Sequence,int in_SwapWithSavedState );
+
+// Sound 3
+void UpdateCdVolume();
+void memcpy32( void* in_Src, void* in_Dst, uint in_Size );
+void memswap32( void* in_A, void* in_B, uint in_Size );
+void Sound_CopyInstrumentInfoToChannel( FSoundChannel* in_pChannel, FSoundInstrumentInfo* in_pInstrumentInfo, u32 in_StartAddress );
+void Sound_ClearVoiceFromSchedulerState( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+
+// SoundVM
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE00_80053F3C( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE01_80053f88( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
@@ -301,7 +472,7 @@ void SoundVM_FE0F_800541d4( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE12_80054208( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_A9_ChannelVolumeSlides( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A9_ChannelVolumeSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE19_80054348( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1A_800543d8( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1B_800543ec( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
@@ -383,7 +554,24 @@ void SoundVM_E0_80055944( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1C_80055958( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1D_8005596c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1E_8005598c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_E1_SetVibratoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_E2_ResetVibratoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E1_SetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_E2_ResetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE13_800559d0( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_XX_Unimplemented( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+
+extern u32 g_Sound_ProgramCounter;
+extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
+extern FSoundChannel g_ActiveMusicChannels[0x20];
+extern FSoundChannel* g_pSecondaryMusicChannels;
+extern FSoundChannelConfig* g_pSavedMousicConfig; // What even is this used for
+extern FSoundChannelConfig g_PushedMusicConfig;
+extern FSoundInstrumentInfo g_InstrumentInfo[256];
+extern u32 g_Music_LoopCounter;
+extern bool g_bSpuTransferring;
+extern FSoundChannelConfig* g_pActiveMusicConfig;
+extern s16 D_80092A64;
+extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
+extern s32 g_CdVolume;
+extern FSoundChannel g_PushedMusicChannels[0x20];
+extern FSoundGlobalFlags g_Sound_GlobalFlags;
+extern FSound80094FA0 D_80094FA0;

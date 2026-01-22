@@ -10,9 +10,9 @@ void UpdateCdVolume()
     *CD_VOL_R = (s16*)D_80092AFA;
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", func_80051E84);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", memcpy32);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", func_80051F04);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", memswap32);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", func_80051F7C);
 
@@ -38,4 +38,4 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", Sound_CopyInstrumentIn
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", func_80053DC4);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", func_80053DFC);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", Sound_ClearVoiceFromSchedulerState);
