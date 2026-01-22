@@ -32,7 +32,16 @@ void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE00_80053F3C);
+void SoundVM_FE00_80053F3C( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s32 temp_v1;
+
+    temp_v1 = in_pChannel->ProgramCounter[0] << 0x10;
+    g_pActiveMusicConfig->Tempo = temp_v1;
+    g_pActiveMusicConfig->Tempo = temp_v1 | in_pChannel->ProgramCounter[1] << 0x18;
+    in_pChannel->ProgramCounter += 2;
+    g_pActiveMusicConfig->TempoSlideLength = 0;
+}
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE01_80053f88);
 
