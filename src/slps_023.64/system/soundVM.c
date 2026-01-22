@@ -630,8 +630,34 @@ void SoundVM_C8_LoopPoint( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_C9_LoopN);
+// Is there a bug in this? It appears as though it loops one fewer times than specified...
+void SoundVM_C9_LoopN( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 NewCount;
+    u16 TopIndex;
+    u16 DesiredLoopCount;
 
+    DesiredLoopCount = *in_pChannel->ProgramCounter++;
+    if( DesiredLoopCount == 0 )
+    {
+        DesiredLoopCount = 0x100;
+    }
+
+    TopIndex = in_pChannel->LoopStackTop;
+    NewCount = in_pChannel->LoopIterationCount[TopIndex] + 1;
+    in_pChannel->LoopIterationCount[TopIndex] = NewCount;
+
+    if( NewCount != DesiredLoopCount )
+    {
+        in_pChannel->ProgramCounter = in_pChannel->LoopStartPc[in_pChannel->LoopStackTop];
+        in_pChannel->OpcodeStepCounter = in_pChannel->LoopStepCounterSnapshot[in_pChannel->LoopStackTop];
+        return;
+    }
+
+    in_pChannel->LoopStackTop = (in_pChannel->LoopStackTop - 1) & SOUND_LOOP_STACK_MAX_INDEX;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE08_80055480);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE09_800554ec);
