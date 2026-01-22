@@ -306,7 +306,7 @@ typedef struct
     /* 0x096 */ u16  VolumeBalance; /* Volume is set by "volume << 8" */
     /* 0x098 */ s16  VolumeBalanceSlideLength;
     /* 0x09A */ s16  field57_0x9a;
-    /* 0x09C */ s16  ChannelVolumeSlideLength;
+    /* 0x09C */ u16  ChannelVolumeSlideLength;
     /* 0x09E */ s16  field59_0x9e;
     /* 0x0A0 */ s16  field60_0xa0;
     /* 0x0A2 */ u16  ChannelPan;
@@ -476,7 +476,7 @@ void SoundVM_FE0F_800541d4( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE12_80054208( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_A9_ChannelVolumeSlides( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_A9_ChannelVolumeSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE19_80054348( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1A_800543d8( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE1B_800543ec( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
