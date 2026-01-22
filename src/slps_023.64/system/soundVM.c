@@ -151,7 +151,19 @@ void SoundVM_C1_ChannelTranspose_Relative( FSoundChannel* in_pChannel, u32 in_Vo
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A4_PitchBendSlide);
+void SoundVM_A4_PitchBendSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Length;
+
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->PitchBendSlideLength = Length;
+    if( Length == 0 )
+    {
+        in_pChannel->ChannelPanSlideLength = 0x100;
+    }
+    
+    in_pChannel->PitchBendSlideTranspose = (s8)*in_pChannel->ProgramCounter++;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_DA_EnablePortamento(FSoundChannel* in_pChannel, u32 in_VoiceFlags) {
