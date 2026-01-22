@@ -307,7 +307,7 @@ typedef struct
     /* 0x098 */ s16  VolumeBalanceSlideLength;
     /* 0x09A */ s16  field57_0x9a;
     /* 0x09C */ u16  ChannelVolumeSlideLength;
-    /* 0x09E */ s16  field59_0x9e;
+    /* 0x09E */ s16  KeyOnVolumeRampLength;
     /* 0x0A0 */ s16  field60_0xa0;
     /* 0x0A2 */ u16  ChannelPan;
     /* 0x0A4 */ u16  ChannelPanSlideLength;

@@ -38,7 +38,7 @@ void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->Volume = (s8) *in_pChannel->ProgramCounter++ << 0x17;
     in_pChannel->ChannelVolumeSlideLength = 0;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
-    in_pChannel->field59_0x9e = 0;
+    in_pChannel->KeyOnVolumeRampLength = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ void SoundVM_A9_ChannelVolumeSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlag
     Delta = Dest - Prev;
     in_pChannel->VolumeSlideStep = Delta / in_pChannel->ChannelVolumeSlideLength;
 
-    in_pChannel->field59_0x9e = 0;
+    in_pChannel->KeyOnVolumeRampLength = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
