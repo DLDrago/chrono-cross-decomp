@@ -221,12 +221,24 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DE_TremeloDep
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E5_80054c00);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BA_DisableTremelo);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_BA_DisableTremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->TremeloVolume = 0;
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_TREMOLO;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BC_ChannelPanLfo);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BD_ChannelLfoDepth);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_BD_ChannelLfoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->PanLfoDepth = *in_pChannel->ProgramCounter++ << 7;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_DF_ChannelPanLfoDepthSlide);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E6_80054d84);
@@ -332,8 +344,7 @@ void SoundVM_CC_EnableLegato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_CD_DEBUG_80055078( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {
-}
+void SoundVM_CD_DEBUG_80055078( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_D0_EnableSustainedNote( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -345,8 +356,7 @@ void SoundVM_D0_EnableSustainedNote( FSoundChannel* in_pChannel, u32 in_VoiceFla
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_D1_DEBUG_8005509c( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {
-}
+void SoundVM_D1_DEBUG_8005509c( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AC_NoiseClockFrequency);
@@ -358,7 +368,7 @@ void SoundVM_AD_AttackRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_ATTACK_RATE_MASK;
     in_pChannel->VoiceParams.AdsrLower |= AttackRate << SOUND_ADSR_ATTACK_RATE_SHIFT;
     in_pChannel->VoiceParams.VoiceParamFlags |= (VOICE_PARAM_ADSR_AMODE | VOICE_PARAM_ADSR_AR);
-    in_pChannel->UpdateFlags |= 0x01000000;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_24;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -571,14 +581,31 @@ void SoundVM_CB_DisableVoiceModes( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D4_EnablePlaybackRateSidechain);
+void SoundVM_D4_EnablePlaybackRateSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_SIDE_CHAIN_PITCH;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D5_DisablePlaybackRateSidechain);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_D5_DisablePlaybackRateSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_SIDE_CHAIN_PITCH;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D6_EnablePitchVolumeSidechain);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_D6_EnablePitchVolumeSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_SIDE_CHAIN_VOL;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_D7_DisablePitchVolumeSidechain);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_D7_DisablePitchVolumeSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->UpdateFlags &= ~SOUND_UPDATE_SIDE_CHAIN_VOL;
+}
 
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0B_800558cc);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E0_80055944);
