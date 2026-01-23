@@ -253,8 +253,7 @@ typedef struct
 {
     /* 0x000 */ u8*  ProgramCounter;
     /* 0x004 */ u8*  LoopStartPc[SOUND_LOOP_STACK_SIZE];
-    /* 0x014 */ u16  field6_0x14;
-    /* 0x016 */ u16  field7_0x16;
+    /* 0x014 */ u8*  ReturnProgramCounter;
     /* 0x018 */ s16  field8_0x18;
     /* 0x01A */ s16  field9_0x1a;
     /* 0x01C */ s16* VibratoWave;
@@ -465,9 +464,9 @@ void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE01_SetTempoSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE02_80054028( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE06_JumpToOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE06_JumpRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE07_80054144( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE0E_8005419c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE0E_CallRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE0F_800541d4( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE12_80054208( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
