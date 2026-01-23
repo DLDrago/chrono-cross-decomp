@@ -6,16 +6,42 @@
 
 extern u32 D_80072E60[];
 
-
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
+    {
+        g_pActiveMusicConfig->ActiveChannelMask &= ~in_VoiceFlags;
+        if( g_pActiveMusicConfig->ActiveChannelMask == 0 )
+        {
+            g_Music_LoopCounter = 0;
+            g_pActiveMusicConfig->MusicId = 0;
+            g_pActiveMusicConfig->StatusFlags = 0;
+        }
+        g_pActiveMusicConfig->ActiveNoteMask     &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->KeyedMask          &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->AllocatedVoiceMask &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->NoiseChannelFlags  &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->ReverbChannelFlags &= ~in_VoiceFlags;
+        g_pActiveMusicConfig->FmChannelFlags     &= ~in_VoiceFlags;
+    }
+    else
+    {
+        Sound_ClearVoiceFromSchedulerState( in_pChannel, in_VoiceFlags );
+    }
+    in_pChannel->UpdateFlags = 0;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A0_FinishChannel);
+void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    g_pActiveMusicConfig->Tempo =  in_pChannel->ProgramCounter[0] << 0x10;
+    g_pActiveMusicConfig->Tempo |= in_pChannel->ProgramCounter[1] << 0x18;
+    in_pChannel->ProgramCounter += 2;
+    g_pActiveMusicConfig->TempoSlideLength = 0;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE00_80053F3C);
-
-<<<<<<< Updated upstream
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE01_80053f88);
-=======
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_FE01_80053f88( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
@@ -24,7 +50,6 @@ void SoundVM_FE01_80053f88( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     s32 Dest;
     s32 Prev;
     s32 Delta;
->>>>>>> Stashed changes
 
     SlideLength = *in_pChannel->ProgramCounter++;
     g_pActiveMusicConfig->TempoSlideLength = SlideLength;
