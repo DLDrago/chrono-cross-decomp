@@ -43,7 +43,26 @@ void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE01_SetTempoSlide);
+void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u32 in_VoiceFlags)
+{
+    u8* pc;
+    s32 Dest;
+    s32 Prev;
+    s32 Delta;
+
+    if((g_pActiveMusicConfig->TempoSlideLength = *in_pChannel->ProgramCounter++) == 0 )
+    {
+        g_pActiveMusicConfig->TempoSlideLength = 0x100;
+    }
+    pc = in_pChannel->ProgramCounter;
+    Dest = pc[0] << 0x10;
+    Dest |= pc[1] << 0x18;
+    in_pChannel->ProgramCounter += 2;
+    Prev = g_pActiveMusicConfig->Tempo & 0xFFFF0000;
+    Delta = Dest - Prev;
+    g_pActiveMusicConfig->TempoSlideStep = Delta / g_pActiveMusicConfig->TempoSlideLength;
+    g_pActiveMusicConfig->Tempo = Prev;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE02_SetMasterReverbDepth);
@@ -839,7 +858,7 @@ void SoundVM_DC_FixNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE04_8005562c( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE04_ClearKeymapTable( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     if( g_pActiveMusicConfig->KeymapTable != NULL )
     {
