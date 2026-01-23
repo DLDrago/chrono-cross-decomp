@@ -481,7 +481,7 @@ void SoundVM_A5_SetOctave( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A6_IncreaseOctave( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A7_DecreaseOctave( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A1_LoadInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE0A_80054580( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE0A_ClearInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE14_800545ec( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_B3_ResetAdsr( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_C0_ChannelTranspose_Absolute( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
