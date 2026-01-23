@@ -6,6 +6,8 @@
 
 #define READ_16LE_PC(pc) ((pc[0]) | (pc[1] << 8))
 
+extern u32 D_80072E60[];
+
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
