@@ -70,7 +70,7 @@ void SoundVM_FE01_SetTempoSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE02_80054028);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE02_SetMasterReverbDepth);
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -103,14 +103,14 @@ void SoundVM_FE06_JumpRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFl
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE07_80054144( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE07_JumpRelativeWithThreshold( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     s16 Threshold;
     s16 Offset;
 
     Threshold = *in_pChannel->ProgramCounter++;
 
-    if( g_pActiveMusicConfig->field32_0x70 >= Threshold )
+    if( g_pActiveMusicConfig->JumpThresholdValue >= Threshold )
     {
         // Read signed 16-bit LE offset at current pc, jump relative to pc
         Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
@@ -144,7 +144,7 @@ void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFla
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE12_80054208);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE12_VolumeBalanceSlide);
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -267,8 +267,24 @@ void SoundVM_A1_LoadInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0A_80054580);
+void SoundVM_FE0A_ClearInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Index;
 
+    Index = *in_pChannel->ProgramCounter++;
+    Sound_CopyInstrumentInfoToChannel(in_pChannel, &g_InstrumentInfo[Index], 0x1010U);
+    in_pChannel->InstrumentIndex = Index;
+    in_pChannel->VoiceParams.VolumeScale = 0;
+    in_pChannel->UpdateFlags &= ~(
+        SOUND_UPDATE_DRUM_MODE  |
+        SOUND_UPDATE_UNKNOWN_12 |
+        SOUND_UPDATE_UNKNOWN_24 |
+        SOUND_UPDATE_UNKNOWN_27 |
+        SOUND_UPDATE_UNKNOWN_28
+    );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE14_800545ec);
 
 //----------------------------------------------------------------------------------------------------------------------
