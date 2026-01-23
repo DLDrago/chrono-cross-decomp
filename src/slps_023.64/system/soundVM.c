@@ -568,7 +568,35 @@ void SoundVM_D0_EnableSustainedNote( FSoundChannel* in_pChannel, u32 in_VoiceFla
 void SoundVM_D1_DEBUG_8005509c( FSoundChannel* in_pChannel, u32 in_VoiceFlags ) {}
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_AC_NoiseClockFrequency);
+void SoundVM_AC_NoiseClockFrequency( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Frequency;
+
+    Frequency = *in_pChannel->ProgramCounter++;
+    if( in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC )
+    {
+        if( Frequency & 0xC0 )
+        {
+            g_pActiveMusicConfig->NoiseClock = (g_pActiveMusicConfig->NoiseClock + (Frequency & 0x3F)) & 0x3F;
+        }
+        else
+        {
+            g_pActiveMusicConfig->NoiseClock = Frequency;
+        }
+    }
+    else
+    {
+        if( Frequency & 0xC0 )
+        {
+            g_Sound_VoiceSchedulerState.NoiseClock = (g_Sound_VoiceSchedulerState.NoiseClock + (Frequency & 0x3F)) & 0x3F;
+        }
+        else
+        {
+            g_Sound_VoiceSchedulerState.NoiseClock = Frequency;
+        }
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_UPDATE_SIDE_CHAIN_PITCH;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_AD_AttackRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
