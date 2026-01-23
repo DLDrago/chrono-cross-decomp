@@ -335,7 +335,7 @@ typedef struct
     /* 0x0E6 */ u16  RandomPitchDepth;
     /* 0x0E8 */ s16  LengthStored;
     /* 0x0EA */ u16  LengthFixed;
-    /* 0x0EC */ s16  field98_0xec;
+    /* 0x0EC */ s16  VolumeBalanceSlideStep;
     /* 0x0EE */ s16  field99_0xee;
     /* 0x0F0 */ u16  field100_0xf0;
     /* 0x0F2 */ u8   field101_0xf2;
@@ -469,7 +469,7 @@ void SoundVM_FE07_JumpRelativeWithThreshold( FSoundChannel* in_pChannel, u32 in_
 void SoundVM_FE0E_CallRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE0F_Return( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE12_80054208( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE12_VolumeBalanceSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A9_ChannelVolumeSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE19_80054348( FSoundChannel* in_pChannel, u32 in_VoiceFlags );

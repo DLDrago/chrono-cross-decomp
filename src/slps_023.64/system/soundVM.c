@@ -120,7 +120,7 @@ void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFla
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE12_80054208);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE12_VolumeBalanceSlide);
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
