@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - nonmatching
+      - master
   pull_request:
   workflow_dispatch:
 
@@ -78,12 +78,12 @@ jobs:
       #   continue-on-error: true  # Don't fail workflow if not matching
 
       - name: Generate progress report
-        # Only generate on nonmatching branch pushes
-        if: github.ref == 'refs/heads/nonmatching' && github.event_name == 'push'
+        # Only generate on master branch pushes
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: make report
 
       - name: Upload progress report
-        if: github.ref == 'refs/heads/nonmatching' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.game_id }}_report
