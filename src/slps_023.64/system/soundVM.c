@@ -43,7 +43,7 @@ void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE01_80053f88( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE01_SetTempoSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u8* pc;
     u16 SlideLength;
