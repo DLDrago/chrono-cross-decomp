@@ -481,7 +481,7 @@ Sound_ClearVoiceFromSchedulerState  = 0x80053DFC;
 // SoundVM
 SoundVM_A0_FinishChannel                = 0x80053E68;
 SoundVM_FE00_SetTempo                   = 0x80053F3C;
-SoundVM_FE01_80053f88                   = 0x80053F88;
+SoundVM_FE01_SetTempoSlide              = 0x80053F88;
 SoundVM_FE02_80054028                   = 0x80054028;
 SoundVM_FE03_80054070                   = 0x80054070;
 SoundVM_FE06_80054118                   = 0x80054118;
