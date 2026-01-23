@@ -2,29 +2,33 @@ name: Merge master into nonmatching
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
+
+permissions:
+  contents: write
 
 jobs:
   merge:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Fetch all branches
+        run: git fetch --all --prune
+
       - name: Merge master into nonmatching
         run: |
           git checkout nonmatching
           git merge origin/master --no-edit
 
-      - name: Push changes
-        run: |
-          git push origin nonmatching
+      - name: Push
+        run: git push origin nonmatching
