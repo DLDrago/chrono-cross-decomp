@@ -4,6 +4,8 @@
 #define SOUND_DEFAULT_PORTAMENTO_STEPS (0x100) // 256 steps
 #define SOUND_DEFAULT_DELAY_TIME       (0x101) // 256 + 1
 
+#define READ_16LE_PC(pc) ((pc[0]) | (pc[1] << 8))
+
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
@@ -28,7 +30,7 @@ void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
         Sound_ClearVoiceFromSchedulerState( in_pChannel, in_VoiceFlags );
     }
     in_pChannel->UpdateFlags = 0;
-    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+    g_Sound_GlobalFlags.UpdateFlags |= ((1 << 4) | (1 << 8));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -36,7 +38,7 @@ void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     g_pActiveMusicConfig->Tempo =  in_pChannel->ProgramCounter[0] << 0x10;
     g_pActiveMusicConfig->Tempo |= in_pChannel->ProgramCounter[1] << 0x18;
-    in_pChannel->ProgramCounter += 2;
+    in_pChannel->ProgramCounter += sizeof(s16);
     g_pActiveMusicConfig->TempoSlideLength = 0;
 }
 
@@ -71,54 +73,49 @@ void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_Voice
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_FE06_JumpRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    s16 Offset;
-
-    Offset = in_pChannel->ProgramCounter[0];
-    Offset |= in_pChannel->ProgramCounter[1] << 8;
-
+    s16 Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
     in_pChannel->ProgramCounter += Offset;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_FE07_80054144( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    s8* pc1;
-    u8* pc2;
-    u8* uhm;
+    s16 Threshold;
+    s16 Offset;
 
-    pc1 = in_pChannel->ProgramCounter;
-    pc2 = pc1 + 1;
-    uhm = pc2 + 1;
-    in_pChannel->ProgramCounter = pc2;
-    if ((s32) (u16) g_pActiveMusicConfig->field32_0x70 >= (s32) *pc1)
+    Threshold = *in_pChannel->ProgramCounter++;
+
+    if( g_pActiveMusicConfig->field32_0x70 >= Threshold )
     {
-        in_pChannel->ProgramCounter = &pc2[(s16) (uhm[0] | (uhm[1] << 8))];
+        // Read signed 16-bit LE offset at current pc, jump relative to pc
+        Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
+        in_pChannel->ProgramCounter += Offset;
         return;
     }
-    in_pChannel->ProgramCounter = &uhm[2];
+
+    // Skip over the 16-bit offset operand
+    in_pChannel->ProgramCounter += sizeof(s16);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_FE0E_CallRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    s16 Offset;
-
-    Offset = in_pChannel->ProgramCounter[0];
-    Offset |= in_pChannel->ProgramCounter[1] << 8;
-
-    in_pChannel->ReturnProgramCounter = in_pChannel->ProgramCounter + 2;
-
+    s16 Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
+    in_pChannel->ReturnProgramCounter = in_pChannel->ProgramCounter + sizeof(s16);
     in_pChannel->ProgramCounter += Offset;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0F_800541d4);
+void SoundVM_FE0F_Return( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    in_pChannel->ProgramCounter = in_pChannel->ReturnProgramCounter;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     in_pChannel->VolumeBalance = *in_pChannel->ProgramCounter++ << 8;
-    in_pChannel->VoiceParams.VoiceParamFlags |= SOUND_UPDATE_SPU_VOICE;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -179,7 +176,7 @@ void SoundVM_AA_ChannelPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     // Convert signed pan (-64..+63) to unsigned 0..255, center at 0x40 and store as Q8.8 pan value
     in_pChannel->ChannelPan = ((*in_pChannel->ProgramCounter++ + 0x40) & 0xFF) << 8;
     in_pChannel->ChannelPanSlideLength = 0;
-    in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -654,7 +651,7 @@ void SoundVM_AC_NoiseClockFrequency( FSoundChannel* in_pChannel, u32 in_VoiceFla
             g_Sound_VoiceSchedulerState.NoiseClock = Frequency;
         }
     }
-    g_Sound_GlobalFlags.UpdateFlags |= SOUND_UPDATE_SIDE_CHAIN_PITCH;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x10;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
