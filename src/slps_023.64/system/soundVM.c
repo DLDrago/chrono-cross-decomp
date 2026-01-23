@@ -94,7 +94,7 @@ void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_Voice
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE06_JumpToOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE06_JumpRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     s16 Offset;
 
@@ -105,10 +105,38 @@ void SoundVM_FE06_JumpToOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE07_80054144);
+void SoundVM_FE07_80054144( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s8* pc1;
+    u8* pc2;
+    u8* uhm;
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0E_8005419c);
+    pc1 = in_pChannel->ProgramCounter;
+    pc2 = pc1 + 1;
+    uhm = pc2 + 1;
+    in_pChannel->ProgramCounter = pc2;
+    if ((s32) (u16) g_pActiveMusicConfig->field32_0x70 >= (s32) *pc1)
+    {
+        in_pChannel->ProgramCounter = &pc2[(s16) (uhm[0] | (uhm[1] << 8))];
+        return;
+    }
+    in_pChannel->ProgramCounter = &uhm[2];
+}
 
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_FE0E_CallRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s16 Offset;
+
+    Offset = in_pChannel->ProgramCounter[0];
+    Offset |= in_pChannel->ProgramCounter[1] << 8;
+
+    in_pChannel->ReturnProgramCounter = in_pChannel->ProgramCounter + 2;
+
+    in_pChannel->ProgramCounter += Offset;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0F_800541d4);
 
 //----------------------------------------------------------------------------------------------------------------------
