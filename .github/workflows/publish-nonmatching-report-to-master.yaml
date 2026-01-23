@@ -50,10 +50,10 @@ jobs:
           echo "Unzipped contents:"
           find pulled -maxdepth 3 -type f -print
 
-          test -f pulled/build/progress.json
+          test -f pulled/progress.json
 
       - name: Re-upload progress report from master (for decomp.dev)
         uses: actions/upload-artifact@v4
         with:
           name: slps_023.64_report
-          path: pulled/build/progress.json
+          path: pulled/progress.json
