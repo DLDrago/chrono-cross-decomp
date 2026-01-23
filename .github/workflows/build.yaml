@@ -72,9 +72,10 @@ jobs:
       - name: Build source objects
         run: make build
 
-      - name: Check for match
-        run: make check
-        continue-on-error: true  # Don't fail workflow if not matching
+      # Don't run a check while we're generating fuzzy progress from nonmatching branch
+      # - name: Check for match
+      #   run: make check
+      #   continue-on-error: true  # Don't fail workflow if not matching
 
       - name: Generate progress report
         # Only generate on nonmatching branch pushes
