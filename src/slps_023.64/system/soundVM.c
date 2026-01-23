@@ -45,7 +45,8 @@ void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE01_SetTempoSlide);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE02_80054028);
+//----------------------------------------------------------------------------------------------------------------------
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE02_SetMasterReverbDepth);
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -78,14 +79,14 @@ void SoundVM_FE06_JumpRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFl
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE07_80054144( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE07_JumpRelativeWithThreshold( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     s16 Threshold;
     s16 Offset;
 
     Threshold = *in_pChannel->ProgramCounter++;
 
-    if( g_pActiveMusicConfig->field32_0x70 >= Threshold )
+    if( g_pActiveMusicConfig->JumpThresholdValue >= Threshold )
     {
         // Read signed 16-bit LE offset at current pc, jump relative to pc
         Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
