@@ -1,0 +1,59 @@
+name: Publish nonmatching report to master
+
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  republish:
+    if: >
+      github.repository == 'jdperos/chrono-cross-decomp' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'nonmatching'
+    runs-on: ubuntu-latest
+
+    steps:
+      # This workflow file lives on master, but we make it explicit
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Download progress artifact from the nonmatching Build run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          echo "Looking for slps_023.64_report on run $RUN_ID in $REPO"
+
+          ART_ID=$(gh api "repos/$REPO/actions/runs/$RUN_ID/artifacts" \
+            --jq '.artifacts[] | select(.name=="slps_023.64_report") | .id')
+
+          if [ -z "$ART_ID" ]; then
+            echo "Artifact slps_023.64_report not found!"
+            gh api "repos/$REPO/actions/runs/$RUN_ID/artifacts" --jq '.artifacts[].name'
+            exit 1
+          fi
+
+          echo "Found artifact id: $ART_ID"
+          gh api "repos/$REPO/actions/artifacts/$ART_ID/zip" > report.zip
+
+          mkdir -p pulled
+          unzip -q report.zip -d pulled
+          echo "Unzipped contents:"
+          find pulled -maxdepth 3 -type f -print
+
+          test -f pulled/build/progress.json
+
+      - name: Re-upload progress report from master (for decomp.dev)
+        uses: actions/upload-artifact@v4
+        with:
+          name: slps_023.64_report
+          path: pulled/build/progress.json
