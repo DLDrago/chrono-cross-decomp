@@ -405,7 +405,7 @@ typedef struct
     s16 ReverbDepthSlideLength;
     u16 TempoSlideLength;
     u16 MusicId;
-    s16 field32_0x70;
+    u16 field32_0x70;
     u16 NoiseClock;
     s16 TimerUpper;
     s16 TimerUpperCurrent;
@@ -467,7 +467,7 @@ void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_Voice
 void SoundVM_FE06_JumpRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE07_80054144( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE0E_CallRelativeOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE0F_800541d4( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE0F_Return( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE12_80054208( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
