@@ -70,8 +70,30 @@ void SoundVM_FE01_SetTempoSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE02_80054028);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE03_80054070);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s32 Prev;
+    s32 Dest;
+    s32 Delta;
+    s8* pc;
 
+    g_pActiveMusicConfig->ReverbDepthSlideLength = *in_pChannel->ProgramCounter++;
+    if( g_pActiveMusicConfig->ReverbDepthSlideLength == 0 )
+    {
+        g_pActiveMusicConfig->ReverbDepthSlideLength = 0x100;
+    }
+    pc = in_pChannel->ProgramCounter;
+    Dest = pc[1] << 0x14;
+    Dest |= (u8)pc[0] << 0xC;
+    in_pChannel->ProgramCounter += 2;
+    Prev = g_pActiveMusicConfig->RevDepth & ~0xFFF;
+    g_pActiveMusicConfig->RevDepth = Prev;
+    Delta = Dest - Prev;
+    g_pActiveMusicConfig->ReverbDepthSlideStep = Delta / g_pActiveMusicConfig->ReverbDepthSlideLength;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE06_80054118);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE07_80054144);
