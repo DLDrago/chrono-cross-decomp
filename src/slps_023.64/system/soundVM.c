@@ -251,8 +251,24 @@ void SoundVM_A1_LoadInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0A_80054580);
+void SoundVM_FE0A_ClearInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Index;
 
+    Index = *in_pChannel->ProgramCounter++;
+    Sound_CopyInstrumentInfoToChannel(in_pChannel, &g_InstrumentInfo[Index], 0x1010U);
+    in_pChannel->InstrumentIndex = Index;
+    in_pChannel->VoiceParams.VolumeScale = 0;
+    in_pChannel->UpdateFlags &= ~(
+        SOUND_UPDATE_DRUM_MODE  |
+        SOUND_UPDATE_UNKNOWN_12 |
+        SOUND_UPDATE_UNKNOWN_24 |
+        SOUND_UPDATE_UNKNOWN_27 |
+        SOUND_UPDATE_UNKNOWN_28
+    );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE14_800545ec);
 
 //----------------------------------------------------------------------------------------------------------------------
