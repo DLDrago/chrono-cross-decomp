@@ -45,17 +45,14 @@ void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE01_SetTempoSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u32 in_VoiceFlags)
 {
     u8* pc;
-    u16 SlideLength;
     s32 Dest;
     s32 Prev;
     s32 Delta;
 
-    SlideLength = *in_pChannel->ProgramCounter++;
-    g_pActiveMusicConfig->TempoSlideLength = SlideLength;
-    if( SlideLength == 0 )
+    if((g_pActiveMusicConfig->TempoSlideLength = *in_pChannel->ProgramCounter++) == 0 )
     {
         g_pActiveMusicConfig->TempoSlideLength = 0x100;
     }
@@ -929,7 +926,7 @@ void SoundVM_DC_FixNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE04_8005562c( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE04_ClearKeymapTable( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     if( g_pActiveMusicConfig->KeymapTable != NULL )
     {

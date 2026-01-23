@@ -534,7 +534,7 @@ void SoundVM_FE09_800554ec( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_CA_LoopInf( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A2_OverwriteNextNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_DC_FixNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE04_8005562c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE04_ClearKeymapTable( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE05_80055664( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE15_8005567c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE16_800556b4( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
