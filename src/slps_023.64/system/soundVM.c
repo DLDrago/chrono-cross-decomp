@@ -13,8 +13,36 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_A0_FinishChan
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE00_80053F3C);
 
+<<<<<<< Updated upstream
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE01_80053f88);
+=======
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_FE01_80053f88( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u8* pc;
+    u16 SlideLength;
+    s32 Dest;
+    s32 Prev;
+    s32 Delta;
+>>>>>>> Stashed changes
 
+    SlideLength = *in_pChannel->ProgramCounter++;
+    g_pActiveMusicConfig->TempoSlideLength = SlideLength;
+    if( SlideLength == 0 )
+    {
+        g_pActiveMusicConfig->TempoSlideLength = 0x100;
+    }
+    pc = in_pChannel->ProgramCounter;
+    Dest = pc[0] << 0x10;
+    Dest |= pc[1] << 0x18;
+    in_pChannel->ProgramCounter += 2;
+    Prev = g_pActiveMusicConfig->Tempo & 0xFFFF0000;
+    Delta = Dest - Prev;
+    g_pActiveMusicConfig->TempoSlideStep = Delta / g_pActiveMusicConfig->TempoSlideLength;
+    g_pActiveMusicConfig->Tempo = Prev;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE02_80054028);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE03_80054070);
