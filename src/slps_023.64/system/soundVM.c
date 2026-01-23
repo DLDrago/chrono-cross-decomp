@@ -94,8 +94,17 @@ void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_Voice
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE06_80054118);
+void SoundVM_FE06_JumpToOffset( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    s16 Offset;
 
+    Offset = in_pChannel->ProgramCounter[0];
+    Offset |= in_pChannel->ProgramCounter[1] << 8;
+
+    in_pChannel->ProgramCounter += Offset;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE07_80054144);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0E_8005419c);
