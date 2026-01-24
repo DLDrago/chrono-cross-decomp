@@ -446,7 +446,20 @@ void SoundVM_DD_VibratoDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E4_VibratoRateSlide);
+void SoundVM_E4_VibratoRateSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Length;
+    u16 Target;
+
+    Length = *in_pChannel->ProgramCounter++;
+    if( Length == 0 )
+    {
+        Length = 0x100;
+    }
+    in_pChannel->VibratoRateSlideLength = Length;
+    Target = *in_pChannel->ProgramCounter++;
+    in_pChannel->VibratoRateSlideStep = Sound_ComputeSlideStep( &in_pChannel->VibratoRatePhase, Target, Length, 0xAU );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B6_DisableVibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
