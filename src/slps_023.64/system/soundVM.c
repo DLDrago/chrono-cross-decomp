@@ -497,31 +497,31 @@ void SoundVM_BA_DisableTremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 extern u32 D_80072E60[];
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_BC_ChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_BC_AutoPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     s32 Rate;
 
     in_pChannel->UpdateFlags |= 4;
     Rate = *in_pChannel->ProgramCounter++ << 0xA;
-    in_pChannel->PanLfoRatePhase = Rate;
+    in_pChannel->AutoPanRatePhase = Rate;
     if( Rate == 0 )
     {
-        in_pChannel->PanLfoRatePhase = 0x40000;
+        in_pChannel->AutoPanRatePhase = 0x40000;
     }
-    in_pChannel->PanLfoType = *in_pChannel->ProgramCounter++;
-    in_pChannel->PanLfoWave = D_80072E60[in_pChannel->PanLfoType];
-    in_pChannel->PanLfoRateCurrent = 1;
-    in_pChannel->PanLfoRateSlideLength = 0;
+    in_pChannel->AutoPanType = *in_pChannel->ProgramCounter++;
+    in_pChannel->AutoPanWave = D_80072E60[in_pChannel->AutoPanType];
+    in_pChannel->AutoPanRateCurrent = 1;
+    in_pChannel->AutoPanRateSlideLength = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_BD_ChannelLfoDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_BD_AutoPanDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    in_pChannel->PanLfoDepth = *in_pChannel->ProgramCounter++ << 7;
+    in_pChannel->AutoPanDepth = *in_pChannel->ProgramCounter++ << 7;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_DF_ChannelPanLfoDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_DF_AutoPanDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u16 Length;
     u16 Prev;
@@ -534,20 +534,20 @@ void SoundVM_DF_ChannelPanLfoDepthSlide( FSoundChannel* in_pChannel, u32 in_Voic
     }
     Dest = *in_pChannel->ProgramCounter++;
     Dest = Dest << 7;
-    Prev = in_pChannel->PanLfoDepth;
+    Prev = in_pChannel->AutoPanDepth;
 
     Delta = Dest - Prev;
-    in_pChannel->PanLfoDepthSlideStep = Delta / Length;
-    in_pChannel->PanLfoDepthSlideLength = Length;
+    in_pChannel->AutoPanDepthSlideStep = Delta / Length;
+    in_pChannel->AutoPanDepthSlideLength = Length;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E6_ChannelPanLfoRateSlide);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E6_AutoPanRateSlide);
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_BE_DisableChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_BE_DisableAutoPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    in_pChannel->PanLfoVolume = 0;
+    in_pChannel->AutoPanVolume = 0;
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_PAN_LFO;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
