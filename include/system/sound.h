@@ -293,7 +293,7 @@ typedef struct
     /* 0x086 */ u16  LoopIterationCount[SOUND_LOOP_STACK_SIZE];
     /* 0x08E */ s16  LoopStepCounterSnapshot[SOUND_LOOP_STACK_SIZE];
     /* 0x096 */ u16  VolumeBalance; /* Volume is set by "volume << 8" */
-    /* 0x098 */ s16  VolumeBalanceSlideLength;
+    /* 0x098 */ u16  VolumeBalanceSlideLength;
     /* 0x09A */ s16  field57_0x9a;
     /* 0x09C */ u16  ChannelVolumeSlideLength;
     /* 0x09E */ s16  KeyOnVolumeRampLength;
