@@ -871,8 +871,36 @@ void SoundVM_C9_LoopN( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE08_80055480);
+void SoundVM_FE08_JumpOnNthLoopPass( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 N;
+    s16 JumpOffset;
 
+    // pLoopCount   pOffset
+    // 0x01         0x02          0x03         0x04
+
+    N = *in_pChannel->ProgramCounter++;
+    if( N == 0 )
+    {
+        N = 0x100;
+    }
+
+    // If current loop's iteration + 1 != N
+    if( (in_pChannel->LoopIterationCount[ in_pChannel->LoopStackTop ] + 1) != N )
+    {
+        // Jumps to next program instruction
+        in_pChannel->ProgramCounter = in_pChannel->ProgramCounter + sizeof(u16);
+        return;
+    }
+
+    // Read the relative offset
+    JumpOffset = READ_16LE_PC(in_pChannel->ProgramCounter);
+    
+    // Jump from pOffset to the relative offset
+    in_pChannel->ProgramCounter += JumpOffset;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE09_800554ec);
 
 //----------------------------------------------------------------------------------------------------------------------

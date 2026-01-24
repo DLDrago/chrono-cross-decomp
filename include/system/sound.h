@@ -530,7 +530,7 @@ void SoundVM_FE10_8005536c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE11_8005538c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_C8_LoopPoint( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_C9_LoopN( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE08_80055480( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE08_JumpOnNthLoopPass( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE09_800554ec( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_CA_LoopInf( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A2_OverwriteNextNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
