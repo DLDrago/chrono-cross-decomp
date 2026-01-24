@@ -455,6 +455,7 @@ void Sound_SetMusicSequence( FMusicSequence *in_Sequence,int in_SwapWithSavedSta
 void UpdateCdVolume();
 void memcpy32( void* in_Src, void* in_Dst, uint in_Size );
 void memswap32( void* in_A, void* in_B, uint in_Size );
+s32 Sound_ComputeSlideStep( u32*, u8, s16, u32 );
 void Sound_CopyInstrumentInfoToChannel( FSoundChannel* in_pChannel, FSoundInstrumentInfo* in_pInstrumentInfo, u32 in_StartAddress );
 void Sound_ClearVoiceFromSchedulerState( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 
