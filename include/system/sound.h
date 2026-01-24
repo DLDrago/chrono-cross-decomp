@@ -267,7 +267,7 @@ typedef struct
     /* 0x03C */ s32  VibratoRateSlideStep;
     /* 0x040 */ u32  TremeloRatePhase;
     /* 0x044 */ s32  TremeloRateSlideStep;
-    /* 0x048 */ s32  AutoPanRatePhase;
+    /* 0x048 */ u32  AutoPanRatePhase;
     /* 0x04C */ s32  AutoPanRateSlideStep;
     /* 0x050 */ s16  field23_0x50;
     /* 0x052 */ s16  field24_0x52;
