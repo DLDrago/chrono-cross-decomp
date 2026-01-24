@@ -569,7 +569,20 @@ void SoundVM_DF_AutoPanDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E6_AutoPanRateSlide);
+void SoundVM_E6_AutoPanRateSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Length;
+    u16 Target;
+
+    Length = *in_pChannel->ProgramCounter++;
+    if( Length == 0 )
+    {
+        Length = 0x100;
+    }
+    in_pChannel->AutoPanRateSlideLength = Length;
+    Target = *in_pChannel->ProgramCounter++;
+    in_pChannel->AutoPanRateSlideStep = Sound_ComputeSlideStep( &in_pChannel->AutoPanRatePhase, Target, (s16) Length, 0xAU);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_BE_DisableAutoPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
