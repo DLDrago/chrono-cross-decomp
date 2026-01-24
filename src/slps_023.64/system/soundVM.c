@@ -542,15 +542,15 @@ void SoundVM_BC_ChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 
     in_pChannel->UpdateFlags |= 4;
     Rate = *in_pChannel->ProgramCounter++ << 0xA;
-    in_pChannel->PanLfoRateAccumulator = Rate;
+    in_pChannel->PanLfoRatePhase = Rate;
     if( Rate == 0 )
     {
-        in_pChannel->PanLfoRateAccumulator = 0x40000;
+        in_pChannel->PanLfoRatePhase = 0x40000;
     }
     in_pChannel->PanLfoType = *in_pChannel->ProgramCounter++;
     in_pChannel->PanLfoWave = D_80072E60[in_pChannel->PanLfoType];
     in_pChannel->PanLfoRateCurrent = 1;
-    in_pChannel->PanLfoRate = 0;
+    in_pChannel->PanLfoRateSlideLength = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
