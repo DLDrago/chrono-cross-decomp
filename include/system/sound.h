@@ -535,7 +535,7 @@ void SoundVM_CA_LoopInf( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_A2_OverwriteNextNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_DC_FixNoteLength( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE04_ClearKeymapTable( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE05_80055664( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE05_MuteVoice( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE15_8005567c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE16_800556b4( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_BO_DecayRateAndSustainLevel( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
@@ -550,12 +550,12 @@ void SoundVM_D6_EnablePitchVolumeSidechain( FSoundChannel* in_pChannel, u32 in_V
 void SoundVM_D7_DisablePitchVolumeSidechain( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE0B_800558cc( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_E0_80055944( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE1C_80055958( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE1D_8005596c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE1E_8005598c( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE1C_IncrementProgramCounter( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE1D_MarkVoicesKeyed( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE1E_ClearVoicesKeyed( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_E1_SetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_E2_ResetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
-void SoundVM_FE13_800559d0( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+void SoundVM_FE13_PreventVoicesFromRekeyingOnResume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_XX_Unimplemented( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 
 extern u32 g_Sound_ProgramCounter;

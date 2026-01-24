@@ -942,7 +942,7 @@ void SoundVM_FE04_ClearKeymapTable( FSoundChannel* in_pChannel, u32 in_VoiceFlag
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE05_80055664( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE05_MuteVoice( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     in_pChannel->VoiceParams.VolumeScale = 0;
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_DRUM_MODE;
@@ -1081,19 +1081,19 @@ void SoundVM_E0_80055944( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE1C_80055958( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE1C_IncrementProgramCounter( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     in_pChannel->ProgramCounter++;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE1D_8005596c( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE1D_MarkVoicesKeyed( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     g_pActiveMusicConfig->KeyedMask |= in_VoiceFlags;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE1E_8005598c( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE1E_ClearVoicesKeyed( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     g_pActiveMusicConfig->KeyedMask &= ~in_VoiceFlags;
 }
@@ -1111,7 +1111,7 @@ void SoundVM_E2_ResetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceF
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE13_800559d0( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+void SoundVM_FE13_PreventVoicesFromRekeyingOnResume( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     g_pActiveMusicConfig->PreventRekeyOnMusicResumeMask |= in_VoiceFlags;
 }
