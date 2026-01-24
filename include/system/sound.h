@@ -281,8 +281,8 @@ typedef struct
     /* 0x064 */ s32  PitchSlideStep;
     /* 0x068 */ u32  FinePitchDelta;
     /* 0x06C */ s32  field34_0x6c;
-    /* 0x070 */ s32  field35_0x70;
-    /* 0x074 */ s32  field36_0x74;
+    /* 0x070 */ s32  KeyOnVolume;
+    /* 0x074 */ s32  KeyOnVolumeSlideStep;
     /* 0x078 */ u16  Type; /* Music, SFX, Menu */
     /* 0x07A */ s16  Length1;
     /* 0x07C */ s16  Length2;
@@ -296,7 +296,7 @@ typedef struct
     /* 0x098 */ u16  VolumeBalanceSlideLength;
     /* 0x09A */ s16  field57_0x9a;
     /* 0x09C */ u16  ChannelVolumeSlideLength;
-    /* 0x09E */ s16  KeyOnVolumeRampLength;
+    /* 0x09E */ u16  KeyOnVolumeSlideLength;
     /* 0x0A0 */ s16  field60_0xa0;
     /* 0x0A2 */ u16  ChannelPan;
     /* 0x0A4 */ u16  ChannelPanSlideLength;

@@ -65,7 +65,19 @@ void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u32 in_VoiceFlags)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE02_SetMasterReverbDepth);
+void SoundVM_FE02_SetMasterReverbDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u8* pc;
+    u32 Depth;
+
+    pc = in_pChannel->ProgramCounter;
+    Depth = (s8)pc[1] << 0x14;
+    Depth |= pc[0] << 0xC;
+    in_pChannel->ProgramCounter += sizeof(s16);
+    g_pActiveMusicConfig->ReverbDepthSlideLength = 0;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x80;
+    g_pActiveMusicConfig->RevDepth = Depth;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_FE03_SetMasterReverbSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -167,7 +179,7 @@ void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->Volume = (s8) *in_pChannel->ProgramCounter++ << 0x17;
     in_pChannel->ChannelVolumeSlideLength = 0;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
-    in_pChannel->KeyOnVolumeRampLength = 0;
+    in_pChannel->KeyOnVolumeSlideLength = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -192,11 +204,31 @@ void SoundVM_A9_ChannelVolumeSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlag
     Delta = Dest - Prev;
     in_pChannel->VolumeSlideStep = Delta / in_pChannel->ChannelVolumeSlideLength;
 
-    in_pChannel->KeyOnVolumeRampLength = 0;
+    in_pChannel->KeyOnVolumeSlideLength = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE19_80054348);
+void SoundVM_FE19_80054348( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 pPc1;
+    s32 Dest;
+    s32 Prev;
+    s32 Delta;
+
+    in_pChannel->KeyOnVolume = ((s8)*in_pChannel->ProgramCounter++) << 0x17;
+    pPc1 = *in_pChannel->ProgramCounter++;
+    in_pChannel->KeyOnVolumeSlideLength = (s16) pPc1;
+
+    if( pPc1 == 0 )
+    {
+        in_pChannel->KeyOnVolumeSlideLength = 0x100;
+    }
+
+    Dest = ((s8)*in_pChannel->ProgramCounter++) << 0x17;
+    Prev = in_pChannel->KeyOnVolume;
+    Delta = Dest - Prev;
+    in_pChannel->KeyOnVolumeSlideStep = Delta / in_pChannel->KeyOnVolumeSlideLength;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_FE1A_800543d8( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
