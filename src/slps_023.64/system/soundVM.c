@@ -139,7 +139,27 @@ void SoundVM_A3_ChannelMasterVolume( FSoundChannel* in_pChannel, u32 in_VoiceFla
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE12_VolumeBalanceSlide);
+void SoundVM_FE12_VolumeBalanceSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 VolumeBalance;
+    u16 Length;
+    s32 Target;
+    s32 Delta;
+
+    Length = *in_pChannel->ProgramCounter++;
+    in_pChannel->VolumeBalanceSlideLength = Length;
+    if( Length == 0 )
+    {
+        in_pChannel->VolumeBalanceSlideLength = 0x100;
+    }
+
+    Target = *in_pChannel->ProgramCounter++ << 8;
+
+    VolumeBalance = in_pChannel->VolumeBalance & 0x7F00;
+    in_pChannel->VolumeBalance = VolumeBalance;
+    Delta = Target - VolumeBalance;
+    in_pChannel->VolumeBalanceSlideStep = Delta / in_pChannel->VolumeBalanceSlideLength;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A8_ChannelVolume( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
