@@ -444,7 +444,7 @@ void SoundVM_DD_VibratoDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E4_80054a30);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E4_VibratoRateSlide);
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B6_DisableVibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -484,7 +484,7 @@ void SoundVM_DE_TremeloDepthSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E5_80054c00);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E5_TremeloRateSlide);
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_BA_DisableTremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -542,7 +542,7 @@ void SoundVM_DF_ChannelPanLfoDepthSlide( FSoundChannel* in_pChannel, u32 in_Voic
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E6_80054d84);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_E6_ChannelPanLfoRateSlide);
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_BE_DisableChannelPanLfo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
