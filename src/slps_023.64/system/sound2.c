@@ -37,7 +37,7 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DF1C);
 
 
 //----------------------------------------------------------------------------------------------------------------------
-u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, s32 in_ChannelMask )
+u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask )
 {
     u32 VoiceNumber, Mask;
     u32 i = 0;
@@ -61,7 +61,7 @@ u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, s32 in_ChannelMask )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E010);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_LoadAkaoSequence);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E3A4);
 
@@ -124,10 +124,16 @@ void unk_Sound_SetLow2BitsForChannels( FSoundChannelConfig* in_p, FSoundChannel*
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EC88);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_SetMusicSequence );
+extern s32 D_80094FAC;
+extern s32 D_80094FFC;
 
+//----------------------------------------------------------------------------------------------------------------------
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_SetMusicSequence);
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EF8C);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004F008);
