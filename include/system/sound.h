@@ -254,8 +254,7 @@ typedef struct
     /* 0x000 */ u8*  ProgramCounter;
     /* 0x004 */ u8*  LoopStartPc[SOUND_LOOP_STACK_SIZE];
     /* 0x014 */ u8*  ReturnProgramCounter;
-    /* 0x018 */ s16  field8_0x18;
-    /* 0x01A */ s16  field9_0x1a;
+    /* 0x018 */ u8*  Keymap;
     /* 0x01C */ s16* VibratoWave;
     /* 0x020 */ u32  TremeloWave;
     /* 0x024 */ u32  AutoPanWave;
@@ -386,7 +385,7 @@ typedef struct
     s32 TempoSlideStep;
     s32 TempoUpdate;
     FAkaoSequence* SequenceBase;
-    s16 *SequencePatchTable;
+    u16* SequencePatchTable;
     FSoundKeymapEntry8* KeymapTable;
     s32 SomeIndexRelatedToSpuVoiceInfo;
     u32 NoiseChannelFlags;
@@ -448,8 +447,9 @@ void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams );
 
 // Sound 2
+u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
 u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_Channel );
-void Sound_SetMusicSequence( FMusicSequence *in_Sequence,int in_SwapWithSavedState );
+void Sound_SetMusicSequence( FAkaoSequence *in_Sequence,int in_SwapWithSavedState );
 
 // Sound 3
 void UpdateCdVolume();
