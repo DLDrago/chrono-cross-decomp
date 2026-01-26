@@ -296,7 +296,7 @@ typedef struct
     /* 0x09A */ s16  field57_0x9a;
     /* 0x09C */ u16  ChannelVolumeSlideLength;
     /* 0x09E */ u16  KeyOnVolumeSlideLength;
-    /* 0x0A0 */ s16  field60_0xa0;
+    /* 0x0A0 */ s16  C_StepsRemaining;
     /* 0x0A2 */ u16  ChannelPan;
     /* 0x0A4 */ u16  ChannelPanSlideLength;
     /* 0x0A6 */ u16  PitchSlideStepsCurrent;
@@ -335,10 +335,9 @@ typedef struct
     /* 0x0E8 */ s16  LengthStored;
     /* 0x0EA */ u16  LengthFixed;
     /* 0x0EC */ s16  VolumeBalanceSlideStep;
-    /* 0x0EE */ s16  field99_0xee;
-    /* 0x0F0 */ u16  field100_0xf0;
-    /* 0x0F2 */ u8   field101_0xf2;
-    /* 0x0F3 */ u8   field102_0xf3;
+    /* 0x0EE */ s16  D_Step;
+    /* 0x0F0 */ u16  C_Value;
+    /* 0x0F2 */ s16  C_Step;
     /* 0x0F4 */ s16  PanSlideStep;
     /* 0x0F6 */ s16  Transpose;
     /* 0x0F8 */ s16  FineTune;
@@ -367,8 +366,27 @@ typedef struct
 
 typedef struct
 {
-    undefined4 unk0;
-} FAkaoSequence;
+    /* 0x00 */ u32 unk00;
+    /* 0x04 */ u32 unk04;
+    /* 0x08 */ u32 unk08;
+    /* 0x0C */ u32 unk0C;
+
+    /* 0x10 */ u32 unk10;
+    /* 0x14 */ u32 unk14;
+    /* 0x18 */ u32 unk18;
+    /* 0x1C */ u32 unk1C;
+
+    /* 0x20 */ u32 ChannelEnableMask;
+    /* 0x24 */ u32 KeyedMask;
+    /* 0x28 */ u32 AllocatedVoiceMask;
+    /* 0x2C */ u32 unk2C;
+
+    /* 0x30 */ s32 PatchRegionOffset;   // field-relative
+    /* 0x34 */ s32 KeymapRegionOffset;  // field-relative
+    /* 0x38 */ u32 unk38;
+    /* 0x3C */ u32 unk3C;
+    /* 0x40 */ u8  Payload[1];  // starts at 0x40 (variable length)
+} FAkaoSequence; // size 0x40 (header), data blob variable
 
 typedef struct 
 {
@@ -436,11 +454,6 @@ typedef struct
     0x00001E34   // B  - 2^(11/12)
 }; */
 
-typedef struct
-{
-    u32 unk0;
-} FMusicSequence;
-
 // Sound
 void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeScale );
 void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate );
@@ -449,7 +462,8 @@ void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams
 // Sound 2
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
 u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_Channel );
-void Sound_SetMusicSequence( FAkaoSequence *in_Sequence,int in_SwapWithSavedState );
+void Sound_SetMusicSequence( FAkaoSequence *in_Sequence, int in_SwapWithSavedState );
+void Sound_SetInstrumentToChannel( FSoundChannel *in_Channel, u32 in_Index );
 
 // Sound 3
 void UpdateCdVolume();

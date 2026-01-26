@@ -36,6 +36,6 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", Sound_ComputeSlideStep
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", Sound_CopyInstrumentInfoToChannel);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", func_80053DC4);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", Sound_SetInstrumentToChannel);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound3", Sound_ClearVoiceFromSchedulerState);
