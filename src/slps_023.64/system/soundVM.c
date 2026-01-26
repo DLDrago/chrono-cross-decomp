@@ -522,6 +522,9 @@ void SoundVM_B6_DisableVibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B8_Tremelo);
+#else
 void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u16 Delay;
@@ -545,21 +548,22 @@ void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     }
 
     Rate = *in_pChannel->ProgramCounter++ << 0xA;
-    in_pChannel->TremeloRateAccumulator = Rate;
+    in_pChannel->TremeloRatePhase = Rate;
 
     if( Rate == 0 )
     {
-        in_pChannel->TremeloRateAccumulator = 0x40000;
+        in_pChannel->TremeloRatePhase = 0x40000;
     }
 
     Type = *in_pChannel->ProgramCounter++;
     in_pChannel->TremeloType = Type;
 
-    in_pChannel->TremeloRate = 0;
+    in_pChannel->TremeloRateSlideLength = 0;
     in_pChannel->field81_0xca = 1;
     in_pChannel->TremeloDelayCurrent = (u16)in_pChannel->TremeloDelay;
     in_pChannel->TremeloWave = D_80072E60[Type];
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B9_TremeloDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -884,6 +888,9 @@ void SoundVM_B7_AttackMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BB_SustainMode);
+#else
 void SoundVM_BB_SustainMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u16 mode;
@@ -914,6 +921,7 @@ void SoundVM_BB_SustainMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 
     in_pChannel->VoiceParams.VoiceParamFlags |= 0x200;
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_BF_ReleaseMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
