@@ -991,9 +991,16 @@ void SoundVM_BF_ReleaseMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE10_8005536c);
+void SoundVM_FE10_8005536c( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo = *in_pChannel->ProgramCounter++;
+}
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE11_8005538c);
+//----------------------------------------------------------------------------------------------------------------------
+void SoundVM_FE11_8005538c( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_C8_LoopPoint( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
