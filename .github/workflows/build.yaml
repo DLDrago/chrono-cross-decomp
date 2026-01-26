@@ -46,7 +46,8 @@ jobs:
             make \
             binutils-mips-linux-gnu \
             cpp-mips-linux-gnu \
-            7zip
+            7zip \
+            V=1
 
       - name: Download ROM from private repository
         uses: actions/checkout@v4
@@ -64,13 +65,13 @@ jobs:
 
       - name: Extract and prepare
         run: |
-          make extract
+          make extract V=1
 
       - name: Generate ASM splits
-        run: make generate
+        run: make generate V=1
 
       - name: Build source objects
-        run: make build
+        run: make build V=1
 
       # Don't run a check while we're generating fuzzy progress from nonmatching branch
       # - name: Check for match
@@ -80,7 +81,7 @@ jobs:
       - name: Generate progress report
         # Only generate on master branch pushes
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        run: make report
+        run: make report V=1
 
       - name: Upload progress report
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
