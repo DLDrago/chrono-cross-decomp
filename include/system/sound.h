@@ -256,8 +256,8 @@ typedef struct
     /* 0x014 */ u8*  ReturnProgramCounter;
     /* 0x018 */ u8*  Keymap;
     /* 0x01C */ s16* VibratoWave;
-    /* 0x020 */ u32  TremeloWave;
-    /* 0x024 */ u32  AutoPanWave;
+    /* 0x020 */ s16* TremeloWave;
+    /* 0x024 */ s16* AutoPanWave;
     /* 0x028 */ s32  unk_Flags;
     /* 0x02C */ s32  PitchBase;
     /* 0x030 */ s32  PitchSlide;

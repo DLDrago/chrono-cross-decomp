@@ -6,7 +6,7 @@
 
 #define READ_16LE_PC(pc) ((pc[0]) | (pc[1] << 8))
 
-extern s32 D_80072E60[];
+extern s16* D_80072E60[];
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -514,7 +514,7 @@ void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     }
 
     in_pChannel->VibratoBase = VibratoBase >> 7;
-    in_pChannel->VibratoWave = (s16*)D_80072E60[ (u16)in_pChannel->VibratoType ];
+    in_pChannel->VibratoWave = D_80072E60[ (u16)in_pChannel->VibratoType ];
     in_pChannel->VibratoDelayCurrent = in_pChannel->VibratoDelay;
     in_pChannel->field72_0xb8 = 1;
     in_pChannel->VibratoRateSlideLength = 0;
@@ -688,8 +688,6 @@ void SoundVM_BA_DisableTremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_TREMOLO;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
-
-extern u32 D_80072E60[];
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_BC_AutoPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
