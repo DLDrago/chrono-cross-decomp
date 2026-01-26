@@ -123,7 +123,7 @@ def _build_custom_make(ssh_config: SSHConfig) -> tuple[str, list[str]]:
     # Add remote commands
     ssh_args.append(f"cd {ssh_config.remote_path} &&")
     
-    ssh_args.append("make progress")
+    ssh_args.append("make NON_MATCHING=1 SKIP_ASM=1")
     
     return "ssh", ssh_args
 
