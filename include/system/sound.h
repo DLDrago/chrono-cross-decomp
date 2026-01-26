@@ -433,6 +433,16 @@ typedef struct
     undefined field40_0x7f;
 } FSoundChannelConfig;
 
+typedef struct
+{
+    u32 Param1;
+    u32 Param2;
+    u32 Param3; // Seems to be usually flags
+    u32 Param4;
+    u32 ExtParam1;
+    u32 ExtParam2;
+} FSoundCommandParams;
+
 
 #define SEMITONES_IN_OCTAVE (12)
 
@@ -582,6 +592,7 @@ extern FSoundChannelConfig g_PushedMusicConfig;
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern u32 g_Music_LoopCounter;
 extern bool g_bSpuTransferring;
+extern FSoundCommandParams g_SoundCommandParams;
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern s16 D_80092A64;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
