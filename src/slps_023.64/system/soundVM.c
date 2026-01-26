@@ -344,7 +344,7 @@ void SoundVM_FE0A_ClearInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags
         if( pPatchTable[PatchIndex] > 0x8000U )
         {
             in_pChannel->VoiceParams.VolumeScale = 0;
-            in_pChannel->UpdateFlags &= ~0x1000;
+            in_pChannel->UpdateFlags &= ~SOUND_UPDATE_UNKNOWN_12;
             return;
         }
         in_pChannel->Keymap = (u8*)((int)pPatchTable + pPatchTable[PatchIndex] + 0x20);
@@ -355,7 +355,7 @@ void SoundVM_FE0A_ClearInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags
             SOUND_UPDATE_UNKNOWN_27 |
             SOUND_UPDATE_UNKNOWN_28
         );
-        in_pChannel->UpdateFlags |= 0x1000;
+        in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_12;
         in_pChannel->Key = 0xFF;
     }
 }
@@ -475,7 +475,7 @@ void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     u32 VibratoBase;
     u16 VibratoDepth;
 
-    in_pChannel->UpdateFlags |= 1;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_VIBRATO;
     if( in_pChannel->Type != SOUND_CHANNEL_TYPE_MUSIC )
     {
         in_pChannel->VibratoDelay = 0;
@@ -605,7 +605,7 @@ void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     u16 Delay;
     u32 Rate;
 
-    in_pChannel->UpdateFlags |= 2;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_TREMOLO;
     Delay = *in_pChannel->ProgramCounter++;
 
     if( in_pChannel->Type != 0 )
@@ -692,7 +692,7 @@ void SoundVM_BC_AutoPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     s32 Rate;
 
-    in_pChannel->UpdateFlags |= 4;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_PAN_LFO;
     Rate = *in_pChannel->ProgramCounter++ << 0xA;
     in_pChannel->AutoPanRatePhase = Rate;
     if( Rate == 0 )
@@ -792,11 +792,11 @@ void SoundVM_C6_EnableFmVoices( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     {
         g_pActiveMusicConfig->FmChannelFlags |= in_VoiceFlags;
     }
-    else if( in_pChannel->UpdateFlags & 0x10000 )
+    else if( in_pChannel->UpdateFlags & SOUND_UPDATE_UNKNOWN_16 )
     {
         g_Sound_VoiceSchedulerState.FmVoiceFlags |= in_VoiceFlags;
     }
-    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    g_Sound_GlobalFlags.UpdateFlags |= ( 1 << 8);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -929,7 +929,7 @@ void SoundVM_B1_SustainRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_SUS_RATE_MASK;
     in_pChannel->VoiceParams.AdsrUpper |= SustainRate << SOUND_ADSR_SUS_RATE_SHIFT;
     in_pChannel->VoiceParams.VoiceParamFlags |= (VOICE_PARAM_ADSR_SR | VOICE_PARAM_ADSR_SMODE);
-    in_pChannel->UpdateFlags |= 0x08000000;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_27;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -939,7 +939,7 @@ void SoundVM_B2_ReleaseRate( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_RELEASE_RATE_MASK;
     in_pChannel->VoiceParams.AdsrUpper |= ReleaseRate << SOUND_ADSR_RELEASE_RATE_SHIFT;
     in_pChannel->VoiceParams.VoiceParamFlags |= (VOICE_PARAM_ADSR_RR | VOICE_PARAM_ADSR_RMODE);
-    in_pChannel->UpdateFlags |= 0x10000000;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_28;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1162,7 +1162,7 @@ void SoundVM_FE04_ClearKeymapTable( FSoundChannel* in_pChannel, u32 in_VoiceFlag
             SOUND_UPDATE_UNKNOWN_27 |
             SOUND_UPDATE_UNKNOWN_28
         );
-        in_pChannel->UpdateFlags |= 8;
+        in_pChannel->UpdateFlags |= SOUND_UPDATE_DRUM_MODE;
     }
 }
 
@@ -1311,7 +1311,7 @@ void SoundVM_FE0B_800558cc( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_E0_80055944( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    in_pChannel->UpdateFlags |= 0x100000;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_20;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
