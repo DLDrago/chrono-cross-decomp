@@ -1308,7 +1308,16 @@ void SoundVM_D7_DisablePitchVolumeSidechain( FSoundChannel* in_pChannel, u32 in_
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE0B_800558cc);
+void SoundVM_FE0B_800558cc( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+
+    g_SoundCommandParams.Param1 = *in_pChannel->ProgramCounter++;
+    g_SoundCommandParams.Param2 = D_80090A34;
+    g_SoundCommandParams.Param3 = in_pChannel->ChannelPan >> 8;
+    g_SoundCommandParams.Param4 = in_pChannel->VolumeBalance >> 8;
+    func_8004F518( &g_SoundCommandParams );
+    D_80090A34 ^= 3;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_E0_80055944( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
