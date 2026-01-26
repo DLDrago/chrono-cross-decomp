@@ -57,7 +57,7 @@ segments:
     type: code
     start: 0x800
     vram: 0x80010000
-    bss_size: 0x21500
+    # bss_size: 0x21500
     bss_contains_common: True
     align: 4
     section_order: [".text", ".rodata", ".sdata", ".data", ".sbss", ".bss"]
@@ -92,20 +92,21 @@ segments:
       - [0x46210, asm, system/sound4]
       - [0x46B7C, asm, psyq/libspu/SpuSetIRQAddr]
       - [0x46BBC, asm]
-      - [0x46C6C, rodata]
-      - [0x5B290, data]
-      - [0x85898]
+      - [0x46C6C, rodata] # 0x8005646C
+      - [0x5B290, data]   # 0x8006AA90
+      # - [0x64380, bss]    # 0x80073B80
+      # - [0x85898]         # 0x80095098
 
   - name: secondary
     type: code
     start: 0x85898 # 0x80095098
     vram: 0x80095098
-    bss_size: 0x40000 # yolo
+    # bss_size: 0x40000 # yolo
     bss_contains_common: True
     align: 4
     section_order: [".rodata", ".text", ".sdata", ".data", ".sbss", ".bss"]
     subsegments:
-      - [0x85898, rodata]
-      - [0x85FE4, asm]
-      - [0x98250, data]
+      - [0x85898, rodata] # 0x80095098
+      - [0x85FE4, asm]    # 0x800957E4
+      - [0x98250, data]   # 0x800A7A50
       - [0x9A800]

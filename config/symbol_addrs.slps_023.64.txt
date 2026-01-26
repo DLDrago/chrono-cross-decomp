@@ -612,7 +612,6 @@ g_Music_LoopCounter         = 0x80092A10;
 g_bSpuTransferring          = 0x80092A18;
 g_pActiveMusicConfig        = 0x80092A48;
 g_Sound_VoiceSchedulerState = 0x80092AA8; // type:FSoundVoiceSchedulerState size:0x30
-g_Sound_OffFlags            = 0x80092AB4;
 g_CdVolume                  = 0x80092AF8;
 g_PushedMusicChannels       = 0x80092B00; // type:FSoundChannel[] size:0x2480
 g_Sound_GlobalFlags         = 0x80094F90;
