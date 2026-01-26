@@ -334,7 +334,33 @@ void SoundVM_FE0A_ClearInstrument( FSoundChannel* in_pChannel, u32 in_VoiceFlags
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_FE14_800545ec);
+ void SoundVM_FE14_ChangePatch( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16* pPatchTable;
+    u8 PatchIndex;
+
+    PatchIndex = *in_pChannel->ProgramCounter++;
+    if( g_pActiveMusicConfig->SequencePatchTable != NULL )
+    {
+        pPatchTable = g_pActiveMusicConfig->SequencePatchTable;
+        if( pPatchTable[PatchIndex] > 0x8000U )
+        {
+            in_pChannel->VoiceParams.VolumeScale = 0;
+            in_pChannel->UpdateFlags &= ~0x1000;
+            return;
+        }
+        in_pChannel->Keymap = (u8*)((int)pPatchTable + pPatchTable[PatchIndex] + 0x20);
+        in_pChannel->UpdateFlags &= ~(
+            SOUND_UPDATE_DRUM_MODE  |
+            SOUND_UPDATE_UNKNOWN_12 |
+            SOUND_UPDATE_UNKNOWN_24 |
+            SOUND_UPDATE_UNKNOWN_27 |
+            SOUND_UPDATE_UNKNOWN_28
+        );
+        in_pChannel->UpdateFlags |= 0x1000;
+        in_pChannel->Key = 0xFF;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B3_ResetAdsr( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
