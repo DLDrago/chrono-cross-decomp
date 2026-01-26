@@ -195,7 +195,7 @@ typedef struct
     undefined4 NoiseVoiceFlags;
     undefined4 ReverbVoiceFlags;
     undefined4 FmVoiceFlags;
-    undefined2 NoiseClock;
+    u16 NoiseClock;
     undefined field11_0x2a;
     undefined field12_0x2b;
     undefined4 field13_0x2c;
