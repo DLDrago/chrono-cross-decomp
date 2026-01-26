@@ -69,13 +69,19 @@ segments:
       - [0x08E94, asm, psyq/libmath]
       - [0x09534, asm, psyq/libcard]
       - [0x099D4, asm]
+      - [0x0CC50, asm]
       - [0x13040, asm, psyq/libapi]
       - [0x138A0, asm, psyq/libcd]
       - [0x157B0, asm, psyq/libgte]
       - [0x18050, asm, psyq/libetc]
       - [0x18D60, asm, psyq/libsn]
       - [0x18F20, asm, psyq/libspu]
-      - [0x19Df0, asm]
+      - [0x19DF0, asm]
+      - [0x19DF0, asm]
+      - [0x1A508, asm]
+      - [0x1BD2C, asm]
+      - [0x2225C, asm]
+      - [0x2A200, asm]
       - [0x3B978, c, system/spu]
       - [0x3BA84, asm]
       - [0x3BFF4, asm, psyq/libapi_2]
@@ -92,7 +98,23 @@ segments:
       - [0x46210, asm, system/sound4]
       - [0x46B7C, asm, psyq/libspu/SpuSetIRQAddr]
       - [0x46BBC, asm]
-      - [0x46C6C, rodata] # 0x8005646C
+      - [0x46C6C, rodata, psyq/libc]     # 0x8005646C
+      - [0x46C8C, rodata, psyq/libgpu]   # 0x8005648C
+      - [0x46EDC, rodata, psyq/libpad]   # 0x800566DC
+      - [0x46EFC, rodata, psyq/libmath]  # 0x800566FC
+      - [0x508E0, rodata, 99D4]          # 0x800600E0
+      - [0x5983C, rodata, 19DF0]         # 0x8006903C
+      - [0x599D0, rodata, CC50]
+      - [0x59BE8, rodata, psyq/libcd]    # 0x800693E8
+      - [0x59CE0, rodata, psyq/libetc]   # 0x800694E0
+      - [0x59DA0, rodata, psyq/libspu]   # 0x800695A0
+      - [0x59F04, rodata, 1A508]
+      - [0x5A0A8, rodata, 1BD2C]
+      - [0x5A2EC, rodata, psyq/libgte]   # 0x80069AEC
+      - [0x5A914, rodata, 2225C]
+      - [0x5ABB8, rodata, 2A200]
+      - [0x5B0C4, rodata, psyq/libspu2]  # 0x8006A8C4
+      - [0x5B0F4, rodata, system/sound3] # 0x8006A8F4
       - [0x5B290, data]   # 0x8006AA90
       # - [0x64380, bss]    # 0x80073B80
       # - [0x85898]         # 0x80095098
@@ -106,7 +128,15 @@ segments:
     align: 4
     section_order: [".rodata", ".text", ".sdata", ".data", ".sbss", ".bss"]
     subsegments:
-      - [0x85898, rodata] # 0x80095098
+      - [0x85898, rodata, 85FE4] # 0x80095098
+      - [0x85CBC, rodata, 88264]
+      - [0x85D30, rodata, 89B4C]
+      - [0x85E7C, rodata, 92208]
+      - [0x85F70, rodata, 96EB8]
       - [0x85FE4, asm]    # 0x800957E4
+      - [0x88264, asm]    # 0x80097A64
+      - [0x89B4C, asm]    # 0x8009934C
+      - [0x92208, asm]    # 0x800A1A08
+      - [0x96EB8, asm]    # 0x800A66B8
       - [0x98250, data]   # 0x800A7A50
       - [0x9A800]

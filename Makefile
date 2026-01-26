@@ -55,10 +55,21 @@ LD_FLAGS            := $(ENDIAN) $(OPT_FLAGS) -nostdlib --no-check-sections
 OBJCOPY_FLAGS       := -O binary
 OBJDUMP_FLAGS       := --disassemble-all --reloc --disassemble-zeroes -Mreg-names=32
 SPLAT_FLAGS         := --disassemble-all --make-full-disasm-for-code
-DL_FLAGS := -G0
-AS_FLAGS := $(ENDIAN) $(INCLUDE_FLAGS) $(OPT_FLAGS) $(DL_FLAGS) -march=r3000 -mtune=r3000 -no-pad-sections
-CC_FLAGS := $(OPT_FLAGS) $(DL_FLAGS) -mips1 -mcpu=3000 -g2 -w -funsigned-char -fpeephole -ffunction-cse -fpcc-struct-return -fcommon -fverbose-asm -msoft-float -mgas -fgnu-linker -quiet
-MASPSX_FLAGS := --aspsx-version=2.79 --expand-div --use-comm-section --run-assembler $(AS_FLAGS)
+DL_FLAGS            := -G0
+AS_FLAGS            := $(ENDIAN) $(INCLUDE_FLAGS) $(OPT_FLAGS) $(DL_FLAGS) -march=r3000 -mtune=r3000 -no-pad-sections
+CC_FLAGS            := $(OPT_FLAGS) $(DL_FLAGS) -mips1 -mcpu=3000 -g2 -w -funsigned-char -fpeephole -ffunction-cse -fpcc-struct-return -fcommon -fverbose-asm -msoft-float -mgas -fgnu-linker -quiet
+MASPSX_FLAGS        := --aspsx-version=2.79 --expand-div --use-comm-section --run-assembler $(AS_FLAGS)
+MAKEFLAGS           += --no-print-directory
+
+# Verbosity:
+#   default: quiet (don't echo commands)
+#   V=1    : verbose (echo commands)
+V ?= 0
+ifeq ($(V),1)
+  Q :=
+else
+  Q := @
+endif
 
 # PSY-Q libraries uses lower than ASPSX 2.56, yet unsure which version
 # Main-related and psyq code seem to use -G0 instead of -G8
@@ -149,71 +160,87 @@ all: build
 build: $(TARGET_OUT)
 
 objdiff-config: regenerate
-	@$(MAKE) NON_MATCHING=1 SKIP_ASM=1 expected
-	@$(MAKE) generate-context
-	@$(PYTHON) $(OBJDIFF_DIR)/objdiff_generate.py $(OBJDIFF_DIR)/config.yaml
+	@echo "[objdiff] Generating non-matching expected build..."
+	$(Q)$(MAKE) NON_MATCHING=1 SKIP_ASM=1 expected
+	$(Q)$(MAKE) generate-context
+	$(Q)$(PYTHON) $(OBJDIFF_DIR)/objdiff_generate.py $(OBJDIFF_DIR)/config.yaml
 
 report: objdiff-config
-	@$(OBJDIFF) report generate > $(BUILD_DIR)/progress.json
+	@echo "[report] Generating objdiff report → $(BUILD_DIR)/progress.json"
+	$(Q)$(OBJDIFF) report generate > $(BUILD_DIR)/progress.json
 
 check: build
+	@echo "[check] Verifying checksum..."
 	@sha256sum --ignore-missing --check $(CONFIG_DIR)/checksum.sha
 
 progress:
-	$(MAKE) build NON_MATCHING=1 SKIP_ASM=1
+	@echo "[progress] Building with non-matching, skipping ASM"
+	$(Q)$(MAKE) build NON_MATCHING=1 SKIP_ASM=1
 
 expected: build
-	mkdir -p $(EXPECTED_DIR)
-	mv build/asm $(EXPECTED_DIR)/asm
+	@echo "[expected] Moving asm output → $(EXPECTED_DIR)/asm"
+	$(Q)mkdir -p $(EXPECTED_DIR)
+	$(Q)mv build/asm $(EXPECTED_DIR)/asm
 
 extract:
+	@echo "[extract] Searching for cdrom.dat under ./disc"
 	@set -euo pipefail; \
-	echo "Searching for cdrom.dat under ./disk ..."; \
 	DAT=$$(find disc -type f -name 'cdrom.dat' -print -quit); \
+	echo "[extract] Extracting $$DAT → $(EXTRACT_DIR)"; \
 	mkdir -p "$(EXTRACT_DIR)"; \
 	if command -v 7z >/dev/null 2>&1; then \
-		7z x -y -o"$(EXTRACT_DIR)" "disc/cdrom.dat"; \
-	fi; \
+		7z x -y -o"$(EXTRACT_DIR)" "$$DAT"; \
+	else \
+		echo "[extract] ERROR: 7z not found"; \
+		exit 1; \
+	fi
 
 clean-extract:
-	@echo "Removing $(EXTRACT_DIR)"
-	@rm -rf "$(EXTRACT_DIR)"
+	@echo "[clean-extract] Removing $(EXTRACT_DIR)"
+	$(Q)rm -rf "$(EXTRACT_DIR)"
 
 generate: $(LD_FILES)
 
 generate-context: $(CTX_FILE)
 
 clean:
-	rm -rf $(BUILD_DIR)
-	rm -rf $(PERMUTER_DIR)
+	@echo "[clean] Removing $(BUILD_DIR) and $(PERMUTER_DIR)..."
+	$(Q)rm -rf $(BUILD_DIR)
+	$(Q)rm -rf $(PERMUTER_DIR)
 
 reset: clean
-	rm -rf $(ASM_DIR)
-	rm -rf $(LINKER_DIR)
-	rm -rf $(EXPECTED_DIR)
-	rm -rf $(CTX_DIR)
+	@echo "[reset] Removing $(ASM_DIR), $(LINKER_DIR), $(EXPECTED_DIR), and $(CTX_DIR)..."
+	$(Q)rm -rf $(ASM_DIR)
+	$(Q)rm -rf $(LINKER_DIR)
+	$(Q)rm -rf $(EXPECTED_DIR)
+	$(Q)rm -rf $(CTX_DIR)
 
 regenerate: reset
-	$(MAKE) generate
+	@echo "[regenerate] Regenerating split output..."
+	$(Q)$(MAKE) generate
 
 setup: reset
-	$(MAKE) extract
-	$(MAKE) generate
+	@echo "[setup] Extracting and generating..."
+	$(Q)$(MAKE) extract
+	$(Q)$(MAKE) generate
 
 clean-build: clean
-	rm -rf $(LINKER_DIR)
-	$(MAKE) generate
-	$(MAKE) build
+	@echo "[clean-build] Removing $(LINKER_DIR) and rebuilding..."
+	$(Q)rm -rf $(LINKER_DIR)
+	$(Q)$(MAKE) generate
+	$(Q)$(MAKE) build
 
 clean-check: clean
-	rm -rf $(LINKER_DIR)
-	$(MAKE) generate
-	$(MAKE) check
+	@echo "[clean-check] Removing $(LINKER_DIR), generating, and running check..."
+	$(Q)rm -rf $(LINKER_DIR)
+	$(Q)$(MAKE) generate
+	$(Q)$(MAKE) check
 
 clean-progress: clean
-	rm -rf $(LINKER_DIR)
-	$(MAKE) generate
-	$(MAKE) progress
+	@echo "[clean-progress] Removing $(LINKER_DIR), generating, and generating progress report..."
+	$(Q)rm -rf $(LINKER_DIR)
+	$(Q)$(MAKE) generate
+	$(Q)$(MAKE) progress
 
 # Recipes
 
@@ -223,36 +250,36 @@ $(foreach target,$(TARGET_IN),$(eval $(call make_elf_target,$(target),$(call get
 
 # Generate objects.
 $(BUILD_DIR)/%.i: %.c
-	@mkdir -p $(dir $@)
-	$(CPP) -MMD -MP -MT $@ -MF $@.d $(CPP_FLAGS) -o $@ $<
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(CPP) -MMD -MP -MT $@ -MF $@.d $(CPP_FLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.c.s: $(BUILD_DIR)/%.i
-	@mkdir -p $(dir $@)
-	$(call DL_FlagsSwitch, $@)
-	$(CC) $(CC_FLAGS) -o $@ $<
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(call DL_FlagsSwitch, $@)
+	$(Q)$(CC) $(CC_FLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.c.o: $(BUILD_DIR)/%.c.s
-	@mkdir -p $(dir $@)
-	$(call DL_FlagsSwitch, $@)
-	-$(MASPSX) $(MASPSX_FLAGS) -o $@ $<
-	-$(OBJDUMP) $(OBJDUMP_FLAGS) $@ > $(@:.o=.dump.s)
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(call DL_FlagsSwitch, $@)
+	-$(Q)$(MASPSX) $(MASPSX_FLAGS) -o $@ $<
+	-$(Q)$(OBJDUMP) $(OBJDUMP_FLAGS) $@ > $(@:.o=.dump.s)
 
 $(BUILD_DIR)/%.s.o: %.s
-	@mkdir -p $(dir $@)
-	$(AS) $(AS_FLAGS) -o $@ $<
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(AS) $(AS_FLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.bin.o: %.bin
-	@mkdir -p $(dir $@)
-	$(LD) -r -b binary -o $@ $<
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(LD) -r -b binary -o $@ $<
 
 # Split .yaml.
 $(LINKER_DIR)/%.ld: $(CONFIG_DIR)/%.yaml
-	@mkdir -p $(dir $@)
-	$(SPLAT) $(SPLAT_FLAGS) $<
+	$(Q)@mkdir -p $(dir $@)
+	$(Q)$(SPLAT) $(SPLAT_FLAGS) $<
 
 $(CTX_FILE):
-	@mkdir -p ctx
-	$(PYTHON) tools/cc_m2ctx.py --auto -o $(CTX_FILE)
+	$(Q)@mkdir -p ctx
+	$(Q)$(PYTHON) tools/cc_m2ctx.py --auto -o $(CTX_FILE)
 
 
 ### Settings
