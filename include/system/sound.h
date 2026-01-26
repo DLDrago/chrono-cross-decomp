@@ -3,6 +3,7 @@
 
 #define VOICE_COUNT 24
 #define SOUND_CHANNEL_COUNT 0x20
+#define SOUND_LFO_COUNT     (0x10)
 
 // Voice parameter update flags
 #define VOICE_PARAM_VOLUME_L      (1 << 0) /* volume (left) */
@@ -586,6 +587,7 @@ void SoundVM_XX_Unimplemented( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 
 extern u32 g_Sound_ProgramCounter;
 extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
+extern s16* g_Sound_LfoTable[SOUND_LFO_COUNT];
 extern FSoundChannel g_ActiveMusicChannels[0x20];
 extern u32 D_80090A34;
 extern FSoundChannel* g_pSecondaryMusicChannels;

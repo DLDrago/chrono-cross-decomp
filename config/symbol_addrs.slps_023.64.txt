@@ -603,6 +603,7 @@ unk_Sound_80056308              = 0x80056308;
 //----------------------------------------------------------------------------------------------------------------------
 g_Sound_ProgramCounter       = 0x80072328;
 g_SemitonePitchTable         = 0x8007232C;
+g_Sound_LfoTable             = 0x80072E60;
 g_ActiveMusicChannels        = 0x8008E578; // type:FSoundChannel[] size:0x2480
 D_80090A34                   = 0x80090A34;
 g_pSecondaryMusicChannels    = 0x800917EC;

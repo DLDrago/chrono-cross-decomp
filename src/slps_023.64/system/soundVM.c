@@ -6,8 +6,6 @@
 
 #define READ_16LE_PC(pc) ((pc[0]) | (pc[1] << 8))
 
-extern s16* D_80072E60[];
-
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
@@ -514,7 +512,7 @@ void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     }
 
     in_pChannel->VibratoBase = VibratoBase >> 7;
-    in_pChannel->VibratoWave = D_80072E60[ (u16)in_pChannel->VibratoType ];
+    in_pChannel->VibratoWave = g_Sound_LfoTable[ (u16)in_pChannel->VibratoType ];
     in_pChannel->VibratoDelayCurrent = in_pChannel->VibratoDelay;
     in_pChannel->field72_0xb8 = 1;
     in_pChannel->VibratoRateSlideLength = 0;
@@ -632,7 +630,7 @@ void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     }
 
     in_pChannel->TremeloType = *in_pChannel->ProgramCounter++;
-    in_pChannel->TremeloWave = D_80072E60[ in_pChannel->TremeloType ];
+    in_pChannel->TremeloWave = g_Sound_LfoTable[ in_pChannel->TremeloType ];
     in_pChannel->TremeloDelayCurrent = in_pChannel->TremeloDelay;
     in_pChannel->field81_0xca = 1;
     in_pChannel->TremeloRateSlideLength = 0;
@@ -702,7 +700,7 @@ void SoundVM_BC_AutoPan( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
         in_pChannel->AutoPanRatePhase = 0x40000;
     }
     in_pChannel->AutoPanType = *in_pChannel->ProgramCounter++;
-    in_pChannel->AutoPanWave = D_80072E60[in_pChannel->AutoPanType];
+    in_pChannel->AutoPanWave = g_Sound_LfoTable[in_pChannel->AutoPanType];
     in_pChannel->AutoPanRateCurrent = 1;
     in_pChannel->AutoPanRateSlideLength = 0;
 }

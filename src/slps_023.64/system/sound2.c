@@ -12,6 +12,9 @@
 // how far to shift SPU sample addresses when remapping
 #define SOUND_BANK_SPU_ADDR_OFFSET           0x30000u
 
+extern s32 D_80094FAC[];
+extern s32 D_80094FFC;
+
 //----------------------------------------------------------------------------------------------------------------------
 u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_pChannel )
 {
@@ -34,7 +37,6 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDF8);
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DED8);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DF1C);
-
 
 //----------------------------------------------------------------------------------------------------------------------
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask )
@@ -61,7 +63,171 @@ u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_LoadAkaoSequence);
+#else
+void Sound_LoadAkaoSequence( FAkaoSequence* in_Sequence, s32 in_Mask )
+{
+    FSoundChannel* pChannel;
+    FSoundKeymapEntry8* KeymapRegionStart;
+    s16 ChannelLength;
+    s32 PatchRegionOffset;
+    s32 KeymapRegionOffset;
+    s32 EnabledMask;
+    s32 ChannelMask;
+    u16* PatchRegionStart;
+    u32 VoiceMask;
+    u32 ChannelEnableMask;
+    u32 ChannelIndex;
+    u8* pData;
+    u16 Offset;
+
+    g_pActiveMusicConfig->SequenceBase = in_Sequence;
+    ChannelEnableMask = in_Sequence->ChannelEnableMask;
+    if( g_pSavedMousicConfig != NULL )
+    {
+        VoiceMask = ChannelMaskToVoiceMask(g_pSecondaryMusicChannels, g_pSavedMousicConfig->ActiveChannelMask);
+    }
+    else
+    {
+        VoiceMask = 0;
+    }
+    
+    g_Sound_VoiceSchedulerState.KeyOffFlags |= ~VoiceMask & (~(D_80094FAC[0] | g_Sound_VoiceSchedulerState.ActiveChannelMask)) & 0xFFFFFF;
+    g_pActiveMusicConfig->PendingKeyOffMask = 0;
+    g_pActiveMusicConfig->PreventRekeyOnMusicResumeMask = 0;
+    
+    if( D_80094FFC & 1 )
+    {
+        g_pActiveMusicConfig->ActiveChannelMask = 0;
+        g_pActiveMusicConfig->LastChannelModeFlags |= ChannelEnableMask & in_Mask;
+    }
+    else
+    {
+        g_pActiveMusicConfig->LastChannelModeFlags = 0;
+        g_pActiveMusicConfig->ActiveChannelMask |= ChannelEnableMask & in_Mask;
+    }
+    
+    g_pActiveMusicConfig->KeyedMask = in_Sequence->KeyedMask;
+    g_pActiveMusicConfig->AllocatedVoiceMask = in_Sequence->AllocatedVoiceMask;
+    g_pActiveMusicConfig->StatusFlags &= ~0x33;
+    
+    PatchRegionOffset = in_Sequence->PatchRegionOffset;
+    PatchRegionStart = NULL;
+    if( PatchRegionOffset != 0 )
+    {
+        PatchRegionStart = (u16*)((u8*)&in_Sequence->PatchRegionOffset + PatchRegionOffset);
+    }
+    g_pActiveMusicConfig->SequencePatchTable = PatchRegionStart;
+    
+    KeymapRegionOffset = in_Sequence->KeymapRegionOffset;
+    KeymapRegionStart = NULL;
+    if( KeymapRegionOffset != 0 )
+    {
+        KeymapRegionStart = (FSoundKeymapEntry8*)((u8*)&in_Sequence->KeymapRegionOffset + KeymapRegionOffset);
+    }
+    g_pActiveMusicConfig->KeymapTable = KeymapRegionStart;
+    
+    ChannelMask = 1;
+    ChannelIndex = 0;
+    pChannel = g_ActiveMusicChannels;
+    pData = in_Sequence->Payload;
+    g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo = 0;
+    
+    D_80090A34 = 1;
+    do
+    {
+        EnabledMask = ChannelEnableMask & ChannelMask;
+        ChannelLength = 4;
+        if( EnabledMask & in_Mask )
+        {
+            Offset = *pData;
+            pChannel->ProgramCounter = &pData[*(u16*)pData];
+            pData += 2;
+            if( D_80094FFC & 0x100 )
+            {
+                ChannelLength = 0x1E4;
+            }
+            pChannel->Length2 = 2;
+            pChannel->VolumeBalance = 0x7F00;
+            pChannel->Volume = 0x3FFF0000;
+            pChannel->C_Value = 0x4000;
+            pChannel->Length1 = ChannelLength;
+            pChannel->FineTune = 0;
+            pChannel->Transpose = 0;
+            pChannel->PortamentoSteps = 0;
+            pChannel->PitchSlide = 0;
+            pChannel->PitchBendSlideTranspose = 0;
+            pChannel->PitchSlideStepsCurrent = 0;
+            pChannel->LengthFixed = 0;
+            pChannel->LengthStored = 0;
+            pChannel->ChannelPan = 0x8000;
+            pChannel->ChannelPanSlideLength = 0;
+            pChannel->PortamentoSteps = 0;
+            pChannel->C_StepsRemaining = 0;
+            pChannel->ChannelVolumeSlideLength = 0;
+            pChannel->FinePitchDelta = 0;
+            pChannel->KeyOnVolumeSlideLength = 0;
+            pChannel->RandomPitchDepth = 0;
+            pChannel->UpdateFlags = ((g_pActiveMusicConfig->AllocatedVoiceMask & VoiceMask) == 0) << 6;
+            pChannel->SfxMask = 0;
+            pChannel->AutoPanVolume = 0;
+            pChannel->LoopStackTop = 0;
+            pChannel->AutoPanDepth = 0;
+            pChannel->TremeloDepth = 0;
+            pChannel->VibratoDepth = 0;
+            pChannel->AutoPanDepthSlideLength = 0;
+            pChannel->TremeloDepthSlideLength = 0;
+            pChannel->VibratoDepthSlideLength = 0;
+            pChannel->AutoPanRateSlideLength = 0;
+            pChannel->TremeloRateSlideLength = 0;
+            pChannel->VibratoRateSlideLength = 0;
+            pChannel->FmTimer = 0;
+            pChannel->NoiseTimer = 0;
+            Sound_SetInstrumentToChannel(pChannel, 0);
+        }
+        else
+        {
+            if( EnabledMask != 0 )
+            {
+                if( !(ChannelMask & in_Mask) )
+                {
+                    pData += 2;
+                }
+            }
+            pChannel->Length1 = 3;
+            pChannel->Length2 = 1;
+            pChannel->ProgramCounter = (u8* ) &g_Sound_ProgramCounter;
+            pChannel->VoiceParams.VoiceParamFlags |= 0x4400;
+            pChannel->VoiceParams.AdsrUpper = (pChannel->VoiceParams.AdsrUpper & 0xFFE0) | 5;
+        }
+        pChannel->VoiceParams.AssignedVoiceNumber = 0x18;
+        ChannelEnableMask &= ~ChannelMask;
+        pChannel++;
+        ChannelIndex++;
+        ChannelMask <<= 1;
+    } while( ChannelIndex < SOUND_CHANNEL_COUNT );
+
+    g_pActiveMusicConfig->Tempo = -0x10000;
+    g_pActiveMusicConfig->TempoUpdate = 1;
+    g_pActiveMusicConfig->TempoSlideLength = 0;
+    g_pActiveMusicConfig->RevDepth = 0;
+    g_pActiveMusicConfig->ReverbDepthSlideLength = 0;
+    g_pActiveMusicConfig->ReverbDepthSlideStep = 0;
+    g_Sound_GlobalFlags.UpdateFlags = 0;
+    g_pActiveMusicConfig->TimerLowerCurrent = 0;
+    g_pActiveMusicConfig->TimerLower = 0;
+    g_pActiveMusicConfig->TimerUpperCurrent = 0;
+    g_pActiveMusicConfig->TimerTopCurrent = 0;
+    g_pActiveMusicConfig->NoiseChannelFlags = 0;
+    g_pActiveMusicConfig->ReverbChannelFlags = 0;
+    g_pActiveMusicConfig->FmChannelFlags = 0;
+    g_pActiveMusicConfig->JumpThresholdValue = 0;
+    g_pActiveMusicConfig->ActiveNoteMask = 0;
+    g_pActiveMusicConfig->PendingKeyOnMask = 0;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+}
+#endif
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E3A4);
 
@@ -127,11 +293,114 @@ void unk_Sound_SetLow2BitsForChannels( FSoundChannelConfig* in_p, FSoundChannel*
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EC88);
 
-extern s32 D_80094FAC;
-extern s32 D_80094FFC;
-
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_SetMusicSequence);
+#else
+void Sound_SetMusicSequence( FAkaoSequence* in_Sequence, s32 in_SwapWithSavedState )
+{
+    FAkaoSequence* PrevSequence;
+    FSoundChannel* pChannel;
+    u32 Delta;
+    u32 Mask;
+    u32 Flags;
+    u32 ActiveChannelMask;
+    u32 PrevActiveChannelMask;
+    u32 VoiceMask;
+    u32 VoicesToKeyOff;
+    u32 UnusedVoices;
+
+    if (in_SwapWithSavedState == 0)
+    {
+        memcpy32(&g_PushedMusicConfig, g_pActiveMusicConfig, 0x80U);
+        memcpy32(g_PushedMusicChannels, g_ActiveMusicChannels, 0x2480U);
+    }
+    else
+    {
+        memswap32(&g_PushedMusicConfig, g_pActiveMusicConfig, 0x80U);
+        memswap32(g_PushedMusicChannels, g_ActiveMusicChannels, 0x2480U);
+    }
+    pChannel = g_ActiveMusicChannels;
+    Flags = 0x20;
+    Mask = 1;
+    PrevSequence = g_pActiveMusicConfig->SequenceBase;
+    g_pActiveMusicConfig->SequenceBase = in_Sequence;
+    g_pActiveMusicConfig->PendingKeyOnMask = 0;
+    g_pActiveMusicConfig->StatusFlags &= ~0x30;
+    Delta = (u32)in_Sequence - (u32)PrevSequence;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x90;
+    ActiveChannelMask = g_pActiveMusicConfig->ActiveChannelMask;
+    (u32)g_pActiveMusicConfig->SequencePatchTable += Delta;
+    (u32)g_pActiveMusicConfig->KeymapTable += Delta;
+    g_pActiveMusicConfig->PendingKeyOnMask = g_pActiveMusicConfig->ActiveNoteMask;
+   
+    while (Flags != 0) {
+        if( ActiveChannelMask & Mask )
+        {
+            pChannel->ProgramCounter += Delta;
+            pChannel->Keymap += Delta;
+            pChannel->LoopStartPc[0] += Delta;
+            pChannel->LoopStartPc[1] += Delta;
+            pChannel->LoopStartPc[2] += Delta;
+            pChannel->LoopStartPc[3] += Delta;
+            pChannel->Length1 += 2;
+            pChannel->Length2 += 2;
+            pChannel->VoiceParams.VoiceParamFlags |= 0x1FF93;
+            Sound_ApplySampleBankOffsetIfNeeded((u32) g_pActiveMusicConfig->StatusFlags, pChannel);
+        }
+        else
+        {
+            pChannel->Length1 = 4U;
+            pChannel->Length2 = 2U;
+            pChannel->ProgramCounter = (u8*)&g_Sound_ProgramCounter;
+        }
+        pChannel->VoiceParams.AssignedVoiceNumber = 0x18;
+        Flags--;
+        pChannel++;
+        Mask <<= 1;
+    }
+    
+    if( g_pSavedMousicConfig )
+    {
+        VoiceMask = ChannelMaskToVoiceMask( g_pSecondaryMusicChannels, g_pSavedMousicConfig->ActiveChannelMask & g_pSavedMousicConfig->KeyedMask );
+    }
+    else
+    {
+        VoiceMask = 0;
+    }
+    
+    g_PushedMusicConfig.MusicId = 0;
+    g_pActiveMusicConfig->PendingKeyOffMask = 0;
+
+    // a0 = ~VoiceMask
+    // a1 = g_Sound_VoiceSchedulerState
+    // v0 = g_Sound_VoiceSchedulerState.ActiveChannelMask
+    // v1 = D_80094FAC
+
+
+    // nor     v1,v1,v0
+    UnusedVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask;
+    UnusedVoices = ~(D_80094FAC[0] | g_Sound_VoiceSchedulerState.ActiveChannelMask);
+
+    UnusedVoices &= 0xFFFFFF;
+
+    VoicesToKeyOff = ~VoiceMask;
+    VoicesToKeyOff &= UnusedVoices;
+    
+
+    // lw      v0,0xc(a1)
+    // or      v0,v0,a0
+    g_Sound_VoiceSchedulerState.KeyOffFlags |= VoicesToKeyOff;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    
+    if( D_80094FFC & 1 )
+    {
+        PrevActiveChannelMask = g_pActiveMusicConfig->ActiveChannelMask;
+        g_pActiveMusicConfig->ActiveChannelMask = 0;
+        g_pActiveMusicConfig->LastChannelModeFlags = PrevActiveChannelMask;
+    }
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EF8C);
