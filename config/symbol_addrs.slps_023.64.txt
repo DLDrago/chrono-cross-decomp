@@ -477,6 +477,7 @@ memcpy32                            = 0x80051E84;
 memswap32                           = 0x80051F04;
 Sound_ComputeSlideStep              = 0x80053D1C;
 Sound_CopyInstrumentInfoToChannel   = 0x80053D90;
+Sound_SetInstrumentToChannel        = 0x80053DC4;
 Sound_ClearVoiceFromSchedulerState  = 0x80053DFC;
 
 //----------------------------------------------------------------------------------------------------------------------
