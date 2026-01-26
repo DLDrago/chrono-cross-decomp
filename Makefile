@@ -159,6 +159,10 @@ all: build
 
 build: $(TARGET_OUT)
 
+matching: regenerate
+	$(Q)$(MAKE) build NON_MATCHING=0 SKIP_ASM=0
+	$(Q)$(MAKE) check
+
 objdiff-config: regenerate
 	@echo "[objdiff] Generating non-matching expected build..."
 	$(Q)$(MAKE) NON_MATCHING=1 SKIP_ASM=1 expected

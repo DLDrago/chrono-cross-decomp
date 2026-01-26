@@ -6,6 +6,8 @@
 
 #define READ_16LE_PC(pc) ((pc[0]) | (pc[1] << 8))
 
+extern u32 D_80072E60[];
+
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
@@ -520,7 +522,48 @@ void SoundVM_B6_DisableVibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B8_Tremelo);
+#else
+void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Delay;
+    u32 Rate;
+    u16 Type;
+
+    in_pChannel->UpdateFlags |= 2;
+    Delay = *in_pChannel->ProgramCounter++;
+
+    if (in_pChannel->Type != 0)
+    {
+        in_pChannel->TremeloDelay = 0;
+        if( Delay != 0 )
+        {
+            in_pChannel->TremeloDepth = (Delay & 0x7F) << 8;
+        }
+    }
+    else
+    {
+        in_pChannel->TremeloDelay = (s16) Delay;
+    }
+
+    Rate = *in_pChannel->ProgramCounter++ << 0xA;
+    in_pChannel->TremeloRatePhase = Rate;
+
+    if( Rate == 0 )
+    {
+        in_pChannel->TremeloRatePhase = 0x40000;
+    }
+
+    Type = *in_pChannel->ProgramCounter++;
+    in_pChannel->TremeloType = Type;
+
+    in_pChannel->TremeloRateSlideLength = 0;
+    in_pChannel->field81_0xca = 1;
+    in_pChannel->TremeloDelayCurrent = (u16)in_pChannel->TremeloDelay;
+    in_pChannel->TremeloWave = D_80072E60[Type];
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B9_TremeloDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -845,7 +888,40 @@ void SoundVM_B7_AttackMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BB_SustainMode);
+#else
+void SoundVM_BB_SustainMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 mode;
+    u16 adsrUpper;
+
+    adsrUpper = in_pChannel->VoiceParams.AdsrUpper & 0x3FFF;
+    mode = *in_pChannel->ProgramCounter++;
+    in_pChannel->VoiceParams.AdsrUpper = adsrUpper;
+
+    if (mode == 5)
+    {
+        in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0x8000;
+    }
+    else if (mode < 6)
+    {
+        if (mode == 3)
+        {
+            in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0x4000;
+        }
+    }
+    else
+    {
+        if (mode == 7)
+        {
+            in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0xC000;
+        }
+    }
+
+    in_pChannel->VoiceParams.VoiceParamFlags |= 0x200;
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_BF_ReleaseMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
