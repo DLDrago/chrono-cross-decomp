@@ -263,7 +263,7 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EBC8);
 
 //----------------------------------------------------------------------------------------------------------------------
 // Unknown exactly how this functions but it is setting bits 0 and 1 to each channel in the incoming struct's flags
-void unk_Sound_SetLow2BitsForChannels( FSoundChannelConfig* in_p, FSoundChannel* in_pChannel )
+void Sound_SetChannelVoiceParamVolumeFlags( FSoundChannelConfig* in_p, FSoundChannel* in_pChannel )
 {
     u32 tmp;
     u32 Flags;
@@ -282,7 +282,7 @@ void unk_Sound_SetLow2BitsForChannels( FSoundChannelConfig* in_p, FSoundChannel*
     {
         if( Flags & Mask )
         {
-            in_pChannel->VoiceParams.VoiceParamFlags |= (1 << 1) | (1 << 0);
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
             Flags ^= Mask;
         }
         in_pChannel++;
