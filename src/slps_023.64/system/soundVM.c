@@ -440,7 +440,61 @@ void SoundVM_D9_ChannelFineTune_Relative( FSoundChannel* in_pChannel, u32 in_Voi
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B4_Vibrato);
+#else
+void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
+{
+    u16 Delay;
+    u32 Rate;
+    u16 Type;
+    s32 PitchBase;
+    s32 var_lo;
+    s32 temp_a2;
+
+    in_pChannel->UpdateFlags |= 2;
+    Delay = *in_pChannel->ProgramCounter++;
+
+    if (in_pChannel->Type != 0)
+    {
+        in_pChannel->VibratoDelay = 0;
+        if( Delay != 0 )
+        {
+            in_pChannel->VibratoDepth = (Delay & 0x7F) << 8;
+        }
+    }
+    else
+    {
+        in_pChannel->VibratoDelay = (s16) Delay;
+    }
+
+    Rate = *in_pChannel->ProgramCounter++ << 0xA;
+    in_pChannel->VibratoRatePhase = Rate;
+
+    if( Rate == 0 )
+    {
+        in_pChannel->VibratoRatePhase = 0x40000;
+    }
+
+    Type = *in_pChannel->ProgramCounter++;
+    in_pChannel->VibratoType = Type;
+
+    PitchBase = in_pChannel->PitchBase;
+    temp_a2 = (u32) (in_pChannel->VibratoDepth & 0x7F00) >> 8;
+    if (!(in_pChannel->VibratoDepth & 0x8000)) {
+        var_lo = temp_a2 * ((s32) (PitchBase * 0xF) >> 8);
+    } else {
+        var_lo = temp_a2 * PitchBase;
+    }
+    in_pChannel->VibratoBase = (u16) (var_lo >> 7);
+
+    in_pChannel->VibratoRateSlideLength = 0;
+    in_pChannel->field72_0xb8 = 1;
+    in_pChannel->VibratoDelayCurrent = (u16)in_pChannel->TremeloDelay;
+    in_pChannel->VibratoWave = D_80072E60[Type];
+}
+#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B5_VibratoDepth(FSoundChannel* in_pChannel, u32 in_VoiceFlags) {
