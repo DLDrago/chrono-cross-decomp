@@ -602,19 +602,15 @@ void SoundVM_B6_DisableVibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B8_Tremelo);
-#else
 void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u16 Delay;
     u32 Rate;
-    u16 Type;
 
     in_pChannel->UpdateFlags |= 2;
     Delay = *in_pChannel->ProgramCounter++;
 
-    if (in_pChannel->Type != 0)
+    if( in_pChannel->Type != 0 )
     {
         in_pChannel->TremeloDelay = 0;
         if( Delay != 0 )
@@ -624,7 +620,7 @@ void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     }
     else
     {
-        in_pChannel->TremeloDelay = (s16) Delay;
+        in_pChannel->TremeloDelay = Delay;
     }
 
     Rate = *in_pChannel->ProgramCounter++ << 0xA;
@@ -635,15 +631,12 @@ void SoundVM_B8_Tremelo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
         in_pChannel->TremeloRatePhase = 0x40000;
     }
 
-    Type = *in_pChannel->ProgramCounter++;
-    in_pChannel->TremeloType = Type;
-
-    in_pChannel->TremeloRateSlideLength = 0;
+    in_pChannel->TremeloType = *in_pChannel->ProgramCounter++;
+    in_pChannel->TremeloWave = D_80072E60[ in_pChannel->TremeloType ];
+    in_pChannel->TremeloDelayCurrent = in_pChannel->TremeloDelay;
     in_pChannel->field81_0xca = 1;
-    in_pChannel->TremeloDelayCurrent = (u16)in_pChannel->TremeloDelay;
-    in_pChannel->TremeloWave = D_80072E60[Type];
+    in_pChannel->TremeloRateSlideLength = 0;
 }
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B9_TremeloDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
