@@ -6,7 +6,7 @@
 
 #define READ_16LE_PC(pc) ((pc[0]) | (pc[1] << 8))
 
-extern u32 D_80072E60[];
+extern s32 D_80072E60[];
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_A0_FinishChannel( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
@@ -471,53 +471,53 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B4_Vibrato);
 #else
 void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    u16 Delay;
-    u32 Rate;
-    u16 Type;
-    s32 PitchBase;
-    s32 var_lo;
-    s32 temp_a2;
+    u16 PitchBase;
+    u32 DepthHigh;
+    u32 VibratoRatePhase;
+    u32 VibratoBase;
+    u16 VibratoDepth;
 
-    in_pChannel->UpdateFlags |= 2;
-    Delay = *in_pChannel->ProgramCounter++;
-
-    if (in_pChannel->Type != 0)
+    in_pChannel->UpdateFlags |= 1;
+    if( in_pChannel->Type != SOUND_CHANNEL_TYPE_MUSIC )
     {
         in_pChannel->VibratoDelay = 0;
-        if( Delay != 0 )
+        VibratoDepth = *in_pChannel->ProgramCounter++;
+        if( VibratoDepth != 0 )
         {
-            in_pChannel->VibratoDepth = (Delay & 0x7F) << 8;
+            in_pChannel->VibratoDepth = VibratoDepth << 8;
         }
     }
     else
     {
-        in_pChannel->VibratoDelay = (s16) Delay;
+        in_pChannel->VibratoDelay = *in_pChannel->ProgramCounter++;
     }
 
-    Rate = *in_pChannel->ProgramCounter++ << 0xA;
-    in_pChannel->VibratoRatePhase = Rate;
+    VibratoRatePhase = *in_pChannel->ProgramCounter++ << 0xA;
+    in_pChannel->VibratoRatePhase = VibratoRatePhase;
 
-    if( Rate == 0 )
+    if( VibratoRatePhase == 0 )
     {
         in_pChannel->VibratoRatePhase = 0x40000;
     }
 
-    Type = *in_pChannel->ProgramCounter++;
-    in_pChannel->VibratoType = Type;
-
+    in_pChannel->VibratoType = *in_pChannel->ProgramCounter++;
     PitchBase = in_pChannel->PitchBase;
-    temp_a2 = (u32) (in_pChannel->VibratoDepth & 0x7F00) >> 8;
-    if (!(in_pChannel->VibratoDepth & 0x8000)) {
-        var_lo = temp_a2 * ((s32) (PitchBase * 0xF) >> 8);
-    } else {
-        var_lo = temp_a2 * PitchBase;
-    }
-    in_pChannel->VibratoBase = (u16) (var_lo >> 7);
+    DepthHigh = (in_pChannel->VibratoDepth & 0x7F00) >> 8;
 
-    in_pChannel->VibratoRateSlideLength = 0;
+    if( !(in_pChannel->VibratoDepth & 0x8000) )
+    {
+        VibratoBase = DepthHigh * ((PitchBase * 0xF) >> 8);
+    }
+    else
+    {
+        VibratoBase =  DepthHigh * PitchBase;
+    }
+
+    in_pChannel->VibratoBase = VibratoBase >> 7;
+    in_pChannel->VibratoWave = (s16*)D_80072E60[ (u16)in_pChannel->VibratoType ];
+    in_pChannel->VibratoDelayCurrent = in_pChannel->VibratoDelay;
     in_pChannel->field72_0xb8 = 1;
-    in_pChannel->VibratoDelayCurrent = (u16)in_pChannel->TremeloDelay;
-    in_pChannel->VibratoWave = D_80072E60[Type];
+    in_pChannel->VibratoRateSlideLength = 0;
 }
 #endif
 
