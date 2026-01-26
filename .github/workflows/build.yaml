@@ -46,8 +46,7 @@ jobs:
             make \
             binutils-mips-linux-gnu \
             cpp-mips-linux-gnu \
-            7zip \
-            V=1
+            7zip
 
       - name: Download ROM from private repository
         uses: actions/checkout@v4
