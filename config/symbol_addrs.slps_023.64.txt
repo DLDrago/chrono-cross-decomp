@@ -450,13 +450,64 @@ FreeVoiceChannels                         = 0x8004E974;
 Sound_MarkActiveChannelsVolumeDirty       = 0x8004EC40;
 Sound_MarkScheduledSfxChannelsVolumeDirty = 0x8004EC88;
 Sound_SetMusicSequence                    = 0x8004ECDC;
-func_8004F518                             = 0x8004F518;
-SetCdVolume                               = 0x8004FBD8;
 
 //----------------------------------------------------------------------------------------------------------------------
-// unk_reverb (???)
-DEBUG_80051234 = 0x80051234;
-Sound_SetReverbMode  = 0x8005123C;
+// soundCommand
+Sound_Cmd_10_StartFieldMusic                              = 0x8004EF8C;
+Sound_Cmd_14_StartBattleMusic                             = 0x8004F008;
+Sound_Cmd_40_8004F088                                     = 0x8004F088;
+Sound_Cmd_19_SetMusicLevelImmediate                       = 0x8004F130;
+Sound_Cmd_1A_StartMasterAndMusicVolumeFade                = 0x8004F1F8;
+Sound_Cmd_12_8004f3c4                                     = 0x8004F3C4;
+Sound_Cmd_34_8004F404	                                  = 0x8004F404;
+Sound_Cmd_30_8004F450	                                  = 0x8004F450;
+Sound_Cmd_20_8004F518                                     = 0x8004F518;
+Sound_Cmd_24_8004F5C8                                     = 0x8004F5C8;
+Sound_Cmd_21_8004F6E8                                     = 0x8004F6E8;
+Sound_Cmd_C0_8004F714                                     = 0x8004F714;
+Sound_Cmd_C1_8004F7C8                                     = 0x8004F7C8;
+Sound_Cmd_C2_8004F904                                     = 0x8004F904;
+Sound_Cmd_C4_8004FA04                                     = 0x8004FA04;
+Sound_Cmd_C5_8004FAB8                                     = 0x8004FAB8;
+Sound_Cmd_70_SetCdVolume                                  = 0x8004FBD8;
+Sound_Cmd_71_8004FC0C                                     = 0x8004FC0C;
+Sound_Cmd_72_8004FC74                                     = 0x8004FC74;
+Sound_Cmd_A0_8004FCE4                                     = 0x8004FCE4;
+Sound_Cmd_A1_8004FDCC                                     = 0x8004FDCC;
+Sound_Cmd_A8_8004FF4C                                     = 0x8004FF4C;
+Sound_Cmd_A9_8004FFC8                                     = 0x8004FFC8;
+Sound_Cmd_A2_80050090                                     = 0x80050090;
+Sound_Cmd_A3_80050170                                     = 0x80050170;
+Sound_Cmd_AA_800502E8                                     = 0x800502E8;
+Sound_Cmd_AB_80050360                                     = 0x80050360;
+Sound_Cmd_A4_80050424                                     = 0x80050424;
+Sound_Cmd_A5_80050504                                     = 0x80050504;
+Sound_Cmd_AC_8005068C                                     = 0x8005068C;
+Sound_Cmd_AD_800506E4                                     = 0x800506E4;
+Sound_Cmd_D0_800507B0                                     = 0x800507B0;
+Sound_Cmd_D1_800507CC                                     = 0x800507CC;
+Sound_Cmd_D2_80050834                                     = 0x80050834;
+Sound_Cmd_D4_800508A8                                     = 0x800508A8;
+Sound_Cmd_D5_800508C4                                     = 0x800508C4;
+Sound_Cmd_D6_8005092C                                     = 0x8005092C;
+Sound_Cmd_F0_800509A0                                     = 0x800509A0;
+Sound_Cmd_11_800509F0                                     = 0x800509F0;
+Sound_Cmd_F1_80050A58                                     = 0x80050A58;
+Sound_Cmd_80_80050B34                                     = 0x80050B34;
+Sound_Cmd_81_80050B94                                     = 0x80050B94;
+Sound_Cmd_90_FlagAllChannelsUpdateVolume                  = 0x80050BF4;
+Sound_Cmd_92_80050C34                                     = 0x80050C34;
+Sound_Cmd_9B_ConsumeChannelModeFlagsAndSanitizeFreeVoices = 0x80050C48;
+Sound_Cmd_9A_80050D38                                     = 0x80050D38;
+Sound_Cmd_9D_80050DD4                                     = 0x80050DD4;
+Sound_Cmd_9C_80050EF0                                     = 0x80050EF0;
+Sound_Cmd_9F_ResetGlobalVoice                             = 0x80050F84;
+Sound_Cmd_9E_80051000                                     = 0x80051000;
+Sound_Cmd_AE_80051094                                     = 0x80051094;
+Sound_Cmd_AF_80051110                                     = 0x80051110;
+Sound_Cmd_XX_Null                                         = 0x80051234;
+Sound_SetReverbMode                                       = 0x8005123C;
+Sound_ExecuteSoundVm2Function                             = 0x8005128C;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)

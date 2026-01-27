@@ -1302,7 +1302,7 @@ void SoundVM_FE0B_800558cc( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     g_SoundCommandParams.Param2 = D_80090A34;
     g_SoundCommandParams.Param3 = in_pChannel->ChannelPan >> 8;
     g_SoundCommandParams.Param4 = in_pChannel->VolumeBalance >> 8;
-    func_8004F518( &g_SoundCommandParams );
+    Sound_Cmd_20_8004F518( &g_SoundCommandParams );
     D_80090A34 ^= 3;
 }
 
