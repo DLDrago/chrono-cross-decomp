@@ -51,7 +51,7 @@ void DEBUG_80051234(void) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SetReverbMode( s32 in_ReverbMode )
+void Sound_SetReverbMode( s32 in_ReverbMode )
 {
     s32 currentReverbMode;
 

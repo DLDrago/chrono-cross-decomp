@@ -476,9 +476,14 @@ void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams
 // Sound 2
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
 u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_Channel );
+void Sound_LoadAkaoSequence( FAkaoSequence* in_Sequence, s32 in_Mask );
+void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice );
+void Sound_MarkActiveChannelsVolumeDirty( FSoundChannelConfig* in_pChannelConfig, FSoundChannel* in_pChannel );
+void Sound_MarkScheduledSfxChannelsVolumeDirty();
 void Sound_SetMusicSequence( FAkaoSequence *in_Sequence, int in_SwapWithSavedState );
 void Sound_SetInstrumentToChannel( FSoundChannel *in_Channel, u32 in_Index );
 void func_8004F518( FSoundCommandParams* in_Params );
+void SetCdVolume( u16* in_pVolume );
 
 // Sound 3
 void UpdateCdVolume();
@@ -593,6 +598,7 @@ extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
 extern s16* g_Sound_LfoTable[SOUND_LFO_COUNT];
 extern FSoundChannel g_ActiveMusicChannels[0x20];
 extern u32 D_80090A34;
+extern FSoundChannel SfxSoundChannels[12];
 extern FSoundChannel* g_pSecondaryMusicChannels;
 extern FSoundChannelConfig* g_pSavedMousicConfig; // What even is this used for
 extern FSoundChannelConfig g_PushedMusicConfig;

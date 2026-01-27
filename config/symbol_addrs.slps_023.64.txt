@@ -443,19 +443,20 @@ SpuSetReverbDepth   = 0x8004DD20;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Sound2
-Sound_ApplySampleBankOffsetIfNeeded   = 0x8004DD50;
-ChannelMaskToVoiceMask                = 0x8004DFC4;
-Sound_LoadAkaoSequence                = 0x8004E010;
-FreeVoiceChannels                     = 0x8004E974;
-Sound_MarkActiveChannelsVolumeDirty   = 0x8004EC40;
-Sound_SetMusicSequence                = 0x8004ECDC;
-func_8004F518                         = 0x8004F518;
-SetCdVolume                           = 0x8004FBD8;
+Sound_ApplySampleBankOffsetIfNeeded       = 0x8004DD50;
+ChannelMaskToVoiceMask                    = 0x8004DFC4;
+Sound_LoadAkaoSequence                    = 0x8004E010;
+FreeVoiceChannels                         = 0x8004E974;
+Sound_MarkActiveChannelsVolumeDirty       = 0x8004EC40;
+Sound_MarkScheduledSfxChannelsVolumeDirty = 0x8004EC88;
+Sound_SetMusicSequence                    = 0x8004ECDC;
+func_8004F518                             = 0x8004F518;
+SetCdVolume                               = 0x8004FBD8;
 
 //----------------------------------------------------------------------------------------------------------------------
 // unk_reverb (???)
 DEBUG_80051234 = 0x80051234;
-SetReverbMode  = 0x8005123C;
+Sound_SetReverbMode  = 0x8005123C;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)
@@ -606,6 +607,7 @@ g_SemitonePitchTable         = 0x8007232C;
 g_Sound_LfoTable             = 0x80072E60;
 g_ActiveMusicChannels        = 0x8008E578; // type:FSoundChannel[] size:0x2480
 D_80090A34                   = 0x80090A34;
+SfxSoundChannels             = 0x80090A38; // type:FSoundChannel[] size:0xDB0
 g_pSecondaryMusicChannels    = 0x800917EC;
 // what is this
 g_pSavedMousicConfig         = 0x800917F0;

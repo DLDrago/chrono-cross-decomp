@@ -263,19 +263,19 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EBC8);
 
 //----------------------------------------------------------------------------------------------------------------------
 // Unknown exactly how this functions but it is setting bits 0 and 1 to each channel in the incoming struct's flags
-void Sound_MarkActiveChannelsVolumeDirty( FSoundChannelConfig* in_p, FSoundChannel* in_pChannel )
+void Sound_MarkActiveChannelsVolumeDirty( FSoundChannelConfig* in_pChannelConfig, FSoundChannel* in_pChannel )
 {
-    u32 tmp;
+    u32 ActiveChannelMask;
     u32 Flags;
     u32 Mask;
 
-    tmp = in_p->ActiveChannelMask;
-    if( tmp == 0 )
+    ActiveChannelMask = in_pChannelConfig->ActiveChannelMask;
+    if( ActiveChannelMask == 0 )
     {
         return;
     }
 
-    Flags = tmp;
+    Flags = ActiveChannelMask;
     Mask = 1;
 
     while( Flags != 0 )
@@ -291,7 +291,31 @@ void Sound_MarkActiveChannelsVolumeDirty( FSoundChannelConfig* in_p, FSoundChann
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EC88);
+void Sound_MarkScheduledSfxChannelsVolumeDirty()
+{
+    u32 Mask;
+    u32 ActiveChannelMask;
+    FSoundChannel* pChannel;
+
+    if( g_Sound_VoiceSchedulerState.ActiveChannelMask == 0 )
+    {
+        return;
+    }
+
+    ActiveChannelMask = g_Sound_VoiceSchedulerState.ActiveChannelMask;
+    pChannel = SfxSoundChannels;
+    Mask = (1 << 12); // SFX Channels start at channel 12
+    while( ActiveChannelMask != 0 )
+    {
+        if( ActiveChannelMask & Mask )
+        {
+            ActiveChannelMask ^= Mask;
+            pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+        pChannel++;
+        Mask <<= 1;
+    };
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 #ifndef NON_MATCHING
