@@ -4,6 +4,12 @@
 volatile extern s32 g_bSpuTransferring;
 
 //----------------------------------------------------------------------------------------------------------------------
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", Sound_CopyAndRelocateInstruments);
+
+//----------------------------------------------------------------------------------------------------------------------
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", unk_Sound_8004B164);
+
+//----------------------------------------------------------------------------------------------------------------------
 void ClearSpuTransferCallback()
 {
   SpuSetTransferCallback( NULL );

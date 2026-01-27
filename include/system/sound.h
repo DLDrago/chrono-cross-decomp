@@ -468,9 +468,19 @@ typedef struct
     0x00001E34   // B  - 2^(11/12)
 }; */
 
+// SPU management
+// void Sound_CopyAndRelocateInstruments( FSoundInstrumentInfo* in_A, FSoundInstrumentInfo* in_B, s32 in_AddrOffset, s32 in_Count);
+// void unk_Sound_8004b164(s32*);
+void ClearSpuTransferCallback();
+void SetSpuTransferCallback();
+void WriteSpu( s32 in_Addr, s32 in_Size );
+void ReadSpu( s32 in_Addr, s32 in_Size );
+void WaitForSpuTransfer();
+
 // Sound
 void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeScale );
 void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate );
+void SetVoiceRepeatAddr( u32 in_VoiceIndex, u32 in_Addr );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams );
 
 // Sound 2
@@ -647,6 +657,11 @@ void SoundVM_E1_SetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFla
 void SoundVM_E2_ResetRandomPitchDepth( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_FE13_PreventVoicesFromRekeyingOnResume( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
 void SoundVM_XX_Unimplemented( FSoundChannel* in_pChannel, u32 in_VoiceFlags );
+
+// sound4
+void unk_Sound_80055a10();
+u32 unk_Sound_80055e0c(s32*);
+u32 unk_Sound_80056144( u32 in_RepeatAddressL, u32 in_RepeatAddressR, int in_Param3, SpuIRQCallbackProc in_IrqCallback );
 
 extern u32 g_Sound_ProgramCounter;
 extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];

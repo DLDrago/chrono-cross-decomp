@@ -383,11 +383,13 @@ InitSound         = 0x80049F1C;
 
 //----------------------------------------------------------------------------------------------------------------------
 // SPU management
-ClearSpuTransferCallback = 0x8004B178;
-SetSpuTransferCallback   = 0x8004B19C;
-WriteSpu                 = 0x8004B1CC;
-ReadSpu                  = 0x8004B21C;
-WaitForSpuTransfer       = 0x8004B258;
+Sound_CopyAndRelocateInstruments = 0x8004B11C;
+unk_Sound_8004B164               = 0x8004B164;
+ClearSpuTransferCallback         = 0x8004B178;
+SetSpuTransferCallback           = 0x8004B19C;
+WriteSpu                         = 0x8004B1CC;
+ReadSpu                          = 0x8004B21C;
+WaitForSpuTransfer               = 0x8004B258;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -402,14 +404,15 @@ ResetRCnt = 0x8004B92C;
 //----------------------------------------------------------------------------------------------------------------------
 // LibSpu (cont.)
 //----------------------------------------------------------------------------------------------------------------------
-SpuInitMalloc          = 0x8004B964;
-SpuSetIRQ              = 0x8004B9C4;
-SpuSetIRQCallback      = 0x8004BB04;
-_SpuCallback           = 0x8004BB44;
-SpuRead                = 0x8004BB74;
-SpuWrite               = 0x8004BBD4;
-SpuSetTransferMode     = 0x8004BC34;
-SpuSetTransferCallback = 0x8004BC64;
+SpuInitMalloc           = 0x8004B964;
+SpuSetIRQ               = 0x8004B9C4;
+SpuSetTransferStartAddr = 0x8004B0B4;
+SpuSetIRQCallback       = 0x8004BB04;
+_SpuCallback            = 0x8004BB44;
+SpuRead                 = 0x8004BB74;
+SpuWrite                = 0x8004BBD4;
+SpuSetTransferMode      = 0x8004BC34;
+SpuSetTransferCallback  = 0x8004BC64;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Sound voice
@@ -634,23 +637,26 @@ SoundVM_E2_ResetRandomPitchDepth               = 0x800559C8;
 SoundVM_FE13_PreventVoicesFromRekeyingOnResume = 0x800559D0;
 SoundVM_XX_Unimplemented                       = 0x800559F0;
 
-
 //----------------------------------------------------------------------------------------------------------------------
 // sound 4
-unk_Sound_80055a10              = 0x80055A10;
-unk_Sound_80055ab0              = 0x80055AB0;
-unk_Sound_80055b40              = 0x80055B40;
-unk_Sound_80055cfc              = 0x80055CFC;
-unk_Sound_SetVolumeStereoPair   = 0x80055D1C;
-unk_Sound_80055d8c              = 0x80055D8C;
-unk_Sound_80055e0c              = 0x80055E0C;
-unk_Sound_80055e60              = 0x80055E60;
-unk_Sound_8005600c              = 0x8005600C;
-unk_Sound_800560d4              = 0x800560D4;
-unk_Sound_80056144              = 0x80056144;
-unk_Sound_800562a0              = 0x800562A0;
-unk_Sound_800562d0              = 0x800562D0;
-unk_Sound_80056308              = 0x80056308;
+unk_Sound_80055a10               = 0x80055A10;
+unk_Sound_80055ab0               = 0x80055AB0;
+unk_Sound_80055b40               = 0x80055B40;
+Sound_Cmd_E2_80055cfc            = 0x80055CFC;
+Sound_Cmd_E4_SetVolumeStereoPair = 0x80055D1C;
+Sound_Cmd_E5_80055d8c            = 0x80055D8C;
+unk_Sound_80055e0c               = 0x80055E0C;
+unk_Sound_80055e60               = 0x80055E60;
+unk_Sound_8005600c               = 0x8005600C;
+unk_Sound_800560d4               = 0x800560D4;
+unk_Sound_80056144               = 0x80056144;
+unk_Sound_800562a0               = 0x800562A0;
+unk_Sound_800562d0               = 0x800562D0;
+Sound_Cmd_E8_80056308            = 0x80056308;
+
+//----------------------------------------------------------------------------------------------------------------------
+// More libspu
+SpuSetIRQAddr = 0x8005637C;
 
 //----------------------------------------------------------------------------------------------------------------------
 g_Sound_ProgramCounter       = 0x80072328;

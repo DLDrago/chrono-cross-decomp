@@ -82,7 +82,7 @@ segments:
       - [0x1BD2C, asm]
       - [0x2225C, asm]
       - [0x2A200, asm]
-      - [0x3B978, c, system/spu]
+      - [0x3B91C, c, system/spu]
       - [0x3BA84, asm]
       - [0x3BFF4, asm, psyq/libapi_2]
       - [0x3C164, asm, psyq/libspu2]
@@ -95,7 +95,7 @@ segments:
       - [0x42654, asm, psyq/libspu_5]
       - [0x42664, c, system/sound3]
       - [0x44668, c, system/soundVM]
-      - [0x46210, asm, system/sound4]
+      - [0x46210, c, system/sound4]
       - [0x46B7C, asm, psyq/libspu/SpuSetIRQAddr]
       - [0x46BBC, asm]
       - [0x46C6C, rodata, psyq/libc]     # 0x8005646C
