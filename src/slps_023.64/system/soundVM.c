@@ -43,7 +43,7 @@ void SoundVM_FE00_SetTempo( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, u32 in_VoiceFlags)
+void SoundVM_FE01_SetTempoSlide( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u8* pc;
     s32 Dest;
@@ -963,29 +963,27 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BB_SustainMod
 void SoundVM_BB_SustainMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u16 mode;
-    u16 adsrUpper;
 
-    adsrUpper = in_pChannel->VoiceParams.AdsrUpper & 0x3FFF;
     mode = *in_pChannel->ProgramCounter++;
-    in_pChannel->VoiceParams.AdsrUpper = adsrUpper;
+    in_pChannel->VoiceParams.AdsrUpper &= ~(1 << 14 | 1 << 15);
 
-    if (mode == 5)
+    if( mode != 5 )
     {
-        in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0x8000;
-    }
-    else if (mode < 6)
-    {
-        if (mode == 3)
+        if( mode < 6 )
         {
-            in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0x4000;
+            if( mode != 3 )
+            {
+                in_pChannel->VoiceParams.AdsrUpper |= 0x4000;
+            }
+        }
+        else if( mode != 7 )
+        {
+            in_pChannel->VoiceParams.AdsrUpper |= 0xC000;
         }
     }
     else
     {
-        if (mode == 7)
-        {
-            in_pChannel->VoiceParams.AdsrUpper = adsrUpper | 0xC000;
-        }
+        in_pChannel->VoiceParams.AdsrUpper  |= 0x8000;
     }
 
     in_pChannel->VoiceParams.VoiceParamFlags |= 0x200;
