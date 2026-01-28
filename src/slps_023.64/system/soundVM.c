@@ -464,16 +464,13 @@ void SoundVM_D9_ChannelFineTune_Relative( FSoundChannel* in_pChannel, u32 in_Voi
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_B4_Vibrato);
-#else
 void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
-    u16 PitchBase;
+    s32 PitchBase;
     u32 DepthHigh;
     u32 VibratoRatePhase;
     u32 VibratoBase;
-    u16 VibratoDepth;
+    s32 VibratoDepth;
 
     in_pChannel->UpdateFlags |= SOUND_UPDATE_VIBRATO;
     if( in_pChannel->Type != SOUND_CHANNEL_TYPE_MUSIC )
@@ -499,7 +496,7 @@ void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     }
 
     in_pChannel->VibratoType = *in_pChannel->ProgramCounter++;
-    PitchBase = in_pChannel->PitchBase;
+    PitchBase = (u16)in_pChannel->PitchBase;
     DepthHigh = (in_pChannel->VibratoDepth & 0x7F00) >> 8;
 
     if( !(in_pChannel->VibratoDepth & 0x8000) )
@@ -512,7 +509,7 @@ void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     }
 
     in_pChannel->VibratoBase = VibratoBase >> 7;
-    in_pChannel->VibratoWave = g_Sound_LfoTable[ (u16)in_pChannel->VibratoType ];
+    in_pChannel->VibratoWave = (s16*)g_Sound_LfoTable[ (u16)in_pChannel->VibratoType ];
     in_pChannel->VibratoDelayCurrent = in_pChannel->VibratoDelay;
     in_pChannel->field72_0xb8 = 1;
     in_pChannel->VibratoRateSlideLength = 0;
