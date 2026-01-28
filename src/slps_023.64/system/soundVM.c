@@ -514,8 +514,6 @@ void SoundVM_B4_Vibrato( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     in_pChannel->field72_0xb8 = 1;
     in_pChannel->VibratoRateSlideLength = 0;
 }
-#endif
-
 
 //----------------------------------------------------------------------------------------------------------------------
 void SoundVM_B5_VibratoDepth(FSoundChannel* in_pChannel, u32 in_VoiceFlags) {

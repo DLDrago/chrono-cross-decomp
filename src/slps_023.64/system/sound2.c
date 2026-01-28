@@ -32,8 +32,55 @@ u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_pChanne
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDA4);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDF8);
+//----------------------------------------------------------------------------------------------------------------------
+void func_8004DDF8()
+{
+    FSoundChannel* pChannel;
+    s32 Bit;
+    s32 Count;
+    s32 VoiceIndex;
+    s32 KeyOffFlags;
+    s32 AllocatedVoices;
+    u32 ActiveAllocatedVoices;
+    u32 SavedAllocatedVoices;
 
+    if( g_pSavedMousicConfig != NULL )
+    {
+        ActiveAllocatedVoices = g_pActiveMusicConfig->AllocatedVoiceMask;
+        SavedAllocatedVoices = g_pSavedMousicConfig->AllocatedVoiceMask;
+        AllocatedVoices = ~(SavedAllocatedVoices & 
+            (~(g_pActiveMusicConfig->KeyedMask & ActiveAllocatedVoices) | 
+                (g_pSavedMousicConfig->KeyedMask & SavedAllocatedVoices))) &
+            ActiveAllocatedVoices & 0xFFFFFF;
+
+        KeyOffFlags = 0;
+        VoiceIndex = 0;
+        while (AllocatedVoices != 0)
+        {
+            Bit = 1 << VoiceIndex;
+            if( AllocatedVoices & Bit )
+            {
+                Count = 0x20;
+                pChannel = g_pSecondaryMusicChannels;
+                while( Count != 0 )
+                {
+                    if( pChannel->VoiceParams.AssignedVoiceNumber == VoiceIndex )
+                    {
+                        pChannel->VoiceParams.AssignedVoiceNumber = 0x18;
+                        KeyOffFlags |= Bit;
+                    }
+                    Count--;
+                    pChannel++;
+                };
+                AllocatedVoices &= ~(1 << VoiceIndex);
+            }
+            VoiceIndex++;
+        };
+        g_Sound_VoiceSchedulerState.KeyOffFlags |= KeyOffFlags;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DED8);
 
 //----------------------------------------------------------------------------------------------------------------------
