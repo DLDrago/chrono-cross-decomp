@@ -469,8 +469,8 @@ typedef struct
 }; */
 
 // SPU management
-// void Sound_CopyAndRelocateInstruments( FSoundInstrumentInfo* in_A, FSoundInstrumentInfo* in_B, s32 in_AddrOffset, s32 in_Count);
-// void unk_Sound_8004b164(s32*);
+void Sound_CopyAndRelocateInstruments( FSoundInstrumentInfo* in_A, FSoundInstrumentInfo* in_B, s32 in_AddrOffset, s32 in_Count);
+void unk_Sound_8004b164(s32*);
 void ClearSpuTransferCallback();
 void SetSpuTransferCallback();
 void WriteSpu( s32 in_Addr, s32 in_Size );
@@ -478,15 +478,31 @@ void ReadSpu( s32 in_Addr, s32 in_Size );
 void WaitForSpuTransfer();
 
 // Sound
+void SetVoiceKeyOn( u32 in_KeyOn );
+void SetVoiceKeyOff( u32 in_KeyOff );
+void SetVoiceReverbMode( u32 in_ReverbMode );
+void SetVoiceNoiseMode( u32 in_NoiseMode );
+void SetVoiceFmMode( u32 in_FmMode );
 void SetVoiceVolume( s32 in_VoiceIndex, u32 in_VolL, u32 in_VolR, u32 in_VolumeScale );
 void SetVoiceSampleRate( s32 in_VoiceIndex, s32 in_SampleRate );
+void SetVoiceStartAddr( u32 in_VoiceIndex, u32 in_Addr );
 void SetVoiceRepeatAddr( u32 in_VoiceIndex, u32 in_Addr );
-void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams *in_VoiceParams );
+void SetVoiceAdsrLower( s32 in_VoiceIndex, u16 in_Register );
+void SetVoiceAdsrUpper( s32 in_VoiceIndex, u16 in_Register );
+void SetVoiceAdsrAttackRateAndMode( s32 in_VoiceIndex, s32 in_AttackStep, u32 in_AttackMode );
+void SetVoiceAdsrDecayRate( s32 in_VoiceIndex, s32 in_DecayRate );
+void SetVoiceAdsrSustainLevel( s32 in_VoiceIndex, s32 in_SustainLevel );
+void SetVoiceAdsrSustainRateAndDirection( s32 in_VoiceIndex, s32 in_SustainRate, u32 in_SustainDirection );
+void SetVoiceAdsrReleaseRateAndMode( s32 in_VoiceIndex, s32 in_ReleaseRate, u32 in_ReleaseMode );
+void SetVoiceParams( s32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, s32 in_VolumeScale );
+void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams );
+void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
 
 // Sound 2
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
 u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_Channel );
 void Sound_LoadAkaoSequence( FAkaoSequence* in_Sequence, s32 in_Mask );
+void Sound_KillMusicConfig( FSoundChannelConfig *in_Struct,FSoundChannel *in_pChannel, uint);
 void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice );
 void Sound_MarkActiveChannelsVolumeDirty( FSoundChannelConfig* in_pChannelConfig, FSoundChannel* in_pChannel );
 void Sound_MarkScheduledSfxChannelsVolumeDirty();
@@ -683,3 +699,4 @@ extern s32 g_CdVolume;
 extern FSoundChannel g_PushedMusicChannels[0x20];
 extern FSoundGlobalFlags g_Sound_GlobalFlags;
 extern FSound80094FA0 D_80094FA0;
+extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];

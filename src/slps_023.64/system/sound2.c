@@ -229,12 +229,46 @@ void Sound_LoadAkaoSequence( FAkaoSequence* in_Sequence, s32 in_Mask )
 }
 #endif
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E3A4);
+//----------------------------------------------------------------------------------------------------------------------
+void Sound_KillMusicConfig( FSoundChannelConfig* in_Config, FSoundChannel* in_pChannel, u32 arg2 )
+{
+    FSoundChannel* pChannel;
+    FSoundChannelConfig** ppThisChannelConfig;
+    u32 Count;
 
+    pChannel = in_pChannel;
+    if( (in_Config->ActiveChannelMask != 0) && ((arg2 == 0) || (arg2 == in_Config->MusicId)))
+    {
+        in_Config->PendingKeyOffMask = -1;
+        for( Count = SOUND_CHANNEL_COUNT; Count != 0; Count-- )
+        {
+            pChannel->Length1 = 3;
+            pChannel->Length2 = 1;
+            pChannel->ProgramCounter = (u8*)&g_Sound_ProgramCounter;
+            pChannel++;
+        };
+
+        ppThisChannelConfig = g_Sound_VoiceChannelConfigs;
+        in_Config->MusicId = 0;
+        in_Config->ActiveNoteMask = 0;
+        in_Config->PendingKeyOnMask = 0;
+
+        for( Count = 0; Count < VOICE_COUNT; Count++ )
+        {
+            if( *ppThisChannelConfig == in_Config )
+            {
+                *ppThisChannelConfig = NULL;
+                SetVoiceAdsrReleaseRateAndMode(Count, 5, 3U);
+            }
+            ppThisChannelConfig++;
+        };
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E478);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E7D8);
-
 
 //----------------------------------------------------------------------------------------------------------------------
 void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice )
