@@ -33,52 +33,66 @@ u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_pChanne
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDA4);
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDF8);
+#else
 void func_8004DDF8()
 {
     FSoundChannel* pChannel;
-    s32 Bit;
-    s32 Count;
+    u32 ActiveAlloc;
+    u32 ActiveKeyed;
+    u32 SavedAlloc;
+    u32 SavedKeyed;
+    u32 VoicesToKeyOff;
+    u32 KeyOffFlags;
+    u32 Bit;
     s32 VoiceIndex;
-    s32 KeyOffFlags;
-    s32 AllocatedVoices;
-    u32 ActiveAllocatedVoices;
-    u32 SavedAllocatedVoices;
+    s32 Count;
 
-    if( g_pSavedMousicConfig != NULL )
+    if( !g_pSavedMousicConfig )
     {
-        ActiveAllocatedVoices = g_pActiveMusicConfig->AllocatedVoiceMask;
-        SavedAllocatedVoices = g_pSavedMousicConfig->AllocatedVoiceMask;
-        AllocatedVoices = ~(SavedAllocatedVoices & 
-            (~(g_pActiveMusicConfig->KeyedMask & ActiveAllocatedVoices) | 
-                (g_pSavedMousicConfig->KeyedMask & SavedAllocatedVoices))) &
-            ActiveAllocatedVoices & 0xFFFFFF;
-
-        KeyOffFlags = 0;
-        VoiceIndex = 0;
-        while (AllocatedVoices != 0)
-        {
-            Bit = 1 << VoiceIndex;
-            if( AllocatedVoices & Bit )
-            {
-                Count = 0x20;
-                pChannel = g_pSecondaryMusicChannels;
-                while( Count != 0 )
-                {
-                    if( pChannel->VoiceParams.AssignedVoiceNumber == VoiceIndex )
-                    {
-                        pChannel->VoiceParams.AssignedVoiceNumber = 0x18;
-                        KeyOffFlags |= Bit;
-                    }
-                    Count--;
-                    pChannel++;
-                };
-                AllocatedVoices &= ~(1 << VoiceIndex);
-            }
-            VoiceIndex++;
-        };
-        g_Sound_VoiceSchedulerState.KeyOffFlags |= KeyOffFlags;
+        return;
     }
+
+    ActiveAlloc = g_pActiveMusicConfig->AllocatedVoiceMask;   /* +0x08 */
+    ActiveKeyed = g_pActiveMusicConfig->KeyedMask;            /* +0x0C */
+    SavedAlloc  = g_pSavedMousicConfig->AllocatedVoiceMask;   /* +0x08 */
+    SavedKeyed  = g_pSavedMousicConfig->KeyedMask;            /* +0x0C */
+
+    VoicesToKeyOff =
+        (~( SavedKeyed & ( (~(ActiveAlloc & ActiveKeyed)) | (SavedAlloc & SavedKeyed) ) ) )
+        & ActiveKeyed
+        & 0x00FFFFFF;
+
+    KeyOffFlags = 0;
+    VoiceIndex = 0;
+
+    while( VoicesToKeyOff != 0 )
+    {
+        Bit = 1u << VoiceIndex;
+        if( VoicesToKeyOff & Bit )
+        {
+            pChannel = g_pSecondaryMusicChannels;
+            
+            for( Count = 0; Count < 0x20; Count++ )
+            {
+                if( pChannel->VoiceParams.AssignedVoiceNumber == (u32)VoiceIndex )
+                {
+                    pChannel->VoiceParams.AssignedVoiceNumber = 0x18;
+                    KeyOffFlags |= Bit;
+                }
+                pChannel++;
+            }
+
+            VoicesToKeyOff &= ~Bit;
+        }
+
+        VoiceIndex++;
+    }
+
+    g_Sound_VoiceSchedulerState.KeyOffFlags |= KeyOffFlags;
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DED8);
