@@ -16,7 +16,7 @@ extern s32 D_80094FAC[];
 extern s32 D_80094FFC;
 
 //----------------------------------------------------------------------------------------------------------------------
-u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_pChannel )
+u16 Sound_MapInstrumentToAltSampleBank( u32 in_Flags, FSoundChannel* in_pChannel )
 {
     if( in_Flags & SOUND_BANK_FLAG_ALT_SAMPLE_BANK &&
             (in_pChannel->InstrumentIndex - SOUND_BANK_REMAP_BASE_INDEX) < SOUND_BANK_REMAP_COUNT
@@ -30,8 +30,20 @@ u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_pChanne
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDA4);
+u16 Sound_MapInstrumentToBaseSampleBank( u32 in_Flags, FSoundChannel* in_Channel )
+{
+    if( (in_Flags & SOUND_BANK_FLAG_ALT_SAMPLE_BANK) && 
+            (in_Channel->InstrumentIndex - SOUND_BANK_REMAP_BASE_INDEX) < SOUND_BANK_REMAP_COUNT
+    )
+    {
+        in_Channel->VoiceParams.StartAddress -= SOUND_BANK_SPU_ADDR_OFFSET;
+        in_Channel->VoiceParams.LoopAddress  -= SOUND_BANK_SPU_ADDR_OFFSET;
+        in_Channel->InstrumentIndex          -= SOUND_BANK_REMAP_BASE_INDEX;
+    }
+    return in_Channel->InstrumentIndex;
+}
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDF8);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DED8);
@@ -303,7 +315,62 @@ void Sound_KillMusicConfig( FSoundChannelConfig* in_Config, FSoundChannel* in_pC
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E478);
 
+//----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E7D8);
+#else
+void func_8004E7D8( FSoundChannel* in_pChannel, FThing* in_pUnk, s32 in_Flags, u8* in_ProgramCounter )
+{
+    FSoundChannel* pChannel;
+    s32 Mask;
+    s32 Flag;
+
+    in_pChannel->field23_0x50 = *(u32*)(in_pUnk + 0x0);
+    in_pChannel->unk_Flags = *(s32*)((s8*)in_pUnk + 0x4);
+    in_pChannel->ChannelPan = 0x8000;
+    in_pChannel->field42_0x82 = 0;
+    in_pChannel->ChannelPanSlideLength = 0;
+    in_pChannel->field41_0x80 = *(u16*)(in_pUnk + 0x8) << 8;
+    in_pChannel->Length1 = 2;
+    in_pChannel->Length2 = 1;
+    in_pChannel->Type = 1;
+    in_pChannel->C_StepsRemaining = 0;
+    in_pChannel->field34_0x6c = -2;
+    in_pChannel->field25_0x54 = 0;
+    in_pChannel->field57_0x9a = 0;
+    in_pChannel->C_Value = (*(u16*)(in_pUnk + 0xC) & 0x7F) << 8;
+
+    Sound_ResetChannel(in_pChannel, in_ProgramCounter);
+    g_Sound_VoiceChannelConfigs[in_pChannel->VoiceParams.AssignedVoiceNumber] = NULL;
+    SetVoiceAdsrReleaseRateAndMode((s32) in_pChannel->VoiceParams.AssignedVoiceNumber, 5, 3U);
+
+    g_Sound_VoiceSchedulerState.ActiveChannelMask |= in_Flags;
+    g_Sound_VoiceSchedulerState.KeyOffFlags |= in_Flags;
+
+    g_Sound_VoiceSchedulerState.KeyOnFlags &= ~in_Flags;
+    g_Sound_VoiceSchedulerState.KeyedFlags &= ~in_Flags;
+    g_Sound_VoiceSchedulerState.NoiseVoiceFlags &= ~in_Flags;
+    g_Sound_VoiceSchedulerState.ReverbVoiceFlags &= ~in_Flags;
+    g_Sound_VoiceSchedulerState.FmVoiceFlags &= ~in_Flags;
+
+    if( D_80094FFC & 2 )
+    {
+        Flag = (1 << 0xC);
+        pChannel = SfxSoundChannels;
+        Mask = 0xC;
+        do {
+            if( (g_Sound_VoiceSchedulerState.ActiveChannelMask & Flag) && !(pChannel->unk_Flags & 0x02000000) )
+            {
+                g_Sound_VoiceSchedulerState.ActiveChannelMask &= ~Flag;
+                g_Sound_VoiceSchedulerState.unk_Flags_0x10 |= Flag;
+            }
+            Mask--;
+            pChannel++;
+            Flag <<= 1;
+        } while( Mask != 0 );
+    }
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice )
@@ -439,7 +506,7 @@ void Sound_SetMusicSequence( FAkaoSequence* in_Sequence, s32 in_SwapWithSavedSta
             pChannel->Length1 += 2;
             pChannel->Length2 += 2;
             pChannel->VoiceParams.VoiceParamFlags |= 0x1FF93;
-            Sound_ApplySampleBankOffsetIfNeeded((u32) g_pActiveMusicConfig->StatusFlags, pChannel);
+            Sound_MapInstrumentToAltSampleBank((u32) g_pActiveMusicConfig->StatusFlags, pChannel);
         }
         else
         {
