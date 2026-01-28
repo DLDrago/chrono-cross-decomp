@@ -510,6 +510,7 @@ typedef struct
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
 u16 Sound_MapInstrumentToAltSampleBank( u32 in_Flags, FSoundChannel* in_Channel );
 u16 Sound_MapInstrumentToBaseSampleBank( u32 in_Flags, FSoundChannel* in_Channel );
+void Sound_ReconcileSavedMusicVoices();
 void Sound_ResetChannel( FSoundChannel* in_pChannel, u8* in_pProgramCounter );
 void Sound_LoadAkaoSequence( FAkaoSequence* in_Sequence, s32 in_Mask );
 void Sound_KillMusicConfig( FSoundChannelConfig *in_Struct,FSoundChannel *in_pChannel, uint);

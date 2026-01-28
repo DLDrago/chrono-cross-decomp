@@ -448,6 +448,7 @@ SpuSetReverbDepth   = 0x8004DD20;
 // Sound2
 Sound_MapInstrumentToAltSampleBank        = 0x8004DD50;
 Sound_MapInstrumentToBaseSampleBank       = 0x8004DDA4;
+Sound_ReconcileSavedMusicVoices           = 0x8004DDF8;
 Sound_ResetChannel                        = 0x8004DF1C;
 ChannelMaskToVoiceMask                    = 0x8004DFC4;
 Sound_LoadAkaoSequence                    = 0x8004E010;
