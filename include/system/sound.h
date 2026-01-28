@@ -501,6 +501,7 @@ void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMas
 // Sound 2
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
 u16 Sound_ApplySampleBankOffsetIfNeeded( u32 in_Flags, FSoundChannel* in_Channel );
+void Sound_ReconcileSavedMusicVoices();
 void Sound_ResetChannel( FSoundChannel* in_pChannel, u8* in_pProgramCounter );
 void Sound_LoadAkaoSequence( FAkaoSequence* in_Sequence, s32 in_Mask );
 void Sound_KillMusicConfig( FSoundChannelConfig *in_Struct,FSoundChannel *in_pChannel, uint);

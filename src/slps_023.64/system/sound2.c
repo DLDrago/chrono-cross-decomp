@@ -34,9 +34,9 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDA4);
 
 //----------------------------------------------------------------------------------------------------------------------
 #ifndef NON_MATCHING
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDF8);
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_ReconcileSavedMusicVoices);
 #else
-void func_8004DDF8()
+void Sound_ReconcileSavedMusicVoices()
 {
     FSoundChannel* pChannel;
     u32 ActiveAlloc;
