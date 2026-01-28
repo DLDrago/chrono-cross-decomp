@@ -36,7 +36,42 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DDF8);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DED8);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DF1C);
+//----------------------------------------------------------------------------------------------------------------------
+void Sound_ResetChannel( FSoundChannel* in_pChannel, u8* in_ProgramCounter )
+{
+    in_pChannel->VolumeBalance = 0x6E00;
+    in_pChannel->Volume = 0x32000000;
+    in_pChannel->ProgramCounter = in_ProgramCounter;
+    in_pChannel->Transpose = 0;
+    in_pChannel->FineTune = 0;
+    in_pChannel->PortamentoSteps = 0;
+    in_pChannel->PitchSlide = 0;
+    in_pChannel->PitchBendSlideTranspose = 0;
+    in_pChannel->PitchSlideStepsCurrent = 0;
+    in_pChannel->LengthFixed = 0;
+    in_pChannel->LengthStored = 0;
+    in_pChannel->ChannelVolumeSlideLength = 0;
+    in_pChannel->FinePitchDelta = 0;
+    in_pChannel->RandomPitchDepth = 0;
+    in_pChannel->LoopStackTop = 0;
+    in_pChannel->UpdateFlags = 0;
+    in_pChannel->AutoPanVolume = 0;
+    in_pChannel->SfxMask = 0;
+    in_pChannel->OpcodeStepCounter = -1;
+    in_pChannel->VoiceParams.VolumeScale = 0;
+    in_pChannel->AutoPanDepth = 0;
+    in_pChannel->TremeloDepth = 0;
+    in_pChannel->VibratoDepth = 0;
+    in_pChannel->AutoPanDepthSlideLength = 0;
+    in_pChannel->TremeloDepthSlideLength = 0;
+    in_pChannel->VibratoDepthSlideLength = 0;
+    in_pChannel->AutoPanRateSlideLength = 0;
+    in_pChannel->TremeloRateSlideLength = 0;
+    in_pChannel->VibratoRateSlideLength = 0;
+    in_pChannel->FmTimer = 0;
+    in_pChannel->NoiseTimer = 0;
+    Sound_SetInstrumentToChannel(in_pChannel, 0U);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask )
