@@ -9,7 +9,11 @@ s32 InitSound()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundApi", TeardownSound);
+s32 TeardownSound()
+{
+    Sound_Stop();
+    return 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 bool Sound_BindAkaoSfxBlob( FAkaoFileBlob* in_Blob )
