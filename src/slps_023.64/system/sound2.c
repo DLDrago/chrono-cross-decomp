@@ -375,6 +375,217 @@ void Sound_KillMusicConfig( FSoundChannelConfig* in_Config, FSoundChannel* in_pC
 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E478);
+#define SOUND_UPDATE_VOICE_ACTIVE         ( 1 << 20 )  // Voice is actively processing  
+#define SOUND_UPDATE_PENDING_RELEASE      ( 1 << 21 )  // Voice marked for release
+
+#define SOUND_GLOBAL_UPDATE_VOICES_CHANGED  0x110      // Bits 4 and 8
+
+#define SFX_CHANNEL_COUNT       12
+#define SFX_FIRST_VOICE_BIT     0x1000      // Voice 12 (first SFX voice)
+
+#define VOICE_MASK_24BIT        0x00FFFFFF
+#define RELEASE_MODE_PRIORITY   0x40000000
+#define RELEASE_MODE_PAIR       0x80000000  // Negative value check
+
+void func_8004E478( s32 in_ChannelIndex, s32 in_VoiceMask )
+{
+    FSoundChannel* pChannel;
+    u32 VoiceBit;
+    u32 ActiveVoices;
+    u32 MaskedArg;
+    u32 UpdateFlags;
+    s32 MaxPriority;
+    s32 Priority;
+    s32 ChannelIdentifier;
+    u32 i;
+
+    ActiveVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask | g_Sound_VoiceSchedulerState.unk_Flags_0x10;
+    MaskedArg = in_VoiceMask & VOICE_MASK_24BIT;
+
+    if (MaskedArg != 0)
+    {
+        /* PATH 1: Release voices matching the mask AND channel's unk_Flags filter */
+        pChannel = SfxSoundChannels;
+        VoiceBit = SFX_FIRST_VOICE_BIT;
+
+        for( i = 0; i < SFX_CHANNEL_COUNT; i++ )
+        {
+            if (ActiveVoices & VoiceBit)
+            {
+                if (pChannel->unk_Flags & in_VoiceMask)
+                {
+                    UpdateFlags = pChannel->UpdateFlags;
+
+                    if (UpdateFlags & SOUND_UPDATE_VOICE_ACTIVE)
+                    {
+                        /* Voice is busy - mark for deferred release */
+                        pChannel->UpdateFlags = UpdateFlags | SOUND_UPDATE_PENDING_RELEASE;
+                    }
+                    else
+                    {
+                        /* Voice not busy - release immediately */
+                        g_Sound_VoiceSchedulerState.KeyOffFlags |= VoiceBit;
+                        Sound_ClearVoiceFromSchedulerState(pChannel, VoiceBit);
+                        pChannel->UpdateFlags = 0;
+                    }
+                }
+            }
+
+            pChannel++;
+            VoiceBit <<= 1;
+        };
+    }
+    else if (in_VoiceMask < 0)
+    {
+        /* PATH 2A: Release stereo voice pair by index */
+        pChannel = &SfxSoundChannels[in_ChannelIndex];
+        VoiceBit = SFX_FIRST_VOICE_BIT << in_ChannelIndex;
+
+        /* Release left voice */
+        if (ActiveVoices & VoiceBit)
+        {
+            func_8004E478(pChannel->field23_0x50, 0);
+        }
+
+        VoiceBit <<= 1;
+        pChannel++;
+
+        /* Release right voice */
+        if (ActiveVoices & VoiceBit)
+        {
+            func_8004E478(pChannel->field23_0x50, 0);
+        }
+
+        return;
+    }
+    else if (in_VoiceMask & RELEASE_MODE_PRIORITY)
+    {
+        /* PATH 2B: Priority-based voice stealing */
+
+        /* Pass 1: Filter out voices with non-zero unk_Flags */
+        pChannel = SfxSoundChannels;
+        VoiceBit = SFX_FIRST_VOICE_BIT;
+
+        for( i = 0; i < SFX_CHANNEL_COUNT; i++ )
+        {
+            if (pChannel->unk_Flags != 0)
+            {
+                ActiveVoices &= ~VoiceBit;
+            }
+
+            pChannel++;
+            VoiceBit <<= 1;
+        };
+
+        /* Pass 2: Find maximum priority (lowest importance = steal first) */
+        pChannel = SfxSoundChannels;
+        VoiceBit = SFX_FIRST_VOICE_BIT;
+        MaxPriority = 0;
+
+        for( i = 0; i < SFX_CHANNEL_COUNT; i++ )
+        {
+            if (ActiveVoices & VoiceBit)
+            {
+                Priority = pChannel->field34_0x6c;
+
+                if (MaxPriority < Priority)
+                {
+                    MaxPriority = Priority;
+                }
+            }
+
+            pChannel++;
+            VoiceBit <<= 1;
+        };
+
+        /* Pass 3: Release all voices with max priority value */
+        pChannel = SfxSoundChannels;
+        VoiceBit = SFX_FIRST_VOICE_BIT;
+
+        for( i = 0; i < SFX_CHANNEL_COUNT; i++ )
+        {
+            if (ActiveVoices & VoiceBit)
+            {
+                if (MaxPriority == pChannel->field34_0x6c)
+                {
+                    UpdateFlags = pChannel->UpdateFlags;
+
+                    if (UpdateFlags & SOUND_UPDATE_VOICE_ACTIVE)
+                    {
+                        pChannel->UpdateFlags = UpdateFlags | SOUND_UPDATE_PENDING_RELEASE;
+                    }
+                    else
+                    {
+                        g_Sound_VoiceSchedulerState.KeyOffFlags |= VoiceBit;
+                        Sound_ClearVoiceFromSchedulerState(pChannel, VoiceBit);
+                        pChannel->UpdateFlags = 0;
+                    }
+                }
+            }
+
+            pChannel++;
+            VoiceBit <<= 1;
+        };
+    }
+    else
+    {
+        /* PATH 3: Release voices by identifier match */
+        pChannel = SfxSoundChannels;
+        VoiceBit = SFX_FIRST_VOICE_BIT;
+
+        for( i = 0; i < SFX_CHANNEL_COUNT; i++ )
+        {
+            if (ActiveVoices & VoiceBit)
+            {
+                ChannelIdentifier = pChannel->field23_0x50;
+
+                if (in_ChannelIndex == -1)
+                {
+                    /* Release all voices with negative identifier */
+                    if (ChannelIdentifier < 0)
+                    {
+                        UpdateFlags = pChannel->UpdateFlags;
+
+                        if (UpdateFlags & SOUND_UPDATE_VOICE_ACTIVE)
+                        {
+                            pChannel->UpdateFlags = UpdateFlags | SOUND_UPDATE_PENDING_RELEASE;
+                        }
+                        else
+                        {
+                            g_Sound_VoiceSchedulerState.KeyOffFlags |= VoiceBit;
+                            Sound_ClearVoiceFromSchedulerState(pChannel, VoiceBit);
+                            pChannel->UpdateFlags = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    /* Release voices matching specific identifier */
+                    if (ChannelIdentifier == in_ChannelIndex)
+                    {
+                        UpdateFlags = pChannel->UpdateFlags;
+
+                        if (UpdateFlags & SOUND_UPDATE_VOICE_ACTIVE)
+                        {
+                            pChannel->UpdateFlags = UpdateFlags | SOUND_UPDATE_PENDING_RELEASE;
+                        }
+                        else
+                        {
+                            g_Sound_VoiceSchedulerState.KeyOffFlags |= VoiceBit;
+                            Sound_ClearVoiceFromSchedulerState(pChannel, VoiceBit);
+                            pChannel->UpdateFlags = 0;
+                        }
+                    }
+                }
+            }
+
+            pChannel++;
+            VoiceBit <<= 1;
+        };
+    }
+
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_VOICES_CHANGED;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 #ifndef NON_MATCHING
