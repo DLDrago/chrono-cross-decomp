@@ -123,16 +123,16 @@
 #define SOUND_UPDATE_NOISE_CLOCK 0x10
 #define SOUND_UPDATE_REVERB      0x80
 
-#define AKAO_FILE_MAGIC          (0x4F414B41U) // AKAO in ASCII
-
+#define AKAO_FILE_MAGIC                    (0x4F414B41U) // AKAO in ASCII
+                                                         //
 typedef struct FAkaoFileBlob
 {
-    s32  Magic;                    // AKAO
-    u8   unk_0x4[0xC];             // Padding? Version? Counts? Music Akao blobs have a different flag in here...
-    u16  ProgramOffsets[0x100][2]; // Offsets into bytecode - indexed by Sfx ID
-    u16  MetadataTableA[0x100];    // Some per sfx table
-    u16  MetadataTableB[0x100];    // Some per sfx table
-    u8*  ProgramData;            // Sfx bytecode
+    /* 0x000 */ s32  Magic;                    // AKAO
+    /* 0x004 */ u8   unk_0x4[0xC];             // Padding? Version? Counts? Music Akao blobs have a different flag in here...
+    /* 0x010 */ u16  ProgramOffsets[0x100][2]; // Offsets into bytecode - indexed by Sfx ID
+    /* 0x410 */ u16  MetadataTableA[0x100];    // Some per sfx table
+    /* 0x610 */ u16  MetadataTableB[0x100];    // Some per sfx table
+    /* 0x810 */ u8   ProgramData[1];           // Sfx bytecode
 } FAkaoFileBlob;
 
 typedef struct
@@ -479,6 +479,9 @@ typedef struct
     0x00001E34   // B  - 2^(11/12)
 }; */
 
+// Sound API - IDK I'm just picking names right now....
+bool Sound_BindAkaoSfxBlob( FAkaoFileBlob* in_Blob );
+
 // SPU management
 void Sound_CopyAndRelocateInstruments( FSoundInstrumentInfo* in_A, FSoundInstrumentInfo* in_B, s32 in_AddrOffset, s32 in_Count);
 bool Sound_IsNotAkaoFile( FAkaoFileBlob* in_Blob );
@@ -713,13 +716,17 @@ extern FSoundChannelConfig* g_pSavedMousicConfig; // What even is this used for
 extern FSoundChannelConfig g_PushedMusicConfig;
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern u32 g_Music_LoopCounter;
+extern u16* g_Sound_Sfx_ProgramOffsets;
 extern volatile bool g_bSpuTransferring;
+extern u16* g_Sound_Sfx_MetadataTableA;
+extern u8** g_Sound_Sfx_ProgramData;
 extern FSoundCommandParams g_SoundCommandParams;
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern s16 D_80092A64;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
 extern s32 g_CdVolume;
 extern FSoundChannel g_PushedMusicChannels[0x20];
+extern u16* g_Sound_Sfx_MetadataTableB;
 extern FSoundGlobalFlags g_Sound_GlobalFlags;
 extern FSound80094FA0 D_80094FA0;
 extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];

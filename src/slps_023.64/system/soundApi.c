@@ -1,11 +1,39 @@
 #include "common.h"
+#include "system/sound.h"
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundApi", InitSound);
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundApi", TeardownSound);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundApi", Sound_BindAkaoSfxBlob);
+//----------------------------------------------------------------------------------------------------------------------
+bool Sound_BindAkaoSfxBlob( FAkaoFileBlob* in_Blob )
+{
+    bool isNotAkao;
+    u8* p;
 
+    isNotAkao = Sound_IsNotAkaoFile(in_Blob);
+
+    if( isNotAkao == 0 )
+    {
+        p = (u8*)in_Blob->ProgramOffsets;
+        g_Sound_Sfx_ProgramOffsets = (u16*)p;
+
+        p = (u8*)in_Blob->MetadataTableA;
+        g_Sound_Sfx_MetadataTableA = (u16*)p;
+
+        p = (u8*)in_Blob->MetadataTableB;
+        g_Sound_Sfx_MetadataTableB = (u16*)p;
+
+        p = (u8*)in_Blob->ProgramData;
+        g_Sound_Sfx_ProgramData = (u8**)p;
+    }
+
+    return isNotAkao;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundApi", func_80049FBC);
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundApi", func_80049FE4);
