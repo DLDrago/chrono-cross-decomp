@@ -374,7 +374,9 @@ void Sound_KillMusicConfig( FSoundChannelConfig* in_Config, FSoundChannel* in_pC
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E478);
+#else
 #define SOUND_UPDATE_VOICE_ACTIVE         ( 1 << 20 )  // Voice is actively processing  
 #define SOUND_UPDATE_PENDING_RELEASE      ( 1 << 21 )  // Voice marked for release
 
@@ -586,6 +588,7 @@ void func_8004E478( s32 in_ChannelIndex, s32 in_VoiceMask )
 
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_VOICES_CHANGED;
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 #ifndef NON_MATCHING
