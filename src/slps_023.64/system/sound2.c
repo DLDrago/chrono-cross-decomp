@@ -106,6 +106,7 @@ void Sound_ReconcileSavedMusicVoices()
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
+// Completely unused in the codebase - modifies a struct, but I'm unaware of what struct exactly
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004DED8);
 
 //----------------------------------------------------------------------------------------------------------------------

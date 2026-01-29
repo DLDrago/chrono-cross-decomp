@@ -1,13 +1,15 @@
 #include "common.h"
 #include "psyq/libspu.h"
-
-volatile extern s32 g_bSpuTransferring;
+#include "system/sound.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", Sound_CopyAndRelocateInstruments);
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", unk_Sound_8004B164);
+bool Sound_IsNotAkaoFile( FAkaoFileBlob* in_Blob )
+{
+    return in_Blob->Magic - AKAO_FILE_MAGIC;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 void ClearSpuTransferCallback()
@@ -28,14 +30,14 @@ void WriteSpu(s32 in_Addr, s32 in_Size)
 {
     g_bSpuTransferring = 1;
     SpuSetTransferCallback( &ClearSpuTransferCallback );
-    SpuWrite( in_Addr, in_Size );
+    SpuWrite( (u8*)in_Addr, in_Size );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void ReadSpu(s32 in_Addr, s32 in_Size)
 {
     SetSpuTransferCallback();
-    SpuRead( in_Addr, in_Size );
+    SpuRead( (u8*)in_Addr, in_Size );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -123,6 +123,17 @@
 #define SOUND_UPDATE_NOISE_CLOCK 0x10
 #define SOUND_UPDATE_REVERB      0x80
 
+#define AKAO_FILE_MAGIC          (0x4F414B41U) // AKAO in ASCII
+
+typedef struct FAkaoFileBlob
+{
+    s32  Magic;                    // AKAO
+    u8   unk_0x4[0xC];             // Padding? Version? Counts? Music Akao blobs have a different flag in here...
+    u16  ProgramOffsets[0x100][2]; // Offsets into bytecode - indexed by Sfx ID
+    u16  MetadataTableA[0x100];    // Some per sfx table
+    u16  MetadataTableB[0x100];    // Some per sfx table
+    u8*  ProgramData;            // Sfx bytecode
+} FAkaoFileBlob;
 
 typedef struct
 {
@@ -470,7 +481,7 @@ typedef struct
 
 // SPU management
 void Sound_CopyAndRelocateInstruments( FSoundInstrumentInfo* in_A, FSoundInstrumentInfo* in_B, s32 in_AddrOffset, s32 in_Count);
-void unk_Sound_8004b164(s32*);
+bool Sound_IsNotAkaoFile( FAkaoFileBlob* in_Blob );
 void ClearSpuTransferCallback();
 void SetSpuTransferCallback();
 void WriteSpu( s32 in_Addr, s32 in_Size );
@@ -702,7 +713,7 @@ extern FSoundChannelConfig* g_pSavedMousicConfig; // What even is this used for
 extern FSoundChannelConfig g_PushedMusicConfig;
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern u32 g_Music_LoopCounter;
-extern bool g_bSpuTransferring;
+extern volatile bool g_bSpuTransferring;
 extern FSoundCommandParams g_SoundCommandParams;
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern s16 D_80092A64;
