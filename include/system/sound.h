@@ -480,6 +480,7 @@ typedef struct
 }; */
 
 // Sound API - IDK I'm just picking names right now....
+s32 InitSound();
 bool Sound_BindAkaoSfxBlob( FAkaoFileBlob* in_Blob );
 
 // SPU management
@@ -490,6 +491,9 @@ void SetSpuTransferCallback();
 void WriteSpu( s32 in_Addr, s32 in_Size );
 void ReadSpu( s32 in_Addr, s32 in_Size );
 void WaitForSpuTransfer();
+void Sound_Setup();
+void Sound_Start();
+void Sound_Stop();
 
 // Sound
 void SetVoiceKeyOn( u32 in_KeyOn );

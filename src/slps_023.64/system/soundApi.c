@@ -2,7 +2,11 @@
 #include "system/sound.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundApi", InitSound);
+s32 InitSound()
+{
+    Sound_Start();
+    return 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundApi", TeardownSound);

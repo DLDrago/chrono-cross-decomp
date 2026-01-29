@@ -85,7 +85,6 @@ segments:
       - [0x3A71C, c, system/soundApi]
       - [0x3B8B4, asm, psyq/libspu/SpuSetTransferStartAddr]
       - [0x3B914, c, system/spu]
-      - [0x3BA84, asm]
       - [0x3BFF4, asm, psyq/libapi_2]
       - [0x3C164, asm, psyq/libspu2]
       - [0x3C494, c, system/sound]

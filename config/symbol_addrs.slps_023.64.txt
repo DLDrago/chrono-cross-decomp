@@ -399,6 +399,9 @@ SetSpuTransferCallback           = 0x8004B19C;
 WriteSpu                         = 0x8004B1CC;
 ReadSpu                          = 0x8004B21C;
 WaitForSpuTransfer               = 0x8004B258;
+Sound_Setup                      = 0x8004B398;
+Sound_Start                      = 0x8004B660;
+Sound_Stop                       = 0x8004B750;
 
 
 //----------------------------------------------------------------------------------------------------------------------

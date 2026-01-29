@@ -47,3 +47,14 @@ void WaitForSpuTransfer()
     {
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", func_8004B284);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", func_8004B2D4);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", Sound_Setup);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", Sound_Start);
+
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/spu", Sound_Stop);
