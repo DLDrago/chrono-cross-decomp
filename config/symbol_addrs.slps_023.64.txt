@@ -379,12 +379,21 @@ _SpuIsInAllocateArea_ = 0x80029560;
 InitGamepad       = 0x8002B52C;
 TeardownHardware  = 0x800365C0;
 IsSpuTransferring = 0x8004ABFC;
-InitSound         = 0x80049F1C;
+
+//----------------------------------------------------------------------------------------------------------------------
+// Sound Hardware
+InitSound               = 0x80049F1C;
+TeardownSound           = 0x80049F3C;
+Sound_BindAkaoSfxBlob   = 0x80049F5C;
+
+//----------------------------------------------------------------------------------------------------------------------
+// LibSpu
+SpuSetTransferStartAddr = 0x8004B0B4;
 
 //----------------------------------------------------------------------------------------------------------------------
 // SPU management
-Sound_CopyAndRelocateInstruments = 0x8004B11C;
-Sound_IsNotAkaoFile         = 0x8004B164;
+Sound_CopyAndRelocateInstruments = 0x8004B114;
+Sound_IsNotAkaoFile              = 0x8004B164;
 ClearSpuTransferCallback         = 0x8004B178;
 SetSpuTransferCallback           = 0x8004B19C;
 WriteSpu                         = 0x8004B1CC;
@@ -406,7 +415,6 @@ ResetRCnt = 0x8004B92C;
 //----------------------------------------------------------------------------------------------------------------------
 SpuInitMalloc           = 0x8004B964;
 SpuSetIRQ               = 0x8004B9C4;
-SpuSetTransferStartAddr = 0x8004B0B4;
 SpuSetIRQCallback       = 0x8004BB04;
 _SpuCallback            = 0x8004BB44;
 SpuRead                 = 0x8004BB74;
