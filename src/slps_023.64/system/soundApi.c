@@ -27,7 +27,7 @@ bool Sound_BindAkaoSfxBlob( FAkaoFileBlob* in_Blob )
         g_Sound_Sfx_MetadataTableB = (u16*)p;
 
         p = (u8*)in_Blob->ProgramData;
-        g_Sound_Sfx_ProgramData = (u8**)p;
+        g_Sound_Sfx_ProgramData = (u8*)p;
     }
 
     return isNotAkao;

@@ -456,7 +456,43 @@ void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice )
 
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E9D0);
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004EBC8);
+//----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_GetProgramCounters);
+#else
+void Sound_GetProgramCounters( u8** out_ProgramCounter1, u8** out_ProgramCounter2, s32 in_SfxIndex )
+{
+    int Offset;
+    u8* ppPc;
+
+    in_SfxIndex &= 0x3FF;
+    in_SfxIndex <<= 1;
+
+    Offset = g_Sound_Sfx_ProgramOffsets[ in_SfxIndex ];
+    if( Offset != 0xFFFF)
+    {
+        ppPc = g_Sound_Sfx_ProgramData + Offset;
+    }
+    else
+    {
+        ppPc = NULL;
+    }
+
+    *out_ProgramCounter1 = ppPc;
+    in_SfxIndex++;
+    Offset = g_Sound_Sfx_ProgramOffsets[ in_SfxIndex ];
+
+    if (Offset != 0xFFFF)
+    {
+        ppPc = g_Sound_Sfx_ProgramData + Offset;
+    }
+    else
+    {
+        ppPc = NULL;
+    }
+    *out_ProgramCounter2 = ppPc;
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 // Unknown exactly how this functions but it is setting bits 0 and 1 to each channel in the incoming struct's flags

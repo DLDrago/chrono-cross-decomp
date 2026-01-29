@@ -462,6 +462,7 @@ ChannelMaskToVoiceMask                    = 0x8004DFC4;
 Sound_LoadAkaoSequence                    = 0x8004E010;
 Sound_KillMusicConfig                     = 0x8004E3A4;
 FreeVoiceChannels                         = 0x8004E974;
+Sound_GetProgramCounters                  = 0x8004EBC8;
 Sound_MarkActiveChannelsVolumeDirty       = 0x8004EC40;
 Sound_MarkScheduledSfxChannelsVolumeDirty = 0x8004EC88;
 Sound_SetMusicSequence                    = 0x8004ECDC;
