@@ -321,8 +321,219 @@ void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C094 );
+#ifndef NON_MATCHING
+INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", Sound_UpdateSlidesAndDelays );
+#else
+void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags, s32 in_Arg2 )
+{
+    s16* var_a0_2;
+    s32 NewVolume;
+    s32 temp_a3_4;
+    s32 temp_a3_5;
+    s32 temp_a3_6;
+    s32 temp_a3_7;
+    s32 Volume;
+    s32 temp_v1_8;
+    u16 NewBalance;
+    u16 NewPan;
+    u16 temp_v0_10;
+    u16 VolumeBalance;
+    u16 Pan;
+    u32 temp_a0;
+    u32 var_lo;
 
+    if( in_pChannel->ChannelVolumeSlideLength != 0 )
+    {
+        Volume = in_pChannel->Volume;
+        in_pChannel->ChannelVolumeSlideLength--;
+        NewVolume = Volume + in_pChannel->VolumeSlideStep;
+        if( (NewVolume & 0xFFE00000) != (Volume & 0xFFE00000) )
+        {
+            in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+        }
+        in_pChannel->Volume = NewVolume;
+    }
+
+    if( in_Arg2 == 0 )
+    {
+        if( in_pChannel->VolumeBalanceSlideLength != 0 )
+        {
+            VolumeBalance = in_pChannel->VolumeBalance;
+            in_pChannel->VolumeBalanceSlideLength--;
+            NewBalance = VolumeBalance + in_pChannel->VolumeBalanceSlideStep;
+            if( (NewBalance & 0x7F00) != (VolumeBalance & 0x7F00) )
+            {
+                in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+            }
+            in_pChannel->VolumeBalance = NewBalance;
+        }
+    }
+
+    if( in_pChannel->ChannelPanSlideLength != 0 )
+    {
+        Pan = in_pChannel->ChannelPan;
+        in_pChannel->ChannelPanSlideLength--;
+        NewPan = Pan + in_pChannel->PanSlideStep;
+        if( (NewPan & 0xFF00) != (Pan & 0xFF00) )
+        {
+            in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+        }
+        in_pChannel->ChannelPan = NewPan;
+    }
+
+    if( in_pChannel->VibratoDelayCurrent != 0 )
+    {
+        in_pChannel->VibratoDelayCurrent--;
+    }
+
+    if( in_pChannel->TremeloDelayCurrent != 0 )
+    {
+        in_pChannel->TremeloDelayCurrent--;
+    }
+
+    if( in_pChannel->VibratoRateSlideLength != 0 )
+    {
+        in_pChannel->VibratoRateSlideLength--;
+        in_pChannel->VibratoRatePhase += in_pChannel->VibratoRateSlideStep;
+    }
+
+    if( in_pChannel->TremeloRateSlideLength != 0 )
+    {
+        in_pChannel->TremeloRateSlideLength--;
+        in_pChannel->TremeloRatePhase += in_pChannel->TremeloRateSlideStep;
+    }
+
+    if( in_pChannel->AutoPanRateSlideLength != 0 )
+    {
+        in_pChannel->AutoPanRateSlideLength--;
+        in_pChannel->AutoPanRatePhase += in_pChannel->AutoPanRateSlideStep;
+    }
+
+    if( in_pChannel->NoiseTimer != 0 )
+    {
+        in_pChannel->NoiseTimer--;
+        if( !(in_pChannel->NoiseTimer & 0xFFFF) )
+        {
+            if (in_Arg2 == 0)
+            {
+                g_pActiveMusicConfig->NoiseChannelFlags ^= in_VoiceFlags;
+            }
+            else
+            {
+                g_Sound_VoiceSchedulerState.NoiseVoiceFlags ^= in_VoiceFlags;
+            }
+            g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+        }
+    }
+
+    if( in_pChannel->FmTimer != 0 )
+    {
+        in_pChannel->FmTimer--;
+        if( !(in_pChannel->FmTimer & 0xFFFF) )
+        {
+            if (in_Arg2 == 0)
+            {
+                g_pActiveMusicConfig->FmChannelFlags ^= in_VoiceFlags;
+            }
+            else
+            {
+                g_Sound_VoiceSchedulerState.FmVoiceFlags ^= in_VoiceFlags;
+            }
+            g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+        }
+    }
+
+    if( in_pChannel->VibratoDepthSlideLength != 0 )
+    {
+        in_pChannel->VibratoDepthSlideLength--;
+        temp_v0_10 = in_pChannel->VibratoDepth + in_pChannel->VibratoDepthSlideStep;
+        in_pChannel->VibratoDepth = temp_v0_10;
+        temp_a0 = (u32) (temp_v0_10 & 0x7F00) >> 8;
+        if( temp_v0_10 & 0x8000 )
+        {
+            var_lo = temp_a0 * in_pChannel->PitchBase;
+        }
+        else
+        {
+            var_lo = temp_a0 * ((u32) (in_pChannel->PitchBase * 0xF) >> 8);
+        }
+        
+        in_pChannel->VibratoBase = (u16) (var_lo >> 7);
+        if( ((u16) in_pChannel->VibratoDelayCurrent == 0) && ((u16) in_pChannel->field72_0xb8 != 1) )
+        {
+            if( (in_pChannel->VibratoWave[0] == 0) && (in_pChannel->VibratoWave[1] == 0) )
+            {
+                in_pChannel->VibratoWave += in_pChannel->VibratoWave[2];
+            }
+
+            temp_a3_4 = (s32) (in_pChannel->VibratoBase * in_pChannel->VibratoWave[0]) >> 0x10;
+            if( temp_a3_4 != in_pChannel->VibratoPitch)
+            {
+                in_pChannel->VibratoPitch = (s16) temp_a3_4;
+                in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
+                if( temp_a3_4 >= 0 )
+                {
+                    in_pChannel->VibratoPitch = temp_a3_4 * 2;
+                }
+            }
+        }
+    }
+
+    if( in_pChannel->TremeloDepthSlideLength != 0 )
+    {
+        in_pChannel->TremeloDepthSlideLength--;
+        in_pChannel->TremeloDepth += (u16) in_pChannel->TremeloDepthSlideStep;
+        if( ((u16) in_pChannel->TremeloDelayCurrent == 0) && ((u16) in_pChannel->field81_0xca != 1) )
+        {
+            if( (in_pChannel->TremeloWave[0] == 0) && (in_pChannel->TremeloWave[1] == 0) )
+            {
+                in_pChannel->TremeloWave += in_pChannel->TremeloWave[2];
+            }
+            
+            temp_a3_5 = (s32) (((s32) ((((s32) ( *((u8*)in_pChannel + 0x5E) * ((u16) in_pChannel->VolumeBalance >> 8)) >> 7) * ((u16) in_pChannel->TremeloDepth >> 8)) << 9) >> 0x10) * *var_a0_2) >> 0xF;
+            if( temp_a3_5 != in_pChannel->TremeloVolume )
+            {
+                in_pChannel->TremeloVolume = (s16) temp_a3_5;
+                in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+            }
+        }
+    }
+
+    if( in_pChannel->AutoPanDepthSlideLength != 0 )
+    {
+        in_pChannel->AutoPanDepthSlideLength--;
+        in_pChannel->AutoPanDepth += (u16) in_pChannel->AutoPanDepthSlideStep;
+        if( in_pChannel->AutoPanRateCurrent != 1 )
+        {
+            if( (in_pChannel->AutoPanWave[0] == 0) && (in_pChannel->AutoPanWave[1] == 0) )
+            {
+                in_pChannel->AutoPanWave += in_pChannel->AutoPanWave[2];
+            }
+
+            temp_a3_6 = ((in_pChannel->AutoPanDepth >> 8) * in_pChannel->AutoPanWave[0]) >> 0xF;
+            if( temp_a3_6 != in_pChannel->AutoPanVolume )
+            {
+                in_pChannel->AutoPanVolume = temp_a3_6;
+                in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+            }
+        }
+    }
+
+    if( in_pChannel->PitchSlideStepsCurrent != 0 )
+    {
+        temp_v1_8 = in_pChannel->PitchSlide;
+        in_pChannel->PitchSlideStepsCurrent--;
+        temp_a3_7 = temp_v1_8 + in_pChannel->PitchSlideStep;
+        if( (temp_a3_7 & 0xFFFF0000) != (temp_v1_8 & 0xFFFF0000) )
+        {
+            in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
+        }
+        in_pChannel->PitchSlide = temp_a3_7;
+    }
+}
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C5A4 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CA1C );

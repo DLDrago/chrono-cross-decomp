@@ -320,17 +320,17 @@ typedef struct
     /* 0x0AE */ s16  PortamentoSteps;
     /* 0x0B0 */ u16  SfxMask;
     /* 0x0B2 */ s16  VibratoDelay;
-    /* 0x0B4 */ s16  VibratoDelayCurrent;
-    /* 0x0B6 */ s16  VibratoRateSlideLength;
+    /* 0x0B4 */ u16  VibratoDelayCurrent;
+    /* 0x0B6 */ u16  VibratoRateSlideLength;
     /* 0x0B8 */ s16  field72_0xb8;
     /* 0x0BA */ u16  VibratoType;
     /* 0x0BC */ u16  VibratoBase;
     /* 0x0BE */ u16  VibratoDepth;
-    /* 0x0C0 */ s16  VibratoDepthSlideLength;
+    /* 0x0C0 */ u16  VibratoDepthSlideLength;
     /* 0x0C2 */ u16  VibratoDepthSlideStep;
     /* 0x0C4 */ s16  TremeloDelay;
-    /* 0x0C6 */ s16  TremeloDelayCurrent;
-    /* 0x0C8 */ s16  TremeloRateSlideLength;
+    /* 0x0C6 */ u16  TremeloDelayCurrent;
+    /* 0x0C8 */ u16  TremeloRateSlideLength;
     /* 0x0CA */ s16  field81_0xca;
     /* 0x0CC */ u16  TremeloType;
     /* 0x0CE */ u16  TremeloDepth;
@@ -342,8 +342,8 @@ typedef struct
     /* 0x0DA */ u16  AutoPanDepth;
     /* 0x0DC */ u16  AutoPanDepthSlideLength;
     /* 0x0DE */ s16  AutoPanDepthSlideStep;
-    /* 0x0E0 */ s16  NoiseTimer;
-    /* 0x0E2 */ s16  FmTimer;
+    /* 0x0E0 */ u16  NoiseTimer;
+    /* 0x0E2 */ u16  FmTimer;
     /* 0x0E4 */ u16  LoopStackTop;
     /* 0x0E6 */ u16  RandomPitchDepth;
     /* 0x0E8 */ s16  LengthStored;
@@ -513,6 +513,7 @@ void SetVoiceAdsrSustainRateAndDirection( s32 in_VoiceIndex, s32 in_SustainRate,
 void SetVoiceAdsrReleaseRateAndMode( s32 in_VoiceIndex, s32 in_ReleaseRate, u32 in_ReleaseMode );
 void SetVoiceParams( s32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, s32 in_VolumeScale );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams );
+void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags, s32 );
 void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
 
 // Sound 2
