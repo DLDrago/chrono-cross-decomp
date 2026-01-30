@@ -594,18 +594,18 @@ void func_8004E478( s32 in_ChannelIndex, s32 in_VoiceMask )
 #ifndef NON_MATCHING
 INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E7D8);
 #else
-void func_8004E7D8( FSoundChannel* in_pChannel, FThing* in_pUnk, s32 in_Flags, u8* in_ProgramCounter )
+void func_8004E7D8( FSoundChannel* in_pChannel, FSoundCommandParams* in_pCommandParams, s32 in_Flags, u8* in_ProgramCounter )
 {
     FSoundChannel* pChannel;
     s32 Mask;
     s32 Flag;
 
-    in_pChannel->field23_0x50 = *(u32*)(in_pUnk + 0x0);
-    in_pChannel->unk_Flags = *(s32*)((s8*)in_pUnk + 0x4);
+    in_pChannel->field23_0x50 = in_pCommandParams->Param1;
+    in_pChannel->unk_Flags = in_pCommandParams->Param2;
     in_pChannel->ChannelPan = 0x8000;
     in_pChannel->field42_0x82 = 0;
     in_pChannel->ChannelPanSlideLength = 0;
-    in_pChannel->field41_0x80 = *(u16*)(in_pUnk + 0x8) << 8;
+    in_pChannel->field41_0x80 = in_pCommandParams->Param3 << 8;
     in_pChannel->Length1 = 2;
     in_pChannel->Length2 = 1;
     in_pChannel->Type = 1;
@@ -613,7 +613,7 @@ void func_8004E7D8( FSoundChannel* in_pChannel, FThing* in_pUnk, s32 in_Flags, u
     in_pChannel->field34_0x6c = -2;
     in_pChannel->field25_0x54 = 0;
     in_pChannel->field57_0x9a = 0;
-    in_pChannel->C_Value = (*(u16*)(in_pUnk + 0xC) & 0x7F) << 8;
+    in_pChannel->C_Value = (in_pCommandParams->Param4 & 0x7F) << 8;
 
     Sound_ResetChannel(in_pChannel, in_ProgramCounter);
     g_Sound_VoiceChannelConfigs[in_pChannel->VoiceParams.AssignedVoiceNumber] = NULL;
@@ -668,7 +668,134 @@ void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice )
     }
 }
 
-INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E9D0);
+//----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
+INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", Sound_PlaySfxProgram);
+#else
+#define SOUND_UPDATE_STEREO_LINKED  (1 << 16)  // Second channel of stereo pair
+
+void Sound_PlaySfxProgram(FSoundCommandParams* in_CommandParams, u8* in_ProgramCounter1, u8* in_ProgramCounter2, s32 in_SkipRelease)
+{
+    FSoundChannel* channel;
+    u32 voiceBit;
+    u32 activeVoices;
+    u32 newActiveVoices;
+    s32 slotsRemaining;
+    s32 isLayered;
+
+    /* Early exit if nothing to play */
+    if (in_ProgramCounter1 == NULL && in_ProgramCounter2 == NULL)
+    {
+        return;
+    }
+
+    /* Conditionally release voices based on CommandParams->Param2 */
+    if (in_SkipRelease == 0)
+    {
+        if (in_CommandParams->Param2 != 0)
+        {
+            func_8004E478(0, in_CommandParams->Param2);
+        }
+    }
+
+    isLayered = (in_ProgramCounter1 != NULL && in_ProgramCounter2 != NULL);
+
+SEARCH_START:
+    /* Build combined "in use" mask from all sources */
+    channel = &SfxSoundChannels[11];  /* Start at highest index */
+    voiceBit = 0x00800000;            /* Voice 23 */
+    activeVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask |
+                   g_Sound_VoiceSchedulerState.unk_Flags_0x10 |
+                   D_80094FA0.VoicesInUseFlags;
+
+    if (isLayered)
+    {
+        /* LAYERED: Search for TWO consecutive free voices */
+        slotsRemaining = 11;
+        channel--;                    /* Back up to index 10 */
+        voiceBit = 0x00400000;        /* Voice 22 (first of pair) */
+
+        do
+        {
+            /* Check if both voices in pair are free */
+            if ((activeVoices & (voiceBit | (voiceBit << 1))) == 0)
+            {
+                break;  /* Found a free pair */
+            }
+
+            slotsRemaining--;
+            channel--;
+            voiceBit >>= 1;
+        } while (slotsRemaining != 0);
+    }
+    else
+    {
+        /* SINGLE: Search for ONE free voice */
+        slotsRemaining = 12;
+
+        do
+        {
+            if ((activeVoices & voiceBit) == 0)
+            {
+                break;  /* Found a free voice */
+            }
+
+            slotsRemaining--;
+            channel--;
+            voiceBit >>= 1;
+        } while (slotsRemaining != 0);
+    }
+
+    /* Check if we found a slot */
+    if (slotsRemaining == 0)
+    {
+        /* No free voices - try priority-based stealing */
+        func_8004E478(0, 0x40000000);
+
+        /* Check if stealing freed anything */
+        newActiveVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask |
+                          g_Sound_VoiceSchedulerState.unk_Flags_0x10 |
+                          D_80094FA0.VoicesInUseFlags;
+
+        if (activeVoices == newActiveVoices)
+        {
+            /* Stealing didn't help - give up */
+            return;
+        }
+
+        /* Retry search */
+        goto SEARCH_START;
+    }
+
+    /* Setup first channel */
+    if (in_ProgramCounter1 != NULL)
+    {
+        func_8004E7D8(channel, in_CommandParams, voiceBit, in_ProgramCounter1);
+        FreeVoiceChannels(g_ActiveMusicChannels, channel->VoiceParams.AssignedVoiceNumber);
+    }
+
+    /* Setup second channel (stereo) */
+    if (in_ProgramCounter2 != NULL)
+    {
+        if (in_ProgramCounter1 != NULL)
+        {
+            channel++;
+            voiceBit <<= 1;
+        }
+
+        func_8004E7D8(channel, in_CommandParams, voiceBit, in_ProgramCounter2);
+        FreeVoiceChannels(g_ActiveMusicChannels, channel->VoiceParams.AssignedVoiceNumber);
+
+        /* Mark stereo link on second channel */
+        if (in_ProgramCounter1 != NULL)
+        {
+            channel->UpdateFlags |= SOUND_UPDATE_STEREO_LINKED;
+        }
+    }
+
+    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 #ifndef NON_MATCHING
@@ -801,8 +928,8 @@ void Sound_SetMusicSequence( FAkaoSequence* in_Sequence, s32 in_SwapWithSavedSta
     Delta = (u32)in_Sequence - (u32)PrevSequence;
     g_Sound_GlobalFlags.UpdateFlags |= 0x90;
     ActiveChannelMask = g_pActiveMusicConfig->ActiveChannelMask;
-    (u32)g_pActiveMusicConfig->SequencePatchTable += Delta;
-    (u32)g_pActiveMusicConfig->KeymapTable += Delta;
+    g_pActiveMusicConfig->SequencePatchTable += Delta;
+    g_pActiveMusicConfig->KeymapTable += Delta;
     g_pActiveMusicConfig->PendingKeyOnMask = g_pActiveMusicConfig->ActiveNoteMask;
    
     while (Flags != 0) {

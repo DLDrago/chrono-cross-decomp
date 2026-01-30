@@ -283,8 +283,7 @@ typedef struct
     /* 0x044 */ s32  TremeloRateSlideStep;
     /* 0x048 */ u32  AutoPanRatePhase;
     /* 0x04C */ s32  AutoPanRateSlideStep;
-    /* 0x050 */ s16  field23_0x50;
-    /* 0x052 */ s16  field24_0x52;
+    /* 0x050 */ s32  field23_0x50;
     /* 0x054 */ u32  field25_0x54;
     /* 0x058 */ u8   field26_0x58;
     /* 0x059 */ u8   field27_0x59;
@@ -516,14 +515,6 @@ void SetVoiceParams( s32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, s32 i
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams );
 void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
 
-typedef struct
-{
-    u32 unk0;
-    u32 unk4;
-    u32 unk8;
-    u32 unkC;
-} FThing;
-
 // Sound 2
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
 u16 Sound_MapInstrumentToAltSampleBank( u32 in_Flags, FSoundChannel* in_Channel );
@@ -532,8 +523,9 @@ void Sound_ReconcileSavedMusicVoices();
 void Sound_ResetChannel( FSoundChannel* in_pChannel, u8* in_pProgramCounter );
 void Sound_LoadAkaoSequence( FAkaoSequence* in_Sequence, s32 in_Mask );
 void Sound_KillMusicConfig( FSoundChannelConfig *in_Struct,FSoundChannel *in_pChannel, uint);
-void unk_Sound_8004e7d8( FSoundChannel *in_Channel, FThing* param_2, uint in_Flags, u8 *in_ProgramCounter );
+void unk_Sound_8004e7d8( FSoundChannel *in_Channel, FSoundCommandParams* in_pCommandParams, uint in_Flags, u8 *in_ProgramCounter );
 void FreeVoiceChannels( FSoundChannel* in_Channel, u32 in_Voice );
+void Sound_PlaySfxProgram( FSoundCommandParams* in_CommandParams, u8* in_ProgramCounter1, u8* in_ProgramCounter2, s32 );
 void Sound_GetProgramCounters( u8** out_ProgramCounter1, u8** out_ProgramCounter2, s32 in_SfxIndex );
 void Sound_MarkActiveChannelsVolumeDirty( FSoundChannelConfig* in_pChannelConfig, FSoundChannel* in_pChannel );
 void Sound_MarkScheduledSfxChannelsVolumeDirty();

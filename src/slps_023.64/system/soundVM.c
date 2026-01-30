@@ -958,13 +958,15 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundVM", SoundVM_BB_SustainMod
 void SoundVM_BB_SustainMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
 {
     u16 mode;
+    int tmp;
 
-    mode = *in_pChannel->ProgramCounter++;
-    in_pChannel->VoiceParams.AdsrUpper &= ~(1 << 14 | 1 << 15);
+    mode = *(in_pChannel->ProgramCounter++);
+    in_pChannel->VoiceParams.AdsrUpper &= ~((1 << 14) | (1 << 15));
+    tmp = 6;
 
     if( mode != 5 )
     {
-        if( mode < 6 )
+        if( mode < tmp )
         {
             if( mode != 3 )
             {
@@ -978,9 +980,8 @@ void SoundVM_BB_SustainMode( FSoundChannel* in_pChannel, u32 in_VoiceFlags )
     }
     else
     {
-        in_pChannel->VoiceParams.AdsrUpper  |= 0x8000;
+        in_pChannel->VoiceParams.AdsrUpper |= 0x8000;
     }
-
     in_pChannel->VoiceParams.VoiceParamFlags |= 0x200;
 }
 #endif
