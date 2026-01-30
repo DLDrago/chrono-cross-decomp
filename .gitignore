@@ -8,6 +8,7 @@ linker/
 .idea/
 __pycache__/
 permuter/
+nonmatchings/
 expected/
 notes/
 .venv/
