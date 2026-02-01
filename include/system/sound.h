@@ -322,7 +322,7 @@ typedef struct
     /* 0x0B2 */ s16  VibratoDelay;
     /* 0x0B4 */ u16  VibratoDelayCurrent;
     /* 0x0B6 */ u16  VibratoRateSlideLength;
-    /* 0x0B8 */ s16  field72_0xb8;
+    /* 0x0B8 */ u16  field72_0xb8;
     /* 0x0BA */ u16  VibratoType;
     /* 0x0BC */ u16  VibratoBase;
     /* 0x0BE */ u16  VibratoDepth;

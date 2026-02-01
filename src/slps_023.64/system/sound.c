@@ -321,64 +321,49 @@ void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-#ifndef NON_MATCHING
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", Sound_UpdateSlidesAndDelays );
-#else
 void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags, s32 in_Arg2 )
 {
-    s16* var_a0_2;
-    s32 NewVolume;
-    s32 temp_a3_4;
-    s32 temp_a3_5;
-    s32 temp_a3_6;
-    s32 temp_a3_7;
-    s32 Volume;
-    s32 temp_v1_8;
-    u16 NewBalance;
-    u16 NewPan;
-    u16 temp_v0_10;
-    u16 VolumeBalance;
-    u16 Pan;
-    u32 temp_a0;
-    u32 var_lo;
+    s16* Wave;
+    s32 temp;
 
     if( in_pChannel->ChannelVolumeSlideLength != 0 )
     {
-        Volume = in_pChannel->Volume;
+        s32 Volume;
         in_pChannel->ChannelVolumeSlideLength--;
-        NewVolume = Volume + in_pChannel->VolumeSlideStep;
-        if( (NewVolume & 0xFFE00000) != (Volume & 0xFFE00000) )
+        Volume = in_pChannel->Volume;
+        temp = Volume + in_pChannel->VolumeSlideStep;
+        if( (temp & 0xFFE00000) != (Volume & 0xFFE00000) )
         {
             in_pChannel->VoiceParams.VoiceParamFlags |= 3;
         }
-        in_pChannel->Volume = NewVolume;
+        in_pChannel->Volume = temp;
     }
 
     if( in_Arg2 == 0 )
     {
         if( in_pChannel->VolumeBalanceSlideLength != 0 )
         {
-            VolumeBalance = in_pChannel->VolumeBalance;
             in_pChannel->VolumeBalanceSlideLength--;
-            NewBalance = VolumeBalance + in_pChannel->VolumeBalanceSlideStep;
-            if( (NewBalance & 0x7F00) != (VolumeBalance & 0x7F00) )
+            temp = in_pChannel->VolumeBalance + in_pChannel->VolumeBalanceSlideStep;
+            if( (temp & 0x7F00) != (in_pChannel->VolumeBalance & 0x7F00) )
             {
                 in_pChannel->VoiceParams.VoiceParamFlags |= 3;
             }
-            in_pChannel->VolumeBalance = NewBalance;
+            in_pChannel->VolumeBalance = temp;
         }
     }
 
     if( in_pChannel->ChannelPanSlideLength != 0 )
     {
-        Pan = in_pChannel->ChannelPan;
+        u16 Pan;
         in_pChannel->ChannelPanSlideLength--;
-        NewPan = Pan + in_pChannel->PanSlideStep;
-        if( (NewPan & 0xFF00) != (Pan & 0xFF00) )
+        Pan = in_pChannel->ChannelPan;
+        temp = Pan + in_pChannel->PanSlideStep;
+        if( (temp & 0xFF00) != (Pan & 0xFF00) )
         {
             in_pChannel->VoiceParams.VoiceParamFlags |= 3;
         }
-        in_pChannel->ChannelPan = NewPan;
+        in_pChannel->ChannelPan = temp;
     }
 
     if( in_pChannel->VibratoDelayCurrent != 0 )
@@ -445,35 +430,42 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
 
     if( in_pChannel->VibratoDepthSlideLength != 0 )
     {
+        u32 var_lo;
+        u16 VibratoDepth;
+        s32 NewVibratoDepth;
+
+        
         in_pChannel->VibratoDepthSlideLength--;
-        temp_v0_10 = in_pChannel->VibratoDepth + in_pChannel->VibratoDepthSlideStep;
-        in_pChannel->VibratoDepth = temp_v0_10;
-        temp_a0 = (u32) (temp_v0_10 & 0x7F00) >> 8;
-        if( temp_v0_10 & 0x8000 )
+        VibratoDepth = in_pChannel->VibratoDepth + in_pChannel->VibratoDepthSlideStep;
+        in_pChannel->VibratoDepth = VibratoDepth;
+        NewVibratoDepth = (u32) (VibratoDepth & 0x7F00) >> 8;
+        if( VibratoDepth & 0x8000 )
         {
-            var_lo = temp_a0 * in_pChannel->PitchBase;
+            var_lo = (u32)(NewVibratoDepth * in_pChannel->PitchBase) >> 7;
         }
         else
         {
-            var_lo = temp_a0 * ((u32) (in_pChannel->PitchBase * 0xF) >> 8);
+            var_lo = (NewVibratoDepth * ((u32) (in_pChannel->PitchBase * 15) >> 8)) >> 7;
         }
+
+        in_pChannel->VibratoBase = var_lo;
         
-        in_pChannel->VibratoBase = (u16) (var_lo >> 7);
-        if( ((u16) in_pChannel->VibratoDelayCurrent == 0) && ((u16) in_pChannel->field72_0xb8 != 1) )
+        if( (in_pChannel->VibratoDelayCurrent == 0) && (in_pChannel->field72_0xb8 != 1) )
         {
-            if( (in_pChannel->VibratoWave[0] == 0) && (in_pChannel->VibratoWave[1] == 0) )
+            Wave = in_pChannel->VibratoWave;
+            if( Wave[0] == 0 && Wave[1] == 0 )
             {
-                in_pChannel->VibratoWave += in_pChannel->VibratoWave[2];
+                Wave += Wave[2];
             }
 
-            temp_a3_4 = (s32) (in_pChannel->VibratoBase * in_pChannel->VibratoWave[0]) >> 0x10;
-            if( temp_a3_4 != in_pChannel->VibratoPitch)
+            temp = (in_pChannel->VibratoBase * Wave[0]) >> 16;
+            if( temp != in_pChannel->VibratoPitch)
             {
-                in_pChannel->VibratoPitch = (s16) temp_a3_4;
+                in_pChannel->VibratoPitch = temp;
                 in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
-                if( temp_a3_4 >= 0 )
+                if( temp >= 0 )
                 {
-                    in_pChannel->VibratoPitch = temp_a3_4 * 2;
+                    in_pChannel->VibratoPitch = temp * 2;
                 }
             }
         }
@@ -481,19 +473,31 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
 
     if( in_pChannel->TremeloDepthSlideLength != 0 )
     {
+
         in_pChannel->TremeloDepthSlideLength--;
         in_pChannel->TremeloDepth += (u16) in_pChannel->TremeloDepthSlideStep;
         if( ((u16) in_pChannel->TremeloDelayCurrent == 0) && ((u16) in_pChannel->field81_0xca != 1) )
         {
-            if( (in_pChannel->TremeloWave[0] == 0) && (in_pChannel->TremeloWave[1] == 0) )
+            int FinalVolume;
+            int TremeloDepthHi8;
+            int VolumeBalanceHigh8;
+            int VolumeHigh16;
+
+            Wave = in_pChannel->TremeloWave;
+            if( Wave[0] == 0 && Wave[1] == 0 )
             {
-                in_pChannel->TremeloWave += in_pChannel->TremeloWave[2];
+                Wave += Wave[2];
             }
             
-            temp_a3_5 = (s32) (((s32) ((((s32) ( *((u8*)in_pChannel + 0x5E) * ((u16) in_pChannel->VolumeBalance >> 8)) >> 7) * ((u16) in_pChannel->TremeloDepth >> 8)) << 9) >> 0x10) * *var_a0_2) >> 0xF;
-            if( temp_a3_5 != in_pChannel->TremeloVolume )
+            VolumeBalanceHigh8 = (u16)in_pChannel->VolumeBalance >> 8;
+            VolumeHigh16 = in_pChannel->Volume >> 16;
+            FinalVolume = (VolumeHigh16 * VolumeBalanceHigh8) >> 7;
+            TremeloDepthHi8 = in_pChannel->TremeloDepth >> 8;
+            temp = ((FinalVolume * TremeloDepthHi8) << 9) >> 16;
+            temp = (temp * *Wave) >> 15;
+            if( temp != in_pChannel->TremeloVolume )
             {
-                in_pChannel->TremeloVolume = (s16) temp_a3_5;
+                in_pChannel->TremeloVolume = temp;
                 in_pChannel->VoiceParams.VoiceParamFlags |= 3;
             }
         }
@@ -502,18 +506,19 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
     if( in_pChannel->AutoPanDepthSlideLength != 0 )
     {
         in_pChannel->AutoPanDepthSlideLength--;
-        in_pChannel->AutoPanDepth += (u16) in_pChannel->AutoPanDepthSlideStep;
+        in_pChannel->AutoPanDepth += in_pChannel->AutoPanDepthSlideStep;
         if( in_pChannel->AutoPanRateCurrent != 1 )
         {
-            if( (in_pChannel->AutoPanWave[0] == 0) && (in_pChannel->AutoPanWave[1] == 0) )
+            Wave = in_pChannel->AutoPanWave;
+            if( (Wave[0] == 0) && (Wave[1] == 0) )
             {
-                in_pChannel->AutoPanWave += in_pChannel->AutoPanWave[2];
+                Wave += Wave[2];
             }
 
-            temp_a3_6 = ((in_pChannel->AutoPanDepth >> 8) * in_pChannel->AutoPanWave[0]) >> 0xF;
-            if( temp_a3_6 != in_pChannel->AutoPanVolume )
+            temp = ((in_pChannel->AutoPanDepth >> 8) * *Wave) >> 15;
+            if( temp != in_pChannel->AutoPanVolume )
             {
-                in_pChannel->AutoPanVolume = temp_a3_6;
+                in_pChannel->AutoPanVolume = temp;
                 in_pChannel->VoiceParams.VoiceParamFlags |= 3;
             }
         }
@@ -521,17 +526,18 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
 
     if( in_pChannel->PitchSlideStepsCurrent != 0 )
     {
-        temp_v1_8 = in_pChannel->PitchSlide;
+        s32 PitchSlide;
+
         in_pChannel->PitchSlideStepsCurrent--;
-        temp_a3_7 = temp_v1_8 + in_pChannel->PitchSlideStep;
-        if( (temp_a3_7 & 0xFFFF0000) != (temp_v1_8 & 0xFFFF0000) )
+        PitchSlide = in_pChannel->PitchSlide;
+        temp = PitchSlide + in_pChannel->PitchSlideStep;
+        if( (temp & 0xFFFF0000) != (PitchSlide & 0xFFFF0000) )
         {
             in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
         }
-        in_pChannel->PitchSlide = temp_a3_7;
+        in_pChannel->PitchSlide = temp;
     }
 }
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C5A4 );
