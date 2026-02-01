@@ -333,7 +333,7 @@ void Sound_LoadAkaoSequence( FAkaoSequence* in_Sequence, s32 in_Mask )
     g_pActiveMusicConfig->JumpThresholdValue = 0;
     g_pActiveMusicConfig->ActiveNoteMask = 0;
     g_pActiveMusicConfig->PendingKeyOnMask = 0;
-    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
 }
 #endif
 
@@ -379,8 +379,6 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/sound2", func_8004E478);
 #else
 #define SOUND_UPDATE_VOICE_ACTIVE         ( 1 << 20 )  // Voice is actively processing  
 #define SOUND_UPDATE_PENDING_RELEASE      ( 1 << 21 )  // Voice marked for release
-
-#define SOUND_GLOBAL_UPDATE_VOICES_CHANGED  0x110      // Bits 4 and 8
 
 #define SFX_CHANNEL_COUNT       12
 #define SFX_FIRST_VOICE_BIT     0x1000      // Voice 12 (first SFX voice)
@@ -586,7 +584,7 @@ void func_8004E478( s32 in_ChannelIndex, s32 in_VoiceMask )
         };
     }
 
-    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_VOICES_CHANGED;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
 }
 #endif
 
@@ -793,7 +791,7 @@ SEARCH_START:
         }
     }
 
-    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
 }
 #endif
 
@@ -926,7 +924,7 @@ void Sound_SetMusicSequence( FAkaoSequence* in_Sequence, s32 in_SwapWithSavedSta
     g_pActiveMusicConfig->PendingKeyOnMask = 0;
     g_pActiveMusicConfig->StatusFlags &= ~0x30;
     Delta = (u32)in_Sequence - (u32)PrevSequence;
-    g_Sound_GlobalFlags.UpdateFlags |= 0x90;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_07;
     ActiveChannelMask = g_pActiveMusicConfig->ActiveChannelMask;
     g_pActiveMusicConfig->SequencePatchTable += Delta;
     g_pActiveMusicConfig->KeymapTable += Delta;
@@ -989,7 +987,7 @@ void Sound_SetMusicSequence( FAkaoSequence* in_Sequence, s32 in_SwapWithSavedSta
     // lw      v0,0xc(a1)
     // or      v0,v0,a0
     g_Sound_VoiceSchedulerState.KeyOffFlags |= VoicesToKeyOff;
-    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
     
     if( D_80094FFC & 1 )
     {

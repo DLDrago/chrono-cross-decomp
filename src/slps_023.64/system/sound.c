@@ -334,7 +334,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
         temp = Volume + in_pChannel->VolumeSlideStep;
         if( (temp & 0xFFE00000) != (Volume & 0xFFE00000) )
         {
-            in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
         }
         in_pChannel->Volume = temp;
     }
@@ -347,7 +347,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
             temp = in_pChannel->VolumeBalance + in_pChannel->VolumeBalanceSlideStep;
             if( (temp & 0x7F00) != (in_pChannel->VolumeBalance & 0x7F00) )
             {
-                in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
             }
             in_pChannel->VolumeBalance = temp;
         }
@@ -361,7 +361,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
         temp = Pan + in_pChannel->PanSlideStep;
         if( (temp & 0xFF00) != (Pan & 0xFF00) )
         {
-            in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
         }
         in_pChannel->ChannelPan = temp;
     }
@@ -407,7 +407,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
             {
                 g_Sound_VoiceSchedulerState.NoiseVoiceFlags ^= in_VoiceFlags;
             }
-            g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+            g_Sound_GlobalFlags.UpdateFlags |= ( SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08 );
         }
     }
 
@@ -424,7 +424,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
             {
                 g_Sound_VoiceSchedulerState.FmVoiceFlags ^= in_VoiceFlags;
             }
-            g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+            g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
         }
     }
 
@@ -462,7 +462,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
             if( temp != in_pChannel->VibratoPitch)
             {
                 in_pChannel->VibratoPitch = temp;
-                in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
+                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
                 if( temp >= 0 )
                 {
                     in_pChannel->VibratoPitch = temp * 2;
@@ -498,7 +498,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
             if( temp != in_pChannel->TremeloVolume )
             {
                 in_pChannel->TremeloVolume = temp;
-                in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
             }
         }
     }
@@ -519,7 +519,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
             if( temp != in_pChannel->AutoPanVolume )
             {
                 in_pChannel->AutoPanVolume = temp;
-                in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
             }
         }
     }
@@ -533,7 +533,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
         temp = PitchSlide + in_pChannel->PitchSlideStep;
         if( (temp & 0xFFFF0000) != (PitchSlide & 0xFFFF0000) )
         {
-            in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
         }
         in_pChannel->PitchSlide = temp;
     }
