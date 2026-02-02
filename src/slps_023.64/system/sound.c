@@ -624,8 +624,41 @@ s32 Sound_FindFreeVoice( s32 in_bForceFullScan  )
 //----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CFC4 );
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", UnassignVoicesFromChannels );
+//----------------------------------------------------------------------------------------------------------------------
+void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 arg1, u16 arg2 )
+{
+    FSoundChannel* pChannel;
+    u32 Count;
 
+    Count = 0;
+    pChannel = in_pChannel;
+
+    do {
+        if( arg1 == pChannel->VoiceParams.AssignedVoiceNumber )
+        {
+            pChannel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
+        }
+        Count++;
+        pChannel++;
+    } while (Count < SOUND_CHANNEL_COUNT);
+
+    Count = 0;
+
+    if( g_pSavedMousicConfig != NULL )
+    {
+        pChannel = g_pSecondaryMusicChannels;
+        do {
+            if( arg1 == pChannel->VoiceParams.AssignedVoiceNumber )
+            {
+                pChannel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
+            }
+            Count++;
+            pChannel++;
+        } while (Count < SOUND_CHANNEL_COUNT);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D294 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D374 );
