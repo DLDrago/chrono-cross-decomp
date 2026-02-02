@@ -500,6 +500,14 @@ typedef struct
     /* 0x6 */ s16 unk6;
 } FSpuVoiceInfo; /* size 0x8 */
 
+typedef struct
+{
+    s32 Value;
+    s32 Step;
+    s32 TicksRemaining;
+    s32 SavedValue;
+} FSoundFadeTimer;
+
 
 #define SEMITONES_IN_OCTAVE (12)
 
@@ -560,6 +568,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
 s32 Sound_StealQuietestVoice( s32 in_bForceFullScan );
 s32 Sound_FindFreeVoice( s32 in_bForceFullScan );
 void Sound_UpdateVoiceEnvelopeStates( u32 in_ProtextedVoiceMask );
+void Sound_ApplyMasterFadeToChannelVolume( FSoundChannelConfig* in_Config );
 void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 );
 void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
 
@@ -768,6 +777,7 @@ extern u16* g_Sound_Sfx_MetadataTableA;
 extern u8* g_Sound_Sfx_ProgramData;
 extern FSoundCommandParams g_SoundCommandParams;
 extern FSoundChannelConfig* g_pActiveMusicConfig;
+extern FSoundFadeTimer g_Sound_MasterFadeTimer;
 extern s16 D_80092A64;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
 extern s32 g_CdVolume;

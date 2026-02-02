@@ -693,8 +693,20 @@ void Sound_UpdateVoiceEnvelopeStates( u32 in_ProtextedVoiceMask )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D374 );
+void Sound_ApplyMasterFadeToChannelVolume( FSoundChannelConfig* in_Config )
+{
+    s32 Volume;
 
+    Volume = in_Config->A_Volume;
+    g_Sound_MasterFadeTimer.SavedValue = in_Config->A_Volume;
+    Volume >>= 16;
+    Volume *= g_Sound_MasterFadeTimer.Value >> 8;
+    Volume /= 127;
+    Volume <<= 8;
+    in_Config->A_Volume = Volume;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3C4 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3D4 );
