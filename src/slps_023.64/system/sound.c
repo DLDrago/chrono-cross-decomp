@@ -579,7 +579,7 @@ s32 Sound_StealQuietestVoice( s32 in_bForceFullScan )
     {
         return VOICE_COUNT;
     }
-    UnassignVoicesFromChannels( g_ActiveMusicChannels, out_VoiceIndex, EnvX );
+    UnassignVoicesFromChannels( g_ActiveMusicChannels, out_VoiceIndex );
     return out_VoiceIndex;
 }
 
@@ -625,7 +625,7 @@ s32 Sound_FindFreeVoice( s32 in_bForceFullScan  )
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CFC4 );
 
 //----------------------------------------------------------------------------------------------------------------------
-void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 arg1, u16 arg2 )
+void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 arg1 )
 {
     FSoundChannel* pChannel;
     u32 Count;
@@ -659,8 +659,41 @@ void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 arg1, u16 arg2 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D294 );
+void Sound_UpdateVoiceEnvelopeStates( u32 in_ProtextedVoiceMask )
+{
+    FSpuVoiceInfo* pVoiceInfo;
+    u32 Count;
+    u32 CombinedMask;
 
+    CombinedMask = (g_pActiveMusicConfig->ActiveChannelMask & g_pActiveMusicConfig->AllocatedVoiceMask) | in_ProtextedVoiceMask;
+
+    if( g_pSavedMousicConfig != NULL )
+    {
+        CombinedMask |= g_pSavedMousicConfig->ActiveChannelMask & g_pSavedMousicConfig->AllocatedVoiceMask;
+    }
+
+    Count = 0;
+    pVoiceInfo = g_SpuVoiceInfo;
+
+    do {
+        if( CombinedMask & (1 << Count) )
+        {
+            pVoiceInfo->pEnvx = 0x7FFF;
+        }
+        else
+        {
+            SpuGetVoiceEnvelope( Count, &pVoiceInfo->pEnvx );
+            if( pVoiceInfo->pEnvx == 0 )
+            {
+                UnassignVoicesFromChannels( g_ActiveMusicChannels, Count );
+            }
+        }
+        Count++;
+        pVoiceInfo++;
+    } while( Count < VOICE_COUNT );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D374 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3C4 );

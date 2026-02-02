@@ -449,6 +449,7 @@ SetVoiceParamsByFlags               = 0x8004BF78;
 Sound_UpdateSlidesAndDelays         = 0x8004C094;
 Sound_StealQuietestVoice            = 0x8004CEAC;
 Sound_FindFreeVoice                 = 0x8004CF5C;
+Sound_UpdateVoiceEnvelopeStates     = 0x8004D294;
 UnassignVoicesFromChannels          = 0x8004D214;
 ChannelMaskToVoiceMaskFiltered      = 0x8004D918;
 
