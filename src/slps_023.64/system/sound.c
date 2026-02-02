@@ -544,8 +544,46 @@ INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C5A4 );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CA1C );
 
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CEAC );
+//----------------------------------------------------------------------------------------------------------------------
+s32 Sound_FindQuietestVoice( s32 in_bForceFullScan )
+{
+    FSpuVoiceInfo* pVoiceInfo;
+    s16 EnvX;
+    s32 i;
+    s32 out_VoiceIndex;
 
+    if( in_bForceFullScan )
+    {
+        i = 0;
+    }
+    else
+    {
+        i = g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo;
+    }
+
+    EnvX = 0x7FFF;
+    out_VoiceIndex = VOICE_COUNT;
+    pVoiceInfo = &g_SpuVoiceInfo[ i ];
+
+    do {
+        if( pVoiceInfo->pEnvx < EnvX )
+        {
+            EnvX = pVoiceInfo->pEnvx;
+            out_VoiceIndex = i;
+        }
+        i++;
+        pVoiceInfo++;
+    } while( i < VOICE_COUNT );
+
+    if( EnvX == 0x7FFF )
+    {
+        return VOICE_COUNT;
+    }
+    UnassignVoicesFromChannels( g_ActiveMusicChannels, out_VoiceIndex, EnvX );
+    return out_VoiceIndex;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CF5C );
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CFC4 );

@@ -493,6 +493,13 @@ typedef struct
     u32 ExtParam2;
 } FSoundCommandParams;
 
+typedef struct
+{
+    /* 0x0 */ s32 unk0; // Seems unused
+    /* 0x4 */ s16 pEnvx;
+    /* 0x6 */ s16 unk6;
+} FSpuVoiceInfo; /* size 0x8 */
+
 
 #define SEMITONES_IN_OCTAVE (12)
 
@@ -550,6 +557,8 @@ void SetVoiceAdsrReleaseRateAndMode( s32 in_VoiceIndex, s32 in_ReleaseRate, u32 
 void SetVoiceParams( s32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, s32 in_VolumeScale );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams );
 void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags, s32 );
+s32 Sound_FindQuietestVoice( s32 in_bForceFullScan );
+void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32, u16 );
 void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
 
 // Sound 2
@@ -747,6 +756,7 @@ extern u32 D_80090A34;
 extern FSoundChannel SfxSoundChannels[12];
 extern FSoundChannel* g_pSecondaryMusicChannels;
 extern FSoundChannelConfig* g_pSavedMousicConfig; // What even is this used for
+extern FSpuVoiceInfo g_SpuVoiceInfo[VOICE_COUNT];
 extern FSoundChannelConfig g_PushedMusicConfig;
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern u32 g_Music_LoopCounter;
