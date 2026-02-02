@@ -1,3 +1,7 @@
 CompileFlags:
   Add:
     - -DNON_MATCHING=1
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
