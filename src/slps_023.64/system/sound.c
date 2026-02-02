@@ -667,15 +667,15 @@ void Sound_UpdateVoiceEnvelopeStates( u32 in_ProtextedVoiceMask )
 
     CombinedMask = (g_pActiveMusicConfig->ActiveChannelMask & g_pActiveMusicConfig->AllocatedVoiceMask) | in_ProtextedVoiceMask;
 
-    if( g_pSavedMousicConfig != NULL )
+    if( g_pSavedMousicConfig )
     {
         CombinedMask |= g_pSavedMousicConfig->ActiveChannelMask & g_pSavedMousicConfig->AllocatedVoiceMask;
     }
 
-    Count = 0;
     pVoiceInfo = g_SpuVoiceInfo;
 
-    do {
+    for( Count = 0; Count < VOICE_COUNT; Count++ )
+    {
         if( CombinedMask & (1 << Count) )
         {
             pVoiceInfo->pEnvx = 0x7FFF;
@@ -688,9 +688,8 @@ void Sound_UpdateVoiceEnvelopeStates( u32 in_ProtextedVoiceMask )
                 UnassignVoicesFromChannels( g_ActiveMusicChannels, Count );
             }
         }
-        Count++;
         pVoiceInfo++;
-    } while( Count < VOICE_COUNT );
+    };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
