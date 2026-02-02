@@ -799,4 +799,52 @@ void Sound_ProcessKeyOffRequests()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004DB24 );
+void Sound_BuildVoiceModeMask( s32* out_VoiceModeMask, s32 in_SavedChannelModeMask, s32 in_ActiveChannelModeMask, s32 in_PersistentVoiceMask )
+{
+    s32 VoiceMask;
+    s32 SavedKeyedMask;
+    s32 temp_a2_2;
+    s32 Filter;
+    s32 var_s0;
+    s32 ChannelFlags;
+
+    ChannelFlags = 0;
+    VoiceMask = 0;
+    Filter = ~(
+        g_Sound_VoiceSchedulerState.ActiveChannelMask
+        | g_Sound_VoiceSchedulerState.unk_Flags_0x10
+        | g_Sound_80094FA0.VoicesInUseFlags
+    );
+
+    if( g_pSavedMousicConfig )
+    {
+        ChannelFlags = g_pSavedMousicConfig->ActiveChannelMask & in_SavedChannelModeMask;
+        SavedKeyedMask = ChannelFlags & g_pSavedMousicConfig->KeyedMask;
+        if( SavedKeyedMask != 0 )
+        {
+            ChannelMaskToVoiceMaskFiltered( g_pSecondaryMusicChannels, &VoiceMask, SavedKeyedMask, Filter );
+            ChannelFlags &= ~g_pSavedMousicConfig->KeyedMask;
+        }
+    }
+
+    var_s0 = g_pActiveMusicConfig->ActiveChannelMask & in_ActiveChannelModeMask;
+    temp_a2_2 = var_s0 & g_pActiveMusicConfig->KeyedMask;
+
+    if( temp_a2_2 != 0 )
+    {
+        ChannelMaskToVoiceMaskFiltered( g_ActiveMusicChannels, &VoiceMask, temp_a2_2, Filter );
+        var_s0 &= ~g_pActiveMusicConfig->KeyedMask;
+    }
+    if( g_pSavedMousicConfig && (ChannelFlags != 0) )
+    {
+        ChannelMaskToVoiceMaskFiltered( g_pSecondaryMusicChannels, &VoiceMask, ChannelFlags, Filter );
+    }
+    if( var_s0 != 0 )
+    {
+        ChannelMaskToVoiceMaskFiltered( g_ActiveMusicChannels, &VoiceMask, var_s0, Filter );
+    }
+
+    VoiceMask |= in_PersistentVoiceMask;
+    *out_VoiceModeMask = VoiceMask;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
+}

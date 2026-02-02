@@ -455,6 +455,7 @@ Sound_ApplyMasterFadeToChannelVolume     = 0x8004D374;
 Sound_RestoreChannelVolumeFromMasterFade = 0x8004D3C4;
 ChannelMaskToVoiceMaskFiltered           = 0x8004D918;
 Sound_ProcessKeyOffRequests              = 0x8004D978;
+Sound_BuildVoiceModeMask                 = 0x8004dB24;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)

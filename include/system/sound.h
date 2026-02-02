@@ -572,6 +572,7 @@ void Sound_RestoreChannelVolumeFromMasterFade ( FSoundChannelConfig* in_Config )
 void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 );
 void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
 void Sound_ProcessKeyOffRequests();
+void Sound_BuildVoiceModeMask( s32* out_VoiceModeMask, s32 in_SavedChannelModeMask, s32 in_ActiveChannelModeMask, s32 in_PersistentVoiceMask );
 
 // Sound 2
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
