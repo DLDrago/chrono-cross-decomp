@@ -447,7 +447,8 @@ SetVoiceAdsrReleaseRateAndMode      = 0x8004BE9C;
 SetVoiceParams                      = 0x8004BECC;
 SetVoiceParamsByFlags               = 0x8004BF78;
 Sound_UpdateSlidesAndDelays         = 0x8004C094;
-Sound_FindQuietestVoice             = 0x8004CEAC;
+Sound_StealQuietestVoice            = 0x8004CEAC;
+Sound_FindFreeVoice                 = 0x8004CF5C;
 UnassignVoicesFromChannels          = 0x8004D214;
 ChannelMaskToVoiceMaskFiltered      = 0x8004D918;
 

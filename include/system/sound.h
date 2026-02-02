@@ -557,7 +557,8 @@ void SetVoiceAdsrReleaseRateAndMode( s32 in_VoiceIndex, s32 in_ReleaseRate, u32 
 void SetVoiceParams( s32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, s32 in_VolumeScale );
 void SetVoiceParamsByFlags( u32 in_VoiceIndex, FSoundVoiceParams* in_VoiceParams );
 void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags, s32 );
-s32 Sound_FindQuietestVoice( s32 in_bForceFullScan );
+s32 Sound_StealQuietestVoice( s32 in_bForceFullScan );
+s32 Sound_FindFreeVoice( s32 in_bForceFullScan );
 void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32, u16 );
 void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
 
