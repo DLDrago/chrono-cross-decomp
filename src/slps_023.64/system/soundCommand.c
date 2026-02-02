@@ -153,13 +153,13 @@ INCLUDE_ASM("asm/slps_023.64/nonmatchings/system/soundCommand", Sound_Cmd_9C_800
 //----------------------------------------------------------------------------------------------------------------------
 void Sound_Cmd_9F_ResetGlobalVoice( FSoundCommandParams* in_Params )
 {
-    if( D_80094FA0.VoicesInUseFlags != 0 )
+    if( g_Sound_80094FA0.VoicesInUseFlags != 0 )
     {
         // Looks like we have a stereo pair, one left and one right
-        SetVoiceSampleRate( D_80094FA0.VoiceIndex, 0 );
-        SetVoiceSampleRate( D_80094FA0.VoiceIndex + 1, 0 );
-        SetVoiceVolume( D_80094FA0.VoiceIndex, 0, 0, 0 );
-        SetVoiceVolume( D_80094FA0.VoiceIndex + 1, 0, 0, 0 );
+        SetVoiceSampleRate( g_Sound_80094FA0.VoiceIndex, 0 );
+        SetVoiceSampleRate( g_Sound_80094FA0.VoiceIndex + 1, 0 );
+        SetVoiceVolume( g_Sound_80094FA0.VoiceIndex, 0, 0, 0 );
+        SetVoiceVolume( g_Sound_80094FA0.VoiceIndex + 1, 0, 0, 0 );
     }
 }
 
@@ -168,16 +168,16 @@ void Sound_Cmd_9E_80051000( FSoundCommandParams* in_Params )
 {
     s32 unpackedVolume;
 
-    if( D_80094FA0.VoicesInUseFlags != 0 )
+    if( g_Sound_80094FA0.VoicesInUseFlags != 0 )
     {
         // Looks like we have a stereo pair, one left and one right
-        SetVoiceSampleRate( D_80094FA0.VoiceIndex, D_80094FA0.VoiceSampleRate );
-        SetVoiceSampleRate( D_80094FA0.VoiceIndex + 1, D_80094FA0.VoiceSampleRate );
+        SetVoiceSampleRate( g_Sound_80094FA0.VoiceIndex, g_Sound_80094FA0.VoiceSampleRate );
+        SetVoiceSampleRate( g_Sound_80094FA0.VoiceIndex + 1, g_Sound_80094FA0.VoiceSampleRate );
 
         // Unpack in sign extended way
-        unpackedVolume = (s32) (D_80094FA0.Volume << 0xF) >> 0x10;
-        SetVoiceVolume( D_80094FA0.VoiceIndex, unpackedVolume, 0, 0 );
-        SetVoiceVolume( D_80094FA0.VoiceIndex + 1, 0, unpackedVolume, 0 );
+        unpackedVolume = (s32) (g_Sound_80094FA0.Volume << 0xF) >> 0x10;
+        SetVoiceVolume( g_Sound_80094FA0.VoiceIndex, unpackedVolume, 0, 0 );
+        SetVoiceVolume( g_Sound_80094FA0.VoiceIndex + 1, 0, unpackedVolume, 0 );
     }
 }
 

@@ -712,6 +712,7 @@ void Sound_RestoreChannelVolumeFromMasterFade( FSoundChannelConfig* in_Config )
     in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3D4 );
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -736,6 +737,66 @@ void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMas
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D978 );
+void Sound_ProcessKeyOffRequests()
+{
+    s32 VoiceMask;
+    s32 SavedConfigKeyedMask;
+    s32 ActiveKeyedMask;
+    s32 Filter;
+    s32 ActiveOffMask;
+    s32 SavedOffMask;
 
+    Filter = ~(
+        g_Sound_VoiceSchedulerState.ActiveChannelMask 
+        | g_Sound_VoiceSchedulerState.unk_Flags_0x10
+        | g_Sound_80094FA0.VoicesInUseFlags
+    );
+    VoiceMask = 0;
+    SavedOffMask = 0;
+
+    if( g_pSavedMousicConfig )
+    {
+        SavedOffMask = g_pSavedMousicConfig->PendingKeyOffMask;
+        SavedConfigKeyedMask  = SavedOffMask & g_pSavedMousicConfig->KeyedMask;
+
+        if( SavedConfigKeyedMask != 0 )
+        {
+            ChannelMaskToVoiceMaskFiltered( g_pSecondaryMusicChannels, &VoiceMask, SavedConfigKeyedMask, Filter );
+            g_pSavedMousicConfig->PendingKeyOffMask &= ~g_pSavedMousicConfig->KeyedMask;
+            SavedOffMask &= ~g_pSavedMousicConfig->KeyedMask;
+        }
+    }
+
+    ActiveOffMask = g_pActiveMusicConfig->PendingKeyOffMask;
+    ActiveKeyedMask = ActiveOffMask & g_pActiveMusicConfig->KeyedMask;
+
+    if( ActiveKeyedMask != 0 )
+    {
+        ChannelMaskToVoiceMaskFiltered( g_ActiveMusicChannels, &VoiceMask, ActiveKeyedMask, Filter );
+        g_pActiveMusicConfig->PendingKeyOffMask &= ~g_pActiveMusicConfig->KeyedMask;
+        ActiveOffMask &= ~g_pActiveMusicConfig->KeyedMask;
+    }
+
+    if( g_pSavedMousicConfig && (SavedOffMask != 0))
+    {
+        ChannelMaskToVoiceMaskFiltered( g_pSecondaryMusicChannels, &VoiceMask, SavedOffMask, Filter );
+        g_pSavedMousicConfig->PendingKeyOffMask = 0;
+    }
+
+    if( ActiveOffMask != 0 )
+    {
+        ChannelMaskToVoiceMaskFiltered( g_ActiveMusicChannels, &VoiceMask, ActiveOffMask, Filter );
+        g_pActiveMusicConfig->PendingKeyOffMask = 0;
+    }
+
+    VoiceMask |= g_Sound_VoiceSchedulerState.KeyOffFlags;
+    g_Sound_VoiceSchedulerState.KeyOffFlags = 0;
+
+    if( VoiceMask != 0 )
+    {
+        SetVoiceKeyOff( VoiceMask );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004DB24 );

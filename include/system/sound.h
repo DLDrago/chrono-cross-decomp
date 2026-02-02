@@ -508,7 +508,6 @@ typedef struct
     /* 0x0C */ s32 SavedValue;
 } FSoundFadeTimer; /* size 0x10 */
 
-
 #define SEMITONES_IN_OCTAVE (12)
 
 // Semitone pitch multipliers (fixed-point, 0x1000 = 1.0)
@@ -572,6 +571,7 @@ void Sound_ApplyMasterFadeToChannelVolume( FSoundChannelConfig* in_Config );
 void Sound_RestoreChannelVolumeFromMasterFade ( FSoundChannelConfig* in_Config );
 void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 );
 void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
+void Sound_ProcessKeyOffRequests();
 
 // Sound 2
 u32 ChannelMaskToVoiceMask( FSoundChannel* in_pChannel, u32 in_ChannelMask );
@@ -785,5 +785,5 @@ extern s32 g_CdVolume;
 extern FSoundChannel g_PushedMusicChannels[0x20];
 extern u16* g_Sound_Sfx_MetadataTableB;
 extern FSoundGlobalFlags g_Sound_GlobalFlags;
-extern FSound80094FA0 D_80094FA0;
+extern FSound80094FA0 g_Sound_80094FA0;
 extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];

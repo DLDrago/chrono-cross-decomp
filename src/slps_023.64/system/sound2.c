@@ -704,7 +704,7 @@ SEARCH_START:
     voiceBit = 0x00800000;            /* Voice 23 */
     activeVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask |
                    g_Sound_VoiceSchedulerState.unk_Flags_0x10 |
-                   D_80094FA0.VoicesInUseFlags;
+                   g_Sound_80094FA0.VoicesInUseFlags;
 
     if (isLayered)
     {
@@ -753,7 +753,7 @@ SEARCH_START:
         /* Check if stealing freed anything */
         newActiveVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask |
                           g_Sound_VoiceSchedulerState.unk_Flags_0x10 |
-                          D_80094FA0.VoicesInUseFlags;
+                          g_Sound_80094FA0.VoicesInUseFlags;
 
         if (activeVoices == newActiveVoices)
         {

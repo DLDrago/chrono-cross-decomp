@@ -454,6 +454,7 @@ Sound_UpdateVoiceEnvelopeStates          = 0x8004D294;
 Sound_ApplyMasterFadeToChannelVolume     = 0x8004D374;
 Sound_RestoreChannelVolumeFromMasterFade = 0x8004D3C4;
 ChannelMaskToVoiceMaskFiltered           = 0x8004D918;
+Sound_ProcessKeyOffRequests              = 0x8004D978;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)
@@ -707,4 +708,5 @@ g_CdVolume                   = 0x80092AF8;
 g_PushedMusicChannels        = 0x80092B00; // type:FSoundChannel[] size:0x2480
 g_Sound_Sfx_MetadataTableB   = 0x80094F80;
 g_Sound_GlobalFlags          = 0x80094F90;
+g_Sound_80094FA0             = 0x80094FA0; // type:FSound80094FA0  size:0x60
 g_Sound_VoiceChannelConfigs  = 0x80095000;
