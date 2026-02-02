@@ -428,31 +428,32 @@ SpuSetTransferCallback  = 0x8004BC64;
 //----------------------------------------------------------------------------------------------------------------------
 // Sound voice
 //----------------------------------------------------------------------------------------------------------------------
-SetVoiceKeyOn                        = 0x8004BC94;
-SetVoiceKeyOff                       = 0x8004BCB0;
-SetVoiceReverbMode                   = 0x8004BCCC;
-SetVoiceNoiseMode                    = 0x8004BCE8;
-SetVoiceFmMode                       = 0x8004BD04;
-SetVoiceVolume                       = 0x8004BD20;
-SetVoiceSampleRate                   = 0x8004BD68;
-SetVoiceStartAddr                    = 0x8004BD80;
-SetVoiceRepeatAddr                   = 0x8004BD9C;
-SetVoiceAdsrLower                    = 0x8004BDB8;
-SetVoiceAdsrUpper                    = 0x8004BDD0;
-SetVoiceAdsrAttackRateAndMode        = 0x8004BDE8;
-SetVoiceAdsrDecayRate                = 0x8004BE18;
-SetVoiceAdsrSustainLevel             = 0x8004BE40;
-SetVoiceAdsrSustainRateAndDirection  = 0x8004BE68;
-SetVoiceAdsrReleaseRateAndMode       = 0x8004BE9C;
-SetVoiceParams                       = 0x8004BECC;
-SetVoiceParamsByFlags                = 0x8004BF78;
-Sound_UpdateSlidesAndDelays          = 0x8004C094;
-Sound_StealQuietestVoice             = 0x8004CEAC;
-Sound_FindFreeVoice                  = 0x8004CF5C;
-UnassignVoicesFromChannels           = 0x8004D214;
-Sound_UpdateVoiceEnvelopeStates      = 0x8004D294;
-Sound_ApplyMasterFadeToChannelVolume = 0x8004D374;
-ChannelMaskToVoiceMaskFiltered       = 0x8004D918;
+SetVoiceKeyOn                            = 0x8004BC94;
+SetVoiceKeyOff                           = 0x8004BCB0;
+SetVoiceReverbMode                       = 0x8004BCCC;
+SetVoiceNoiseMode                        = 0x8004BCE8;
+SetVoiceFmMode                           = 0x8004BD04;
+SetVoiceVolume                           = 0x8004BD20;
+SetVoiceSampleRate                       = 0x8004BD68;
+SetVoiceStartAddr                        = 0x8004BD80;
+SetVoiceRepeatAddr                       = 0x8004BD9C;
+SetVoiceAdsrLower                        = 0x8004BDB8;
+SetVoiceAdsrUpper                        = 0x8004BDD0;
+SetVoiceAdsrAttackRateAndMode            = 0x8004BDE8;
+SetVoiceAdsrDecayRate                    = 0x8004BE18;
+SetVoiceAdsrSustainLevel                 = 0x8004BE40;
+SetVoiceAdsrSustainRateAndDirection      = 0x8004BE68;
+SetVoiceAdsrReleaseRateAndMode           = 0x8004BE9C;
+SetVoiceParams                           = 0x8004BECC;
+SetVoiceParamsByFlags                    = 0x8004BF78;
+Sound_UpdateSlidesAndDelays              = 0x8004C094;
+Sound_StealQuietestVoice                 = 0x8004CEAC;
+Sound_FindFreeVoice                      = 0x8004CF5C;
+UnassignVoicesFromChannels               = 0x8004D214;
+Sound_UpdateVoiceEnvelopeStates          = 0x8004D294;
+Sound_ApplyMasterFadeToChannelVolume     = 0x8004D374;
+Sound_RestoreChannelVolumeFromMasterFade = 0x8004D3C4;
+ChannelMaskToVoiceMaskFiltered           = 0x8004D918;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lib Spu (cont.)
@@ -700,7 +701,7 @@ g_Sound_Sfx_MetadataTableA   = 0x80092A1C;
 g_Sound_Sfx_ProgramData      = 0x80092A20;
 g_SoundCommandParams         = 0x80092A28; // type:FSoundCommandParams size:0x18
 g_pActiveMusicConfig         = 0x80092A48;
-g_Sound_MasterFadeTimer      = 0x80092A50;
+g_Sound_MasterFadeTimer      = 0x80092A50; // type:FSoundFadeTimer size:0x10
 g_Sound_VoiceSchedulerState  = 0x80092AA8; // type:FSoundVoiceSchedulerState size:0x30
 g_CdVolume                   = 0x80092AF8;
 g_PushedMusicChannels        = 0x80092B00; // type:FSoundChannel[] size:0x2480

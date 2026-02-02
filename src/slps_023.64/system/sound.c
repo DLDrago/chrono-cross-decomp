@@ -707,7 +707,10 @@ void Sound_ApplyMasterFadeToChannelVolume( FSoundChannelConfig* in_Config )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3C4 );
+void Sound_RestoreChannelVolumeFromMasterFade( FSoundChannelConfig* in_Config )
+{
+    in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
+}
 
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004D3D4 );
 

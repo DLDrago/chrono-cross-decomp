@@ -502,11 +502,11 @@ typedef struct
 
 typedef struct
 {
-    s32 Value;
-    s32 Step;
-    s32 TicksRemaining;
-    s32 SavedValue;
-} FSoundFadeTimer;
+    /* 0x00 */ s32 Value;
+    /* 0x04 */ s32 Step;
+    /* 0x08 */ s32 TicksRemaining;
+    /* 0x0C */ s32 SavedValue;
+} FSoundFadeTimer; /* size 0x10 */
 
 
 #define SEMITONES_IN_OCTAVE (12)
@@ -569,6 +569,7 @@ s32 Sound_StealQuietestVoice( s32 in_bForceFullScan );
 s32 Sound_FindFreeVoice( s32 in_bForceFullScan );
 void Sound_UpdateVoiceEnvelopeStates( u32 in_ProtextedVoiceMask );
 void Sound_ApplyMasterFadeToChannelVolume( FSoundChannelConfig* in_Config );
+void Sound_RestoreChannelVolumeFromMasterFade ( FSoundChannelConfig* in_Config );
 void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 );
 void ChannelMaskToVoiceMaskFiltered( FSoundChannel* in_Channel, s32* io_VoiceMask, s32 in_ChannelMask, s32 in_VoiceMaskFilter );
 
