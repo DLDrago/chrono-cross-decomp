@@ -885,7 +885,97 @@ s32 Sound_FindFreeVoice( s32 in_bForceFullScan  )
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CFC4 );
+#else
+extern s32 D_80092AFC;
+
+void func_8004CFC4( FSoundChannel* in_pChannel, u32 in_Flags1, u32 in_Flags2, u32* out_KeyOnFlags )
+{
+    FSoundChannel* pChannel;
+    s32 Flags;
+    s32 ChannelMask;
+    u32 VoiceIndex;
+
+    pChannel = in_pChannel;
+    VoiceIndex = 0;
+    ChannelMask = 1;
+    Flags = in_Flags1 & g_pActiveMusicConfig->PendingKeyOnMask;
+    
+    do {
+        if( in_Flags1 & ChannelMask )
+        {
+            func_8004C5A4( pChannel );
+
+            if( pChannel->VoiceParams.VoiceParamFlags != 0 )
+            {
+                if( D_80092AFC & ChannelMask )
+                {
+                    pChannel->VoiceParams.Volume.right = 0;
+                    pChannel->VoiceParams.Volume.left = 0;
+                }
+
+                if( Flags & ChannelMask )
+                {
+                    u32 AssignedVoiceIndex;
+
+                    if( in_Flags2 & ChannelMask )
+                    {
+                        *out_KeyOnFlags |= 1 << VoiceIndex;
+                        pChannel->VoiceParams.AssignedVoiceNumber = VoiceIndex;
+                    }
+                    else
+                    {
+                        s32 bForceFullScan = (g_pActiveMusicConfig->KeyedMask & ChannelMask) != 0;
+                        u32 FreeVoiceIndex = Sound_FindFreeVoice( bForceFullScan );
+
+                        if( FreeVoiceIndex == VOICE_COUNT )
+                        {
+                            g_pActiveMusicConfig->StatusFlags |= 2;
+                            FreeVoiceIndex = Sound_StealQuietestVoice(bForceFullScan);
+
+                            if( FreeVoiceIndex == VOICE_COUNT )
+                            {
+                                pChannel->VoiceParams.AssignedVoiceNumber = FreeVoiceIndex;
+                                g_pActiveMusicConfig->StatusFlags |= 1;
+                            }
+                        }
+                        else
+                        {
+                            *out_KeyOnFlags |= 1 << FreeVoiceIndex;
+                            pChannel->VoiceParams.AssignedVoiceNumber = FreeVoiceIndex;
+                            g_SpuVoiceInfo[FreeVoiceIndex].pEnvx = 0x7FFF;
+                        }
+                    }
+
+                    /* VoiceIndex = AssignedVoiceNumber */
+                    AssignedVoiceIndex = pChannel->VoiceParams.AssignedVoiceNumber;
+                    if( AssignedVoiceIndex < VOICE_COUNT )
+                    {
+                        SetVoiceParams( AssignedVoiceIndex, &pChannel->VoiceParams, pChannel->VoiceParams.VolumeScale );
+                        g_Sound_VoiceChannelConfigs[ AssignedVoiceIndex ] = g_pActiveMusicConfig;
+                        g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+                    }
+                }
+                else
+                {    
+                    u32 AssignedVoiceIndex;
+
+                    AssignedVoiceIndex = pChannel->VoiceParams.AssignedVoiceNumber;
+                    if( AssignedVoiceIndex < VOICE_COUNT )
+                    {
+                        SetVoiceParamsByFlags( AssignedVoiceIndex, &pChannel->VoiceParams );
+                    }
+                }
+            }
+            in_Flags1 &= ~ChannelMask;
+        }
+        ChannelMask <<= 1;
+        pChannel++;
+        VoiceIndex++;
+    } while( in_Flags1 != 0 );
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 arg1 )
