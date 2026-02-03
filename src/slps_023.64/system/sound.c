@@ -805,7 +805,183 @@ void func_8004C5A4(FSoundChannel* in_pChannel)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CA1C );
+#else
+void func_8004CA1C(FSoundChannel* in_pChannel )
+{
+    s16 temp_v0_3;
+    s32 VibratoPitch;
+    s32 temp_a0_2;
+    s32 temp_a0_3;
+    s32 temp_a0_4;
+    s32 temp_a0_5;
+    s32 temp_a0_6;
+    s32 temp_a0_7;
+    s32 UpdateFlags;
+    s32 temp_v0_5;
+    s32 Index;
+    s32 var_a1;
+    s32 var_a1_2;
+    s32 var_a3;
+    s32 BaseVolume;
+    u16 temp_v0;
+
+    UpdateFlags = in_pChannel->UpdateFlags;
+    var_a3 = ((in_pChannel->Volume >> 16) * ((u16)in_pChannel->VolumeBalance >> 8)) >> 7;
+    if (UpdateFlags & 1)
+    {
+        temp_v0 = in_pChannel->field72_0xb8 - 1;
+        in_pChannel->field72_0xb8 = temp_v0;
+        if (!(temp_v0 & 0xFFFF))
+        {
+            in_pChannel->field72_0xb8 = ((u32)in_pChannel->VibratoRatePhase >> 10);
+            if( (in_pChannel->VibratoWave[0] == 0) && (in_pChannel->VibratoWave[1] == 0) )
+            {
+                in_pChannel->VibratoWave += in_pChannel->VibratoWave[2];
+            }
+            
+            VibratoPitch = ((u16)in_pChannel->VibratoBase * *in_pChannel->VibratoWave++) >> 16;
+
+            if (VibratoPitch != in_pChannel->VibratoPitch)
+            {
+                in_pChannel->VibratoPitch = VibratoPitch;
+                in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
+                if (VibratoPitch >= 0)
+                {
+                    in_pChannel->VibratoPitch = VibratoPitch * 2;
+                }
+            }
+        }
+    }
+    
+    if( UpdateFlags & 2 )
+    {
+        temp_v0_3 = in_pChannel->field81_0xca - 1;
+        in_pChannel->field81_0xca = temp_v0_3;
+        if (!(temp_v0_3 & 0xFFFF))
+        {
+            in_pChannel->field81_0xca = ((u32)in_pChannel->TremeloRatePhase >> 10);
+            if( (in_pChannel->TremeloWave[0] == 0) && (in_pChannel->TremeloWave[1] == 0) )
+            {
+                in_pChannel->TremeloWave += in_pChannel->TremeloWave[2];
+            }
+            
+            temp_a0_2 = (((s32) ((var_a3 * ((u16) in_pChannel->TremeloDepth >> 8)) << 9) >> 16) * *in_pChannel->TremeloWave++) >> 15;
+            if (temp_a0_2 != in_pChannel->TremeloVolume)
+            {
+                in_pChannel->TremeloVolume = temp_a0_2;
+                in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+            }
+        }
+    }
+
+    if( UpdateFlags & 4 )
+    {
+        in_pChannel->AutoPanRateCurrent--;
+        if( !(in_pChannel->AutoPanRateCurrent & 0xFFFF) )
+        {
+            in_pChannel->AutoPanRateCurrent = ((u32)in_pChannel->AutoPanRatePhase >> 10);
+            if ((in_pChannel->AutoPanWave[0] == 0) && (in_pChannel->AutoPanWave[1] == 0))
+            {
+                in_pChannel->AutoPanWave += in_pChannel->AutoPanWave[2];
+            }
+            
+            temp_a0_3 = (((u16)in_pChannel->AutoPanDepth >> 8) * *in_pChannel->AutoPanWave++) >> 15;
+            if (temp_a0_3 != in_pChannel->AutoPanVolume)
+            {
+                in_pChannel->AutoPanVolume = temp_a0_3;
+                in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+            }
+        }
+    }
+    
+    if( UpdateFlags & 0x20 )
+    {
+        in_pChannel->VoiceParams.VoiceParamFlags |= 3;
+        var_a3 = ((s16) (*((u16*)in_pChannel - 0x6) << 1) * ((u16)in_pChannel->VolumeBalance >> 8)) >> 7;
+    }
+
+    if (in_pChannel->VoiceParams.VoiceParamFlags & 3)
+    {
+        BaseVolume = var_a3 + in_pChannel->TremeloVolume;
+
+        if( !(in_pChannel->unk_Flags & 0x02000000) )
+        {
+            int Temp;
+            
+            Temp = (in_pChannel->ChannelPan + in_pChannel->field41_0x80) >> 8;
+            Temp += in_pChannel->AutoPanVolume;
+            Temp += 0x80;
+
+            Index = Temp & 0xFF;
+            BaseVolume = (BaseVolume * ((in_pChannel->C_Value << 0x10) >> 0x18)) >> 7;
+        }
+        else
+        {
+            Index = 0x80;
+        }
+
+        if( g_Sound_GlobalFlags.MixBehavior & 2 )
+        {
+            temp_v0_5 = (BaseVolume * g_Sound_StereoPanGainTableQ15[0x80]) >> 15;
+            in_pChannel->VoiceParams.Volume.right = temp_v0_5;
+            in_pChannel->VoiceParams.Volume.left = temp_v0_5;
+        }
+        else
+        {
+            var_a1 = g_Sound_StereoPanGainTableQ15[ Index ];
+            in_pChannel->VoiceParams.Volume.left = (BaseVolume * var_a1) >> 15;
+            var_a1 = g_Sound_StereoPanGainTableQ15[ Index ^ 0xFF ];
+            in_pChannel->VoiceParams.Volume.right = (BaseVolume * var_a1) >> 15;
+        }
+    }
+
+    if( UpdateFlags & 0x10 )
+    {
+        var_a1 = *((u16*)in_pChannel - 0x6) + in_pChannel->VibratoPitch + (in_pChannel->PitchSlide >> 16);
+        temp_a0_4 = in_pChannel->field25_0x54 & 0xFF00;
+        if (!(in_pChannel->unk_Flags & 0x02000000))
+        {
+            temp_a0_5 = temp_a0_4 >> 8;
+            if (temp_a0_4 != 0)
+            {
+                if (temp_a0_5 < 0x80)
+                {
+                    var_a1 += var_a1 * temp_a0_5 >> 7;
+                }
+                else
+                {
+                    var_a1 = var_a1 * temp_a0_5 >> 8;
+                }
+            }
+        }
+        in_pChannel->VoiceParams.SampleRate = (in_pChannel->FinePitchDelta + var_a1) & 0x3FFF;
+        in_pChannel->VoiceParams.VoiceParamFlags |= 0x10;
+    }
+    else if( in_pChannel->VoiceParams.VoiceParamFlags & 0x10 )
+    {
+        var_a1_2 = in_pChannel->PitchBase + in_pChannel->VibratoPitch + (in_pChannel->PitchSlide >> 16);
+        temp_a0_6 = in_pChannel->field25_0x54 & 0xFF00;
+        if (!(in_pChannel->unk_Flags & 0x02000000))
+        {
+            temp_a0_7 = temp_a0_6 >> 8;
+            if (temp_a0_6 != 0)
+            {
+                if (temp_a0_7 < 0x80)
+                {
+                    var_a1_2 += var_a1_2 * temp_a0_7 >> 7;
+                }
+                else
+                {
+                    var_a1_2 = var_a1_2 * temp_a0_7 >> 8;
+                }
+            }
+        }
+        in_pChannel->VoiceParams.SampleRate = (in_pChannel->FinePitchDelta + var_a1_2) & 0x3FFF;
+    }
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 s32 Sound_StealQuietestVoice( s32 in_bForceFullScan )
