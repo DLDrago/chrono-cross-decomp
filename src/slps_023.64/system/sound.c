@@ -540,8 +540,271 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+#ifndef NON_MATCHING
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004C5A4 );
+#else
+void func_8004C5A4(FSoundChannel* in_pChannel)
+{
+    /* locals declared up-front (old C style) */
+    FSoundChannel* ch;
+    s32 updateFlags;
+    s32 baseAmp;          /* corresponds to a3 in asm */
+    s32 tmp32;
+    s32 prod;
+    u16 utmp16;
+    s16 stmp16;
+    s16* wave;
+    s32 pitchAcc;
+    FSoundChannelConfig* cfg;
+    s32 scale8;
 
+
+    ch = in_pChannel;
+
+    /* baseAmp = ((Volume >> 16) * (VolumeBalance >> 8)) >> 7 */
+    prod = ((ch->Volume >> 16) * (s32)(ch->VolumeBalance >> 8));
+    baseAmp = prod >> 7;
+
+    updateFlags = ch->UpdateFlags;
+
+    /* ---------------------------
+     * Vibrato (UpdateFlags & 1)
+     * --------------------------- */
+    if (updateFlags & SOUND_UPDATE_VIBRATO)
+    {
+        /* if VibratoDelayCurrent != 0, skip stepping */
+        if (ch->VibratoDelayCurrent == 0)
+        {
+            /* field72_0xb8 is a tick countdown */
+            utmp16 = ch->field72_0xb8;
+            utmp16 = (u16)(utmp16 - 1);
+            ch->field72_0xb8 = utmp16;
+
+            if (utmp16 == 0)
+            {
+                /* reload countdown from VibratoRatePhase >> 10 */
+                ch->field72_0xb8 = (u16)(ch->VibratoRatePhase >> 10);
+
+                wave = ch->VibratoWave;
+                if (wave[0] == 0 && wave[1] == 0)
+                {
+                    wave += wave[2];
+                    ch->VibratoWave = wave;
+                }
+
+                /* newPitch = (VibratoBase * waveSample) >> 16 */
+                tmp32 = ch->VibratoBase * *ch->VibratoWave++;
+
+                if( (tmp32 >> 16) != ch->VibratoPitch )
+                {
+                    ch->VibratoPitch = (tmp32 >> 16);
+                    ch->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+
+                    /* preserve the asm’s sign-dependent behavior */
+                    if( (tmp32 >> 16) >= 0 )
+                    {
+                        ch->VibratoPitch = (tmp32 >> 16) << 1;
+                    }
+                }
+            }
+        }
+    }
+
+    /* ---------------------------
+     * Tremolo (UpdateFlags & 2)
+     * --------------------------- */
+    if (updateFlags & SOUND_UPDATE_TREMOLO)
+    {
+        if (ch->TremeloDelayCurrent == 0)
+        {
+            utmp16 = (u16)ch->field81_0xca;
+            utmp16 = (u16)(utmp16 - 1);
+            ch->field81_0xca = (s16)utmp16;
+
+            if (utmp16 == 0)
+            {
+                ch->field81_0xca = (s16)(ch->TremeloRatePhase >> 10);
+
+                wave = ch->TremeloWave;
+                if (wave[0] == 0 && wave[1] == 0)
+                {
+
+                    wave += wave[2];
+                    ch->TremeloWave = wave;
+                }
+                
+                /* compute tremolo base from baseAmp and TremeloDepth>>8 */
+                tmp32 = (baseAmp * (ch->TremeloDepth >> 8));
+                /* asm does: a0 = ((tmp32 << 9) >> 16)  == (tmp32 >> 7) with sign behavior */
+                tmp32 = (tmp32 << 9) >> 16;
+
+                /* newTrem = (tmp32 * waveSample) >> 15 */
+                scale8 = *ch->TremeloWave++;
+                prod = tmp32 * scale8;
+
+                if ((prod >> 15) != ch->TremeloVolume)
+                {
+                    ch->TremeloVolume = (prod >> 15);
+                    ch->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+                }
+            }
+        }
+    }
+
+    /* ---------------------------
+     * Auto-pan (UpdateFlags & 4)
+     * --------------------------- */
+    if (updateFlags & SOUND_UPDATE_PAN_LFO)
+    {
+        utmp16 = ch->AutoPanRateCurrent;
+        utmp16 = (u16)(utmp16 - 1);
+        ch->AutoPanRateCurrent = utmp16;
+
+        if (utmp16 == 0)
+        {
+            ch->AutoPanRateCurrent = (u16)(ch->AutoPanRatePhase >> 10);
+
+            wave = ch->AutoPanWave;
+            if (wave[0] == 0 && wave[1] == 0)
+            {
+                wave += wave[2];
+                ch->AutoPanWave = wave;
+            }
+
+            /* newAutoPan = ((AutoPanDepth>>8) * waveSample) >> 15 */
+            prod = ((ch->AutoPanDepth >> 8) * *ch->AutoPanWave++);
+
+            if ((prod >> 15) != ch->AutoPanVolume)
+            {
+                ch->AutoPanVolume = (prod >> 15);
+                ch->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+            }
+        }
+    }
+
+    /* ---------------------------
+     * Side-chain volume update (UpdateFlags & 0x20)
+     * --------------------------- */
+    if (updateFlags & SOUND_UPDATE_SIDE_CHAIN_VOL)
+    {
+        /* external value at (channel - 0xC), treated as (s16)(u16<<1) */
+        utmp16 = *(u16*)(((u8*)ch) - 0x0C);
+        tmp32 = (utmp16 << 1);
+
+        baseAmp = ((s16)tmp32 * (ch->VolumeBalance >> 8)) >> 7;
+
+        ch->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+    }
+
+    /* ---------------------------
+     * If volume dirty, compute VoiceParams.Volume L/R
+     * --------------------------- */
+    if (ch->VoiceParams.VoiceParamFlags & VOICE_PARAM_VOLUME)
+    {
+        u16 panIndex;
+
+        cfg = g_pActiveMusicConfig;
+
+        /* baseAmp += TremeloVolume */
+        baseAmp += (u32)ch->TremeloVolume >> 16;
+
+        /* apply master volume scalar (cfg+0x56) & 0x7F */
+        tmp32 = (baseAmp * ((cfg->A_Volume >> 0x10) & 0x7F));
+        baseAmp = tmp32 >> 7;
+
+        /* compute pan index:
+         * pan = (ChannelPan>>8) + AutoPanVolume + *(s16*)(cfg+0x62) - 0x40
+         * then mask to 0..255.
+         */
+        tmp32  = ch->AutoPanVolume;
+        tmp32  += (cfg->B_Volume >> 0x10);
+        tmp32  += (ch->ChannelPan >> 8);
+        tmp32  -= 0x40;
+        panIndex = tmp32 & 0xFF;
+
+        /* if global mix behavior forces center/mono-ish path */
+        if( g_Sound_GlobalFlags.MixBehavior & 0x2 )
+        {
+            stmp16 = baseAmp * g_Sound_StereoPanGainTableQ15[0x80] >> 15;
+
+            ch->VoiceParams.Volume.right = stmp16;
+            ch->VoiceParams.Volume.left  = stmp16;
+        }
+        else
+        {
+            ch->VoiceParams.Volume.left = (baseAmp * (s16)g_Sound_StereoPanGainTableQ15[panIndex]) >> 15;
+            ch->VoiceParams.Volume.right = (baseAmp * (s16)g_Sound_StereoPanGainTableQ15[panIndex ^ 0xFF]) >> 15;
+        }
+    }
+
+    /* ---------------------------
+     * Pitch update A: UpdateFlags & 0x10 (side-chain pitch)
+     * --------------------------- */
+    if (updateFlags & SOUND_UPDATE_SIDE_CHAIN_PITCH)
+    {
+        u16 Pitch;
+        /* base = *(u16*)(channel-0xC) + VibratoPitch + (PitchSlide>>16) */
+        utmp16  = *(u16*)(((u8*)ch) - 0x0C);
+        pitchAcc = utmp16 + ch->VibratoPitch + (ch->PitchSlide >> 16);
+
+        /* apply master pitch scale using only (scale>>16)&0xFF with piecewise behavior */
+        scale8 = (g_Sound_MasterPitchScaleQ16_16 & 0x00FF0000);
+        if (scale8 != 0)
+        {
+            scale8 >>= 16;
+            if (scale8 < 0x80)
+            {
+                prod = pitchAcc * scale8;
+                pitchAcc = pitchAcc + (prod >> 7);
+            }
+            else
+            {
+                prod = pitchAcc * scale8;
+                pitchAcc = (prod >> 8);
+            }
+        }
+
+        /* sampleRate = (FinePitchDelta + pitchAcc) & 0x3FFF */
+        Pitch = (ch->FinePitchDelta + pitchAcc) & 0x3FFF;
+        ch->VoiceParams.SampleRate = Pitch;
+        ch->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+        return;
+    }
+
+    /* ---------------------------
+     * Pitch update B: if sample-rate already dirty
+     * --------------------------- */
+    if (ch->VoiceParams.VoiceParamFlags & VOICE_PARAM_SAMPLE_RATE)
+    {
+        u16 SampleRate;
+
+        /* base = PitchBase + VibratoPitch + (PitchSlide>>16) */
+        pitchAcc = ch->PitchBase + ch->VibratoPitch + (ch->PitchSlide >> 16);
+
+        scale8 = (g_Sound_MasterPitchScaleQ16_16 & 0x00FF0000);
+
+        if (scale8 != 0)
+        {
+            scale8 >>= 16;
+            if (scale8 < 0x80)
+            {
+                prod = pitchAcc * scale8;
+                pitchAcc = pitchAcc + (prod >> 7);
+            }
+            else
+            {
+                prod = pitchAcc * scale8;
+                pitchAcc = (prod >> 8);
+            }
+        }
+
+        SampleRate = ch->FinePitchDelta + pitchAcc;
+        ch->VoiceParams.SampleRate = SampleRate & 0x3FFF;
+    }
+}
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
 INCLUDE_ASM( "asm/slps_023.64/nonmatchings/system/sound", func_8004CA1C );
 
 //----------------------------------------------------------------------------------------------------------------------

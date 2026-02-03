@@ -440,47 +440,47 @@ typedef struct
 
 typedef struct 
 {
-    s32 StatusFlags; /*   0x01 - Voice exhaustion (couldn't allocate even with stealing) 0x02 - Voice stealing occurred */
-    u32 ActiveChannelMask;
-    u32 KeyedMask; /* SPU voices currently keyed-on */
-    u32 AllocatedVoiceMask; /* Channels with SPU voices allocated */
-    s32 PendingKeyOnMask; /* Pending key-ons */
-    s32 ActiveNoteMask; /* Currently playing notes (not rests) */
-    u32 PreventRekeyOnMusicResumeMask; /* With the way music pushes and pops, if something like a one-shot was started and "paused" then it won't rekey/resume that note when the music resumes*/
-    s32 PendingKeyOffMask;
-    u32 LastChannelModeFlags;
-    s32 Tempo;
-    s32 TempoSlideStep;
-    s32 TempoUpdate;
-    FAkaoSequence* SequenceBase;
-    u16* SequencePatchTable;
-    FSoundKeymapEntry8* KeymapTable;
-    s32 SomeIndexRelatedToSpuVoiceInfo;
-    u32 NoiseChannelFlags;
-    u32 ReverbChannelFlags;
-    u32 FmChannelFlags;
-    s32 RevDepth;
-    s32 ReverbDepthSlideStep;
-    u32 A_Volume;
-    s32 A_Step;
-    s16 A_StepsRemaining;
-    undefined field24_0x5e;
-    undefined field25_0x5f;
-    u32 B_Volume;
-    s32 B_Step;
-    s16 B_StepsRemaining;
-    s16 ReverbDepthSlideLength;
-    u16 TempoSlideLength;
-    u16 MusicId;
-    u16 JumpThresholdValue;
-    u16 NoiseClock;
-    s16 TimerUpper;
-    s16 TimerUpperCurrent;
-    s16 TimerLower;
-    s16 TimerLowerCurrent;
-    s16 TimerTopCurrent;
-    undefined field39_0x7e;
-    undefined field40_0x7f;
+    /* 0x00 */ s32 StatusFlags; /*   0x01 - Voice exhaustion (couldn't allocate even with stealing) 0x02 - Voice stealing occurred */
+    /* 0x04 */ u32 ActiveChannelMask;
+    /* 0x08 */ u32 KeyedMask; /* SPU voices currently keyed-on */
+    /* 0x0C */ u32 AllocatedVoiceMask; /* Channels with SPU voices allocated */
+    /* 0x10 */ s32 PendingKeyOnMask; /* Pending key-ons */
+    /* 0x14 */ s32 ActiveNoteMask; /* Currently playing notes (not rests) */
+    /* 0x18 */ u32 PreventRekeyOnMusicResumeMask; /* With the way music pushes and pops, if something like a one-shot was started and "paused" then it won't rekey/resume that note when the music resumes*/
+    /* 0x1C */ s32 PendingKeyOffMask;
+    /* 0x20 */ u32 LastChannelModeFlags;
+    /* 0x24 */ s32 Tempo;
+    /* 0x28 */ s32 TempoSlideStep;
+    /* 0x2C */ s32 TempoUpdate;
+    /* 0x30 */ FAkaoSequence* SequenceBase;
+    /* 0x34 */ u16* SequencePatchTable;
+    /* 0x38 */ FSoundKeymapEntry8* KeymapTable;
+    /* 0x3C */ s32 SomeIndexRelatedToSpuVoiceInfo;
+    /* 0x40 */ u32 NoiseChannelFlags;
+    /* 0x44 */ u32 ReverbChannelFlags;
+    /* 0x48 */ u32 FmChannelFlags;
+    /* 0x4C */ s32 RevDepth;
+    /* 0x50 */ s32 ReverbDepthSlideStep;
+    /* 0x54 */ u32 A_Volume;
+    /* 0x58 */ s32 A_Step;
+    /* 0x5C */ s16 A_StepsRemaining;
+    /* 0x5E */ undefined field24_0x5e;
+    /* 0x5F */ undefined field25_0x5f;
+    /* 0x60 */ u32 B_Volume;
+    /* 0x64 */ s32 B_Step;
+    /* 0x68 */ s16 B_StepsRemaining;
+    /* 0x6A */ s16 ReverbDepthSlideLength;
+    /* 0x6C */ u16 TempoSlideLength;
+    /* 0x6E */ u16 MusicId;
+    /* 0x70 */ u16 JumpThresholdValue;
+    /* 0x72 */ u16 NoiseClock;
+    /* 0x74 */ s16 TimerUpper;
+    /* 0x76 */ s16 TimerUpperCurrent;
+    /* 0x78 */ s16 TimerLower;
+    /* 0x7A */ s16 TimerLowerCurrent;
+    /* 0x7C */ s16 TimerTopCurrent;
+    /* 0x7E */ undefined field39_0x7e;
+    /* 0x7F */ undefined field40_0x7f;
 } FSoundChannelConfig;
 
 typedef struct
@@ -567,6 +567,7 @@ void Sound_UpdateSlidesAndDelays( FSoundChannel* in_pChannel, u32 in_VoiceFlags,
 s32 Sound_StealQuietestVoice( s32 in_bForceFullScan );
 s32 Sound_FindFreeVoice( s32 in_bForceFullScan );
 void Sound_UpdateVoiceEnvelopeStates( u32 in_ProtextedVoiceMask );
+void func_8004C5A4( FSoundChannel* in_pChannel );
 void Sound_ApplyMasterFadeToChannelVolume( FSoundChannelConfig* in_Config );
 void Sound_RestoreChannelVolumeFromMasterFade ( FSoundChannelConfig* in_Config );
 void UnassignVoicesFromChannels( FSoundChannel* in_pChannel, s32 );
@@ -761,9 +762,13 @@ void unk_Sound_80055a10();
 u32 unk_Sound_80055e0c(s32*);
 u32 unk_Sound_80056144( u32 in_RepeatAddressL, u32 in_RepeatAddressR, int in_Param3, SpuIRQCallbackProc in_IrqCallback );
 
+// RODATA it seems
 extern u32 g_Sound_ProgramCounter;
 extern const u32 g_SemitonePitchTable[SEMITONES_IN_OCTAVE];
 extern s16* g_Sound_LfoTable[SOUND_LFO_COUNT];
+extern s16 g_Sound_StereoPanGainTableQ15[0x100];
+
+// DATA I think
 extern FSoundChannel g_ActiveMusicChannels[0x20];
 extern u32 D_80090A34;
 extern FSoundChannel SfxSoundChannels[12];
@@ -785,6 +790,7 @@ extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
 extern s32 g_CdVolume;
 extern FSoundChannel g_PushedMusicChannels[0x20];
 extern u16* g_Sound_Sfx_MetadataTableB;
+extern s32 g_Sound_MasterPitchScaleQ16_16;
 extern FSoundGlobalFlags g_Sound_GlobalFlags;
 extern FSound80094FA0 g_Sound_80094FA0;
 extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];
