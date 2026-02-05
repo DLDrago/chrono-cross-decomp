@@ -508,6 +508,13 @@ typedef struct
     /* 0x0C */ s32 SavedValue;
 } FSoundFadeTimer; /* size 0x10 */
 
+typedef struct
+{
+    s32 Reverb;
+    s32 Noise;
+    s32 Fm;
+} FSoundVoiceModeFlags;
+
 #define SEMITONES_IN_OCTAVE (12)
 
 // Semitone pitch multipliers (fixed-point, 0x1000 = 1.0)
@@ -777,6 +784,7 @@ extern FSoundChannel SfxSoundChannels[12];
 extern FSoundChannel* g_pSecondaryMusicChannels;
 extern FSoundChannelConfig* g_pSavedMousicConfig; // What even is this used for
 extern FSpuVoiceInfo g_SpuVoiceInfo[VOICE_COUNT];
+extern FSoundChannelConfig g_PrimaryMusicConfig;
 extern FSoundChannelConfig g_PushedMusicConfig;
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern u32 g_Music_LoopCounter;
@@ -796,3 +804,4 @@ extern s32 g_Sound_MasterPitchScaleQ16_16;
 extern FSoundGlobalFlags g_Sound_GlobalFlags;
 extern FSound80094FA0 g_Sound_80094FA0;
 extern FSoundChannelConfig* g_Sound_VoiceChannelConfigs[VOICE_COUNT];
+extern FSoundVoiceModeFlags g_Sound_VoiceModeFlags;
