@@ -893,40 +893,41 @@ extern s32 D_80092AFC;
 void func_8004CFC4( FSoundChannel* in_pChannel, u32 in_Flags1, u32 in_Flags2, u32* out_KeyOnFlags )
 {
     FSoundChannel* pChannel;
+    int Mask;
     s32 Flags;
     s32 ChannelMask;
     u32 VoiceIndex;
 
-    pChannel = in_pChannel;
-    VoiceIndex = 0;
-    ChannelMask = 1;
     Flags = in_Flags1 & g_pActiveMusicConfig->PendingKeyOnMask;
+    VoiceIndex = 0;
+    pChannel = in_pChannel;
+    ChannelMask = 1;
     
     do {
-        if( in_Flags1 & ChannelMask )
+        Mask = ChannelMask;
+        if( in_Flags1 & Mask )
         {
             func_8004C5A4( pChannel );
 
+
             if( pChannel->VoiceParams.VoiceParamFlags != 0 )
             {
-                if( D_80092AFC & ChannelMask )
+                if( D_80092AFC & Mask )
                 {
                     pChannel->VoiceParams.Volume.right = 0;
                     pChannel->VoiceParams.Volume.left = 0;
                 }
 
-                if( Flags & ChannelMask )
+                if( Flags & Mask )
                 {
-                    u32 AssignedVoiceIndex;
-
-                    if( in_Flags2 & ChannelMask )
+                    if( in_Flags2 & Mask )
                     {
                         *out_KeyOnFlags |= 1 << VoiceIndex;
                         pChannel->VoiceParams.AssignedVoiceNumber = VoiceIndex;
                     }
                     else
                     {
-                        s32 bForceFullScan = (g_pActiveMusicConfig->KeyedMask & ChannelMask) != 0;
+                        s32 bForceFullScan = (g_pActiveMusicConfig->KeyedMask & Mask) != 0;
                         u32 FreeVoiceIndex = Sound_FindFreeVoice( bForceFullScan );
 
                         if( FreeVoiceIndex == VOICE_COUNT )
@@ -948,27 +949,23 @@ void func_8004CFC4( FSoundChannel* in_pChannel, u32 in_Flags1, u32 in_Flags2, u3
                         }
                     }
 
-                    /* VoiceIndex = AssignedVoiceNumber */
-                    AssignedVoiceIndex = pChannel->VoiceParams.AssignedVoiceNumber;
-                    if( AssignedVoiceIndex < VOICE_COUNT )
+                    if( pChannel->VoiceParams.AssignedVoiceNumber < VOICE_COUNT )
                     {
-                        SetVoiceParams( AssignedVoiceIndex, &pChannel->VoiceParams, pChannel->VoiceParams.VolumeScale );
-                        g_Sound_VoiceChannelConfigs[ AssignedVoiceIndex ] = g_pActiveMusicConfig;
+                        SetVoiceParams( pChannel->VoiceParams.AssignedVoiceNumber, &pChannel->VoiceParams, pChannel->VoiceParams.VolumeScale );
+                        g_Sound_VoiceChannelConfigs[ pChannel->VoiceParams.AssignedVoiceNumber ] = g_pActiveMusicConfig;
                         g_Sound_GlobalFlags.UpdateFlags |= 0x100;
                     }
                 }
                 else
                 {    
-                    u32 AssignedVoiceIndex;
 
-                    AssignedVoiceIndex = pChannel->VoiceParams.AssignedVoiceNumber;
-                    if( AssignedVoiceIndex < VOICE_COUNT )
+                    if( pChannel->VoiceParams.AssignedVoiceNumber < VOICE_COUNT )
                     {
-                        SetVoiceParamsByFlags( AssignedVoiceIndex, &pChannel->VoiceParams );
+                        SetVoiceParamsByFlags( pChannel->VoiceParams.AssignedVoiceNumber, &pChannel->VoiceParams );
                     }
                 }
             }
-            in_Flags1 &= ~ChannelMask;
+            in_Flags1 &= ~Mask;
         }
         ChannelMask <<= 1;
         pChannel++;
